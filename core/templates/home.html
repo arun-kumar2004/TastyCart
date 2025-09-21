@@ -1,0 +1,509 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Welcome Banner -->
+<section class="bg-gradient-to-r from-orange-200 to-yellow-100 text-center py-6 shadow-md">
+  <h2 class="text-3xl font-[Dancing Script] text-orange-700">Welcome to TastyCart</h2>
+  <p class="text-lg font-[Pacifico] text-gray-700">Where every bite tells a story of tradition, taste, and togetherness.</p>
+</section>
+
+<!-- Search Bar (replace the old search div with this) -->
+<!-- Search Bar -->
+<div id="searchContainer" class="px-12 py-6 text-center relative z-50">
+  <div class="relative w-2/3 md:w-1/2 mx-auto">
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Search dishes & sweets..."
+      class="w-full p-3 pr-12 border rounded-lg shadow-lg font-[Pacifico] text-lg"
+      aria-label="Search dishes and sweets"
+    />
+    <button
+      id="searchBtn"
+      class="absolute right-2 top-1/2 transform -translate-y-1/2 w-9 h-9 p-0 bg-transparent border-0 disabled:opacity-40 disabled:cursor-not-allowed"
+      disabled
+      aria-label="Search"
+      title="Search"
+    >
+      <img src="{% static 'images/search-icon.png' %}" alt="Search" class="w-full h-full object-contain"/>
+    </button>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<section id="home" class="flex flex-col md:flex-row justify-between items-center px-16 py-20 bg-gradient-to-r from-yellow-50 to-orange-100">
+  <div class="max-w-lg">
+    <h2 class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-red-500 font-[Cinzel]">
+      Enjoy Delicious
+    </h2>
+    <h1 class="text-7xl font-extrabold text-orange-700 font-[Dancing Script] mt-2">
+      Traditional Food
+    </h1>
+    <p class="text-gray-700 mt-4 text-lg leading-relaxed font-[Poppins]">
+      Good food warms the heart and mends the soul. At TastyCart, every dish is made fresh with love, spices, and tradition – 
+      because food is not just to fill your stomach, but to create memories that last forever.
+    </p>
+    <a href="/menu/" class="mt-6 inline-block bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg shadow-md">Order Now ⏭️ </a>
+  </div>
+  <div class="w-full md:w-1/2 mt-8 md:mt-0">
+    <img id="heroImage" src="{% static 'images/about1.jpg' %}" class="rounded-lg shadow-lg w-full h-96 object-cover">
+  </div>
+</section>
+
+<!-- Popular Dishes -->
+<section id="popular" class="px-12 py-12 relative">
+  <h2 class="text-4xl text-center mb-10 font-[Dancing Script] text-purple-700">
+    Popular Dishes
+  </h2>
+
+  <!-- Scroll Buttons -->
+  <img src="{% static 'images/left-arrow.png' %}" id="dishesLeft" onclick="manualScroll('dishesRow', -1)" 
+       class="arrow left-arrow absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-orange-500 rounded-full p-2 shadow cursor-pointer z-20" alt="left">
+  <img src="{% static 'images/right-arrow.png' %}" id="dishesRight" onclick="manualScroll('dishesRow', 1)" 
+       class="arrow right-arrow absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-orange-500 rounded-full p-2 shadow cursor-pointer z-20" alt="right">
+
+  <div id="dishesRow" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
+    {% for dish in dishes %}
+    <div class="dish-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+      {% if dish.image %}
+        <img src="{{ dish.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">
+      {% endif %}
+      <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ dish.name }}</h3>
+      <p class="mb-3 font-[Pacifico] text-gray-600">{{ dish.description|truncatechars:80 }}</p>
+      <p class="font-bold mb-3 text-red-600">₹{{ dish.price }}</p>
+      <div class="flex justify-between">
+        {% if user.is_authenticated %}
+          <a href="{% url 'menu:order_from_menu' dish.id %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+            {% if dish.id in cart_ids %}
+              <button 
+                  disabled
+                  class="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-lg">
+                  Added ✔
+              </button>
+            {% else %}
+              <button 
+                  onclick="addToCartHandler('{{ dish.name }}', {{ dish.id }}, this)"
+                  class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">
+                  Add to Cart
+              </button>
+          {% endif %}
+
+        {% else %}
+          <a href="{% url 'login' %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+          <a href="{% url 'login' %}" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+      <p class="text-center text-gray-500">No popular dishes yet.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Traditional Sweets -->
+<section id="sweets" class="px-12 py-12 relative">
+  <h2 class="text-4xl text-center mb-10 font-[Dancing Script] text-pink-700">
+    Traditional Sweets
+  </h2>
+
+  <!-- Scroll Buttons -->
+  <img src="{% static 'images/left-arrow.png' %}" id="sweetsLeft" onclick="manualScroll('sweetsRow', -1)" 
+      class="arrow left-arrow absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-orange-500 rounded-full p-2 shadow cursor-pointer z-20" alt="left">
+  <img src="{% static 'images/right-arrow.png' %}" id="sweetsRight" onclick="manualScroll('sweetsRow', 1)" 
+      class="arrow right-arrow absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-orange-500 rounded-full p-2 shadow cursor-pointer z-20" alt="right">
+
+  <div id="sweetsRow" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
+    {% for sweet in sweets %}
+    <div class="dish-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+      {% if sweet.image %}
+        <img src="{{ sweet.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">
+      {% endif %}
+      <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ sweet.name }}</h3>
+      <p class="mb-3 font-[Pacifico] text-gray-600">{{ sweet.description|truncatechars:80 }}</p>
+      <p class="font-bold mb-3 text-red-600">₹{{ sweet.price }}</p>
+      <div class="flex justify-between">
+          {% if user.is_authenticated %}
+            <a href="{% url 'menu:order_from_menu' sweet.id %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+              {% if sweet.id in cart_ids %}
+                <button 
+                    disabled
+                    class="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-lg">
+                    Added ✔
+                </button>
+              {% else %}
+                <button 
+                    onclick="addToCartHandler('{{ sweet.name }}', {{ sweet.id }}, this)"
+                    class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">
+                    Add to Cart
+                </button>
+              {% endif %}
+
+
+        {% else %}
+          <a href="{% url 'login' %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+          <a href="{% url 'login' %}" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+      <p class="text-center text-gray-500">No sweets yet.</p>
+    {% endfor %}
+  </div>
+</section>
+
+
+<!-- About Us -->
+<section id="about" class="flex flex-col md:flex-row items-center px-12 py-16 bg-gradient-to-r from-yellow-100 to-orange-100">
+  <div class="w-full h-85 md:w-1/2 relative">
+    <img id="aboutImage" src="{% static 'images/about1.jpg' %}" class="rounded-lg shadow-lg w-full h-full object-cover">
+  </div>
+  <div class="w-full md:w-1/2 px-6 mt-6 md:mt-0">
+    <h2 class="text-4xl mb-4 font-[Dancing Script] text-orange-700">About Us</h2>
+    <p class="text-lg font-[Pacifico] text-gray-700 leading-relaxed">
+      At <span class="text-orange-600 font-bold">TastyCart</span>, we don’t just cook food—we craft stories through flavors. 
+      Every spice is carefully chosen, every ingredient sourced fresh, and every recipe perfected with a touch of love. 
+      For us, food is not just about filling your stomach, it is about creating experiences that connect people, build traditions, 
+      and preserve memories. Our chefs work tirelessly to bring you authentic tastes, whether it’s the warmth of a home-style curry 
+      or the sweetness of a festive dessert. Over the years, TastyCart has become more than a restaurant; it’s a family where 
+      our guests are at the heart of everything we do. Step into our world, and let your senses travel through a delightful journey 
+      of taste, culture, and celebration.
+    </p>
+  </div>
+</section>
+
+<!-- Dear Guest -->
+<section id="guest" class="py-16 bg-gradient-to-r from-pink-100 to-red-100 text-center">
+  <div class="max-w-3xl mx-auto p-8 bg-white rounded-xl shadow-lg">
+    <h2 class="text-3xl mb-4 font-[Dancing Script] text-orange-600">Dear Guest</h2>
+    <p class="text-lg mb-4 font-[Pacifico] text-gray-600">
+      Welcome to TastyCart, where each recipe is crafted with love, passion, and a touch of tradition. 
+      We invite you to enjoy a <span class="text-orange-600 italic">culinary journey</span> that warms your heart 
+      and leaves memories to cherish long after the last bite.
+    </p>
+    <p class="text-right text-purple-600 font-[Dancing Script]">— Chef Arun Kumar</p>
+  </div>
+</section>
+
+<!-- Scroll to Top -->
+<button id="scrollTopBtn"
+     class="hidden fixed bottom-6 right-6 w-8  bg-white-600 text-white text-lg rounded-full shadow-lg cursor-pointer">
+  <img src="{% static 'images/up-arrow.png' %}" alt="uparrow" class="w-full h-full object-contain">
+</button>
+
+
+<!-- Inline CSS -->
+<style>
+  .items-row::-webkit-scrollbar { height: 8px; }
+  .items-row::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 8px; }
+  .arrow { width: 48px; height: 48px; object-fit: contain; }
+  @media (max-width: 768px) {
+    .arrow { width: 40px; height: 40px; }
+  }
+</style>
+
+
+<!-- Scroll Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sections = [
+      { id: 'dishesRow', left: 'dishesLeft', right: 'dishesRight', direction: 1 },   // Popular Dishes → left to right
+      { id: 'sweetsRow', left: 'sweetsLeft', right: 'sweetsRight', direction: -1 }  // Traditional Sweets → right to left
+    ];
+
+    window.manualScroll = function(rowId, dir) {
+      const el = document.getElementById(rowId);
+      if (!el) return;
+      el.dataset.auto = "false";
+      el.scrollBy({ left: dir * 600, behavior: 'smooth' });
+      setTimeout(() => el.dataset.auto = "true", 1800);
+    };
+    window.addToCartHandler = function(name, id, btn) {
+  fetch(`/cart/add/${id}/`)
+    .then(res => {
+      if (res.ok) {
+        // ✅ Update cart count
+        let cartCountEl = document.getElementById("cart-count");
+        if (cartCountEl) {
+          cartCountEl.textContent = parseInt(cartCountEl.textContent || "0") + 1;
+        } else {
+          const cartLink = document.querySelector('a[href$="/cart/"]');
+          if (cartLink) {
+            const span = document.createElement("span");
+            span.id = "cart-count";
+            span.className = "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
+            span.textContent = "1";
+            cartLink.parentNode.appendChild(span);
+          }
+        }
+
+        // ✅ Update button state
+        btn.disabled = true;
+        btn.textContent = "Added ✔";
+        btn.classList.remove("bg-orange-500", "hover:bg-orange-600");
+        btn.classList.add("bg-gray-400", "cursor-not-allowed");
+
+      } else {
+        alert("Something went wrong!");
+      }
+    })
+    .catch(err => alert("Error: " + err));
+};
+
+
+    // helper function → check दोनों direction same तो sweetsRow उल्टा
+    function checkDirections() {
+      const dishes = document.getElementById("dishesRow");
+      const sweets = document.getElementById("sweetsRow");
+      if (!dishes || !sweets) return;
+
+      const dishDir = parseInt(dishes.dataset.dir);
+      const sweetDir = parseInt(sweets.dataset.dir);
+
+      if (dishDir === sweetDir) {
+        sweets.dataset.dir = sweetDir * -1; // opposite कर दो
+      }
+    }
+
+    sections.forEach(({ id, left, right, direction }) => {
+      const row = document.getElementById(id);
+      const leftBtn = document.getElementById(left);
+      const rightBtn = document.getElementById(right);
+
+      if (!row) return;
+
+      // initial setup
+      row.dataset.dir = direction;
+      row.dataset.counter = 0;
+
+      // अगर sweets section है → start from right
+      if (direction === -1) {
+        row.scrollLeft = row.scrollWidth - row.clientWidth;
+      }
+
+      function updateArrows() {
+        const overflow = row.scrollWidth > row.clientWidth + 4;
+        if (!overflow) {
+          leftBtn.style.display = 'none';
+          rightBtn.style.display = 'none';
+          return;
+        }
+        leftBtn.style.display = (row.scrollLeft > 4) ? 'block' : 'none';
+        rightBtn.style.display = (row.scrollLeft + row.clientWidth < row.scrollWidth - 4) ? 'block' : 'none';
+      }
+
+      row.addEventListener('scroll', updateArrows);
+      window.addEventListener('resize', () => setTimeout(updateArrows, 200));
+      setTimeout(updateArrows, 300);
+
+      row.dataset.auto = "true";
+
+      setInterval(() => {
+        if (row.dataset.auto !== "true") return;
+
+        let dir = parseInt(row.dataset.dir);
+        row.scrollBy({ left: dir * 2, behavior: 'smooth' });
+
+        // boundary check
+        if (row.scrollLeft + row.clientWidth >= row.scrollWidth - 2) {
+          row.dataset.dir = -1;
+          row.dataset.counter = parseInt(row.dataset.counter) + 1;
+        }
+        if (row.scrollLeft <= 0) {
+          row.dataset.dir = 1;
+          row.dataset.counter = parseInt(row.dataset.counter) + 1;
+        }
+
+        // हर 4 बार के बाद direction check
+        if (parseInt(row.dataset.counter) >= 4) {
+          row.dataset.counter = 0;
+          checkDirections();
+        }
+      }, 30);
+    });
+  });
+
+
+
+/* ========== Hero & About image slider (preserved) ========== */
+  const images = ["{% static 'images/about.png' %}","{% static 'images/hero.png' %}", "{% static 'images/about1.jpg' %}"];
+  let idx = 0;
+  setInterval(() => {
+    idx = (idx + 1) % images.length;
+    const aboutImg = document.getElementById("aboutImage");
+    const heroImg = document.getElementById("heroImage");
+    if (aboutImg) aboutImg.src = images[idx];
+    if (heroImg) heroImg.src = images[idx];
+  }, 5000);
+
+  /* ========== Add to Cart (preserved simple confirm) ========== */
+  window.addToCart = function(name, price) {
+    if (confirm(`${name} (₹${price}) added to your cart! Go to Cart?`)) {
+      window.location.href = "/cart/";
+    }
+  };
+
+/* ========== Scroll to Top (preserved) ========== */
+const scrollBtn = document.getElementById("scrollTopBtn");
+window.addEventListener('scroll', () => {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+    scrollBtn.classList.remove("hidden");
+  } else {
+    scrollBtn.classList.add("hidden");
+  }
+});
+if (scrollBtn) scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+/* ========== SEARCH: enable button, live search, scroll to first match ========== */
+(function () {
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const searchContainer = document.getElementById('searchContainer');
+  const originalOffset = searchContainer.offsetTop;
+
+  if (!searchInput || !searchBtn || !searchContainer) return;
+
+  function setSearchBtnState() {
+    const q = searchInput.value.trim();
+    searchBtn.disabled = (q.length === 0);
+    if (q.length > 0) {
+      searchBtn.classList.remove('opacity-40','cursor-not-allowed');
+      searchBtn.classList.add('opacity-100','cursor-pointer');
+      // Make search bar fixed at top
+      searchContainer.style.position = 'fixed';
+      searchContainer.style.top = '0';
+      searchContainer.style.left = '0';
+      searchContainer.style.right = '0';
+      searchContainer.style.background = 'white';
+      searchContainer.style.padding = '0.75rem 3rem';
+      searchContainer.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+      searchContainer.style.zIndex = '50';
+      // Auto scroll to bottom of navbar
+      window.scrollTo({ top: document.querySelector('nav').offsetHeight, behavior: 'smooth' });
+    } else {
+      searchBtn.classList.add('opacity-40','cursor-not-allowed');
+      searchBtn.classList.remove('opacity-100','cursor-pointer');
+      // Reset position
+      searchContainer.style.position = 'relative';
+      searchContainer.style.top = '';
+      searchContainer.style.left = '';
+      searchContainer.style.right = '';
+      searchContainer.style.background = '';
+      searchContainer.style.padding = '';
+      searchContainer.style.boxShadow = '';
+    }
+  }
+
+  function performSearch() {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) {
+      document.querySelectorAll('.dish-card, .sweet-card').forEach(card => card.style.display = '');
+      return;
+    }
+
+    let firstMatch = null;
+    document.querySelectorAll('.dish-card, .sweet-card').forEach(card => {
+      const name = (card.querySelector('h3')?.innerText || '').toLowerCase();
+      if (name.includes(q)) {
+        card.style.display = '';
+        if (!firstMatch) firstMatch = card;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (firstMatch) firstMatch.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  searchInput.addEventListener('input', () => {
+    setSearchBtnState();
+    performSearch();
+  });
+
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!searchBtn.disabled) performSearch();
+    }
+  });
+
+  searchBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!searchBtn.disabled) performSearch();
+  });
+
+  setSearchBtnState();
+})();
+
+
+  // DOMContentLoaded end
+</script>
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Scroll Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const sections = [
+    { id: 'dishesRow', left: 'dishesLeft', right: 'dishesRight', direction: 1 },   // left ➝ right
+    { id: 'sweetsRow', left: 'sweetsLeft', right: 'sweetsRight', direction: -1 }  // right ➝ left
+  ];
+
+  window.manualScroll = function(rowId, dir) {
+    const el = document.getElementById(rowId);
+    if(!el) return;
+    el.dataset.auto = "false";
+    el.scrollBy({ left: dir * 600, behavior: 'smooth' });
+    setTimeout(() => el.dataset.auto = "true", 1800);
+  };
+
+  sections.forEach(({id, left, right, direction}) => {
+    const row = document.getElementById(id);
+    const leftBtn = document.getElementById(left);
+    const rightBtn = document.getElementById(right);
+    let dir = direction;
+
+    function updateArrows() {
+      if(!row) return;
+      const overflow = row.scrollWidth > row.clientWidth + 4;
+      if(!overflow) {
+        leftBtn.style.display = 'none';
+        rightBtn.style.display = 'none';
+        return;
+      }
+      leftBtn.style.display = (row.scrollLeft > 4) ? 'block' : 'none';
+      rightBtn.style.display = (row.scrollLeft + row.clientWidth < row.scrollWidth - 4) ? 'block' : 'none';
+    }
+
+    row.addEventListener('scroll', updateArrows);
+    window.addEventListener('resize', () => setTimeout(updateArrows, 200));
+    setTimeout(updateArrows, 300);
+
+    row.dataset.auto = "true";
+    setInterval(() => {
+      if(row.dataset.auto !== "true") return;
+      row.scrollBy({ left: dir * 2, behavior: 'smooth' });
+      if(row.scrollLeft + row.clientWidth >= row.scrollWidth - 2) dir = -1;
+      if(row.scrollLeft <= 0) dir = 1;
+    }, 30);
+  });
+});
+</script>

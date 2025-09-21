@@ -1,0 +1,653 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Your Deliveries{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-6 py-8">
+  <h1 class="text-3xl font-bold mb-6">🚚 Your Deliveries</h1>
+
+  <!-- Tabs (Admin & User) -->
+<div class="flex justify-center gap-4 mb-6">
+  <button type="button" class="filter-btn px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-800" data-filter="on_the_way">On The Way</button>
+  <button type="button" class="filter-btn px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-800" data-filter="completed">Completed</button>
+  <button type="button" class="filter-btn px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-800" data-filter="cancelled">Cancelled</button>
+  <button type="button" class="filter-btn px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-800" data-filter="pending">Pending</button>
+</div>
+
+
+  {% if not orders %}
+    <div class="text-center py-20">
+      <h2 class="text-2xl font-bold mb-4">You have no order yet.</h2>
+      <p class="text-gray-600 mb-6">Redirecting to home in 10 seconds...</p>
+      <a href="{% url 'home' %}" class="inline-block px-6 py-2 bg-blue-600 text-white rounded-md">Go to Home</a>
+    </div>
+    <script>
+      setTimeout(()=>{ window.location.href = "{% url 'home' %}"; }, 10000);
+    </script>
+  {% else %}
+    {% for order in orders %}
+      <div id="order-{{ order.id }}"
+        class="mb-6 border rounded-lg p-4 shadow order-block"
+        data-status="{{ order.status }}"
+        data-cancelled-by="{{ order.cancelled_by|default:'' }}"
+        data-cancelled-by-name="{% if order.cancelled_by and 'user' in order.cancelled_by %}{{ order.user.get_full_name|default:order.user.username }}{% elif order.cancelled_by and 'admin' in order.cancelled_by %}Admin{% else %}{% endif %}"
+        data-username="{{ order.user.get_full_name|default:order.user.username }}">
+
+        <!-- Order Header -->
+        <div class="flex justify-between items-start">
+          <div>
+            <h2 class="font-semibold text-lg mb-1">Order #{{ order.id }} Summary</h2>
+            <p class="text-sm"><b>User:</b> {{ order.user.get_full_name|default:order.user.username }}</p>
+            <p class="text-sm"><b>Phone:</b> {{ order.user.phone|default:"-" }}</p>
+            <p class="text-sm"><b>Address:</b> {{ order.user.address|default:"-" }}</p>
+          </div>
+          <div class="text-right text-sm">
+            <p>
+            <b>Arrival time & Date:</b>
+              <span id="arrival-{{ order.id }}" data-arrival-ts="{{ order.actual_delivery_time|date:'U' }}">
+                {{ order.actual_delivery_time|date:"h:i A (d-m-Y)" }}
+              </span>
+            </p>
+            <p>
+              <b>Status:</b>
+                  <span id="status-{{ order.id }}"
+                      class="{% if order.status == 'completed' %}text-green-600{% elif order.status == 'cancelled' %}text-red-600{% else %}text-orange-600{% endif %}">
+                  {% if order.status == 'cancelled' %}
+                    {% if order.cancelled_by and 'user' in order.cancelled_by %}
+                      Cancelled ❌ by {{ order.user.get_full_name|default:order.user.username }}
+                    {% elif order.cancelled_by and 'admin' in order.cancelled_by %}
+                      Cancelled ❌ by Admin
+                    {% else %}
+                      Cancelled ❌
+                    {% endif %}
+                  {% elif order.status == 'completed' %}
+                    Completed ✔️
+                  {% else %}
+                    {{ order.status|title|cut:"_" }}
+                  {% endif %}
+                </span>
+            </p>
+          </div>
+        </div>
+
+        <p class="mt-3">⏰ Time left: <strong id="remaining-{{ order.id }}">--:--</strong></p>
+
+        <!-- Order Items Table -->
+        <table class="w-full border mt-4">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="p-2">Sr</th>
+              <th class="p-2">Item</th>
+              <th class="p-2">Qty</th>
+              <th class="p-2">Price</th>
+              <th class="p-2">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for it in order.items.all %}
+              <tr class="{% cycle 'bg-white' 'bg-gray-50' %} border-t">
+                <td class="p-3">{{ forloop.counter }}</td>
+                <td class="p-3 flex items-center gap-3">
+                  {% if it.image %}
+                    <img src="{{ it.image }}" alt="{{ it.name }}" class="h-10 w-10 object-cover rounded">
+                  {% endif %}
+                  <span class="font-medium">{{ it.name }}</span>
+                </td>
+                <td class="p-3">{{ it.quantity }}</td>
+                <td class="p-3">₹{{ it.price }}</td>
+                <td class="p-3">₹{{ it.total }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot class="bg-gray-100">
+            <tr>
+              <td colspan="4" class="text-right font-bold p-3">Grand Total</td>
+              <td class="font-bold p-3">₹{{ order.grand_total }}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Action Buttons -->
+        <div class="mt-4 flex gap-3 items-center flex-wrap">
+          {% if request.user.is_superuser %}
+            {% if order.status != 'completed' and order.status != 'cancelled' %}
+              <button id="send-otp-btn-{{ order.id }}" class="px-4 py-2 rounded text-white font-semibold bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 shadow-lg" onclick="sendOtp({{ order.id }})">Send OTP</button>
+              <input id="otp-input-{{ order.id }}" class="border p-2 rounded" placeholder="Enter OTP" />
+              <button id="verify-otp-btn-{{ order.id }}" class="px-4 py-2 bg-blue-400 text-white rounded hover:bg-blue-500 cursor-not-allowed" onclick="verifyOtp({{ order.id }})" disabled>Verify OTP</button>
+              <button onclick="confirmOnTheWay({{ order.id }}, '{{ order.status }}')" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">              On the Way
+              </button>
+              <button onclick="if(confirm('Are you sure you want to cancel this order?')) updateStatus({{ order.id }}, 'cancelled')" 
+                      class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Cancelled
+              </button>
+              <button class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700" onclick="deleteOrder({{ order.id }})">Delete Order</button>
+            {% endif %}
+          {% else %}
+              {% if order.status == 'pending' or order.status == 'on_the_way' %}
+                <button onclick="sendCancelOtp({{ order.id }})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Cancel Order</button>
+              {% endif %}
+          {% endif %}
+          <span id="otp-msg-{{ order.id }}" class="text-sm ml-3"></span>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- Global Popup Modal -->
+<div id="adminPopup" class="fixed inset-0 bg-black bg-opacity-40 hidden flex items-center justify-center z-50">
+  <div class="rounded-xl p-6 max-w-sm w-full shadow-xl text-center bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white">
+    <h2 id="adminPopupTitle" class="text-xl font-bold mb-3">Message</h2>
+    <p id="adminPopupMessage" class="mb-4"></p>
+
+    <!-- OTP Input (Initially hidden) -->
+    <div id="otpContainer" class="hidden mb-4">
+      <input id="otpInput" type="text" placeholder="Enter OTP"
+             class="w-full px-3 py-2 rounded-md text-black text-center outline-none" />
+      <p id="otpError" class="text-red-200 text-sm mt-2 hidden"></p>
+    </div>
+
+    <div class="flex justify-center gap-4">
+      <button id="okAdminPopup" class="px-5 py-2 bg-white text-black rounded-lg hover:bg-gray-100">OK</button>
+      <button id="hideAdminPopup" class="px-5 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300">Hide</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// Popup
+function showAdminPopup(title, msg, autoClose=false){
+  document.getElementById('adminPopupTitle').textContent = title;
+  document.getElementById('adminPopupMessage').textContent = msg;
+  document.getElementById('adminPopup').classList.remove('hidden');
+
+  // reset OTP error each time
+  document.getElementById('otpError').classList.add('hidden');
+
+  // ✅ auto-close in 5 sec only if asked
+  if(autoClose){
+    setTimeout(()=>{
+      document.getElementById('adminPopup').classList.add('hidden');
+    }, 5000);
+  }
+}
+
+// Hide button (just close the popup)
+document.getElementById("hideAdminPopup").addEventListener("click", function() {
+  document.getElementById("adminPopup").classList.add("hidden");
+});
+
+
+document.getElementById('closeAdminPopup')?.addEventListener('click', function(){
+  document.getElementById('adminPopup').classList.add('hidden');
+});
+
+// CSRF
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// Utilities
+function pad2(n){ return String(n).padStart(2,'0'); }
+function formatMMSS(sec){
+  const m = Math.floor(Math.abs(sec)/60);
+  const s = Math.floor(Math.abs(sec)%60);
+  return `${pad2(m)}:${pad2(s)}`;
+}
+
+// Effective Status
+function getEffectiveStatus(el){
+  const serverStatus = (el.dataset.status || '').toLowerCase();
+  if(serverStatus === 'cancelled') return 'cancelled';
+  if(serverStatus === 'completed') return 'completed';
+  const arrivalEl = el.querySelector('[data-arrival-ts]');
+  const arrivalTs = Number(arrivalEl?.dataset?.arrivalTs || 0);
+  const now = Math.floor(Date.now() / 1000);
+  if(arrivalTs && now > arrivalTs) return 'pending';
+  return 'on_the_way';
+}
+
+// Update Status UI
+// Update Status UI
+window.updateStatusUI = function(el, effStatus){
+  const id = el.id.replace('order-','');
+  const statusSpan = document.getElementById('status-' + id);
+  if(!statusSpan) return;
+
+  statusSpan.className = '';
+
+  if(effStatus === 'cancelled'){
+    const cancelledByName = el.dataset.cancelledByName || 'Admin';
+    if(cancelledByName.toLowerCase().includes('user')){
+      // Show actual user name instead of "You"
+      statusSpan.textContent = `Cancelled ❌ by ${el.dataset.username || 'User'}`;
+    } else {
+      statusSpan.textContent = `Cancelled ❌ by ${cancelledByName}`;
+    }
+    statusSpan.classList.add('text-red-600');
+  }
+ else if(effStatus === 'completed'){
+    statusSpan.textContent = 'Completed ✔️';
+    statusSpan.classList.add('text-green-600');
+  } else if(effStatus === 'pending'){
+    statusSpan.textContent = 'Pending';
+    statusSpan.classList.add('text-orange-600');
+  } else {
+    statusSpan.textContent = 'On The Way';
+    statusSpan.classList.add('text-orange-600');
+  }
+};
+
+
+// Filtering
+function setActiveTabButton(btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>{
+    b.classList.remove('bg-blue-600','text-white');
+    b.classList.add('bg-gray-200','text-gray-800');
+  });
+  if(btn){
+    btn.classList.remove('bg-gray-200','text-gray-800');
+    btn.classList.add('bg-blue-600','text-white');
+  }
+}
+
+function filterOrders(status){
+  document.querySelectorAll('.order-block').forEach(el=>{
+    const eff = getEffectiveStatus(el);
+    if(status === 'all' || eff === status){
+      el.style.display = '';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+}
+
+document.querySelectorAll('.filter-btn').forEach(b=>{
+  b.addEventListener('click', function(){
+    setActiveTabButton(b);
+    filterOrders(b.dataset.filter);
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function(){
+  const defaultBtn = document.querySelector('.filter-btn[data-filter="on_the_way"]');
+  setActiveTabButton(defaultBtn);
+  filterOrders('on_the_way');
+
+  // Attach user cancel buttons
+  document.querySelectorAll('.cancel-user-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const orderId = this.dataset.orderId;
+      showAdminPopup('Confirm Cancellation', 'Are you sure you want to cancel this order?');
+
+      const closeBtn = document.getElementById('closeAdminPopup');
+      const handler = () => {
+        updateStatus(orderId, 'cancelled');
+        closeBtn.removeEventListener('click', handler);
+        document.getElementById('adminPopup').classList.add('hidden');
+      };
+      closeBtn.addEventListener('click', handler);
+    });
+  });
+});
+
+// Countdown & dynamic status updater
+(function(){
+  const rows = Array.from(document.querySelectorAll('.order-block'));
+  const clocks = rows.map(el => {
+    const id = el.id.replace('order-','');
+    const arrivalEl = el.querySelector('[data-arrival-ts]');
+    const arrivalTs = Number(arrivalEl?.dataset?.arrivalTs || 0);
+    return {
+      id,
+      el,
+      remEl: document.getElementById('remaining-' + id),
+      arrivalTs,
+      serverStatus: (el.dataset.status || '').toLowerCase(),
+      frozen: false,
+      lastEffStatus: null
+    };
+  });
+
+  function tick(){
+    const now = Math.floor(Date.now() / 1000);
+    clocks.forEach(c => {
+      c.serverStatus = (c.el.dataset.status || '').toLowerCase();
+      let eff;
+      if(c.serverStatus === 'cancelled') eff = 'cancelled';
+      else if(c.serverStatus === 'completed') eff = 'completed';
+      else if(c.arrivalTs && now > c.arrivalTs) eff = 'pending';
+      else eff = 'on_the_way';
+
+      if(eff !== c.lastEffStatus){
+        updateStatusUI(c.el, eff);
+        c.lastEffStatus = eff;
+        c.frozen = (eff === 'cancelled' || eff === 'completed') ? true : false;
+      }
+
+      if(!c.frozen && c.remEl){
+        if(!c.arrivalTs){ c.remEl.textContent = '--:--'; return; }
+        const diff = c.arrivalTs - now;
+        c.remEl.textContent = (diff >= 0) ? formatMMSS(diff) : 'late ' + formatMMSS(Math.abs(diff));
+      }
+    });
+  }
+
+  tick();
+  setInterval(tick, 1000);
+})();
+
+// Verify OTP
+async function verifyOtp(orderId){
+  const otpVal = document.getElementById('otp-input-' + orderId).value.trim();
+  if (!otpVal){
+    showAdminPopup('Error', 'Please enter OTP first');
+    return;
+  }
+  try{
+    const resp = await fetch("{% url 'delivery:verify_delivery_otp' 0 %}".replace('/0/', '/' + orderId + '/'), {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({ otp: otpVal })
+    });
+    const data = await resp.json();
+    if (data.success){
+      showAdminPopup('OTP Verified', 'Order will be marked delivered✔️.');
+      const statusEl = document.getElementById('status-' + orderId);
+      const orderBlock = document.getElementById('order-' + orderId);
+      if(statusEl){
+        statusEl.textContent = 'Completed ✔️';
+        statusEl.className = 'text-green-600';
+      }
+      if(orderBlock){
+        orderBlock.dataset.status = 'completed';
+      }
+      const ts = data.delivered_at_ts ? data.delivered_at_ts * 1000 : (Date.now() + 10000);
+      const removeDelay = Math.max(0, ts - Date.now());
+      setTimeout(()=> {
+        const el = document.getElementById('order-' + orderId);
+        if(el) el.remove();
+      }, removeDelay + 500);
+    } else {
+      showAdminPopup('Verify Error', data.error || 'OTP verification failed');
+    }
+  } catch(err){
+    showAdminPopup('Error', err.toString());
+  }
+}
+
+// Update status (Admin & User)
+async function updateStatus(orderId, status){
+  try {
+    const resp = await fetch("{% url 'delivery:update_order_status' 0 %}".replace('/0/', '/' + orderId + '/'), {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+        'Accept': 'application/json',
+        'Content-Type':'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({status: status})
+    });
+
+    let data;
+    try {
+      data = await resp.json();
+    } catch(e) {
+      showAdminPopup('Error', 'Invalid server response');
+      return;
+    }
+
+    if(data.success){
+      const orderBlock = document.getElementById('order-' + orderId);
+      const statusEl = document.getElementById('status-' + orderId);
+      const arrivalEl = document.getElementById('arrival-' + orderId);
+
+      if(orderBlock) orderBlock.dataset.status = data.status;
+
+      if(statusEl){
+        if(data.status === 'cancelled'){
+          const cancelledByName = orderBlock.dataset.cancelledByName || 'Admin';
+          statusEl.textContent = cancelledByName.toLowerCase().includes('user') ? 'Cancelled ❌ by you' : 'Cancelled ❌ by Admin';
+          statusEl.className = 'text-red-600';
+        } else if(data.status === 'on_the_way'){
+          statusEl.textContent = 'On The Way';
+          statusEl.className = 'text-orange-600';
+        } else if(data.status === 'completed'){
+          statusEl.textContent = 'Completed ✔️';
+          statusEl.className = 'text-green-600';
+        } else {
+          statusEl.textContent = data.status.replace('_',' ');
+          statusEl.className = 'text-orange-600';
+        }
+      }
+
+      // Convert UTC timestamp to IST
+      if(data.arrival_ts && arrivalEl){
+        const arrivalUTC = new Date(data.arrival_ts * 1000); // UTC
+        const istTime = new Date(arrivalUTC.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+        const hours = istTime.getHours();
+        const minutes = istTime.getMinutes().toString().padStart(2,'0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = ((hours + 11) % 12 + 1);
+        const day = pad2(istTime.getDate());
+        const month = pad2(istTime.getMonth() + 1);
+        const year = istTime.getFullYear();
+        arrivalEl.textContent = `${formattedHours}:${minutes} ${ampm} (${day}-${month}-${year})`;
+        arrivalEl.dataset.arrivalTs = data.arrival_ts;
+      }
+
+      showAdminPopup('Status Updated', 'Order status updated to '+ (data.status || status).replace('_',' '));
+      const activeBtn = document.querySelector('.filter-btn.bg-blue-600');
+      if(activeBtn) filterOrders(activeBtn.dataset.filter);
+    } else {
+      showAdminPopup('Error', data.error || 'Failed to update status');
+    }
+  } catch(err){
+    showAdminPopup('Error', 'Network or server error: ' + err.toString());
+  }
+}
+
+
+
+
+// Send OTP
+async function sendOtp(orderId){
+  try{
+    const resp = await fetch("{% url 'delivery:send_delivery_otp' 0 %}".replace('/0/', '/' + orderId + '/'), {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Accept': 'application/json' }
+    });
+    const data = await resp.json();
+    if (data.success){
+      showAdminPopup('OTP Sent', data.message);
+      document.getElementById('otp-msg-' + orderId).textContent = data.message;
+      const verifyBtn = document.getElementById('verify-otp-btn-' + orderId);
+      if(verifyBtn){
+        verifyBtn.disabled = false;
+        verifyBtn.classList.remove('bg-blue-400','cursor-not-allowed');
+        verifyBtn.classList.add('bg-blue-600','hover:bg-blue-700');
+      }
+    } else {
+      showAdminPopup('Error', data.error || 'Failed to send OTP');
+    }
+  } catch(err){
+    showAdminPopup('Error', err.toString());
+  }
+}
+
+// Delete Order - Admin Only
+async function deleteOrder(orderId){
+  if(!confirm('Are you sure you want to delete this order?')) return;
+  try{
+    const resp = await fetch("{% url 'delivery:delete_order' 0 %}".replace('/0/', '/' + orderId + '/'), {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Accept': 'application/json' }
+    });
+    const data = await resp.json();
+    if(data.success){
+      showAdminPopup('Deleted', 'Order deleted successfully.');
+      const el = document.getElementById('order-' + orderId);
+      if(el) el.remove();
+    } else {
+      showAdminPopup('Error', data.error || 'Failed to delete order');
+    }
+  } catch(err){
+    showAdminPopup('Error', err.toString());
+  }
+}
+
+async function sendCancelOtp(orderId){
+  // ⏰ check remaining time from UI
+  const timerEl = document.getElementById("remaining-" + orderId);
+  const orderBlock = document.getElementById("order-" + orderId);
+  if(timerEl && orderBlock){
+    const text = timerEl.textContent.trim();
+    // parse MM:SS (ignore "late" case)
+    const match = text.match(/(\d+):(\d+)/);
+    if(match){
+      const minutes = parseInt(match[1], 10);
+      const seconds = parseInt(match[2], 10);
+      const totalSec = minutes*60 + seconds;
+
+      if(totalSec <= 30*60){  // less than or equal 30 min
+        const username = orderBlock.dataset.username || "User";
+        showAdminPopup("Cancel Not Allowed", 
+          `${username}, can't cancel your order now bcoz left time is ${text} left`);
+        return; // 🚫 stop here, don't call backend
+      }
+    }
+  }
+
+  // ✅ Normal flow if more than 30 minutes
+  if(!confirm("Are you sure you want to cancel this order?")) return;
+
+  try{
+    const resp = await fetch("{% url 'delivery:send_cancel_otp' 0 %}".replace('/0/', '/' + orderId + '/'));
+    const data = await resp.json();
+
+    if(!data.success){
+      showAdminPopup('Error', data.error || 'Failed to send OTP');
+      return;
+    }
+
+    showAdminPopup('OTP Sent', `Cancel OTP has been sent to your email (${data.email}). Enter it below:`);
+
+    const otpInput = document.createElement('input');
+    otpInput.type = 'text';
+    otpInput.placeholder = 'Enter OTP';
+    otpInput.id = 'cancel-otp-input-' + orderId;
+    otpInput.className = 'border p-2 rounded mt-4 w-full text-black text-center font-semibold';
+    otpInput.style.fontSize = '16px';
+    otpInput.style.letterSpacing = '2px';
+
+    const popup = document.getElementById('adminPopup');
+    popup.querySelector('#adminPopupMessage').appendChild(otpInput);
+
+    const verifyBtn = document.createElement('button');
+    verifyBtn.textContent = 'Verify OTP';
+    verifyBtn.className = 'px-5 py-2 mt-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold';
+
+    verifyBtn.onclick = async () => {
+      const otpVal = otpInput.value.trim();
+      if(!otpVal) return showAdminPopup('Error', 'Please enter OTP');
+
+      const verifyResp = await fetch("{% url 'delivery:verify_cancel_otp' 0 %}".replace('/0/', '/' + orderId + '/'), {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({otp: otpVal})
+      });
+      const verifyData = await verifyResp.json();
+      if(verifyData.success){
+        showAdminPopup('Cancelled', verifyData.message);
+        const statusEl = document.getElementById('status-' + orderId);
+        const orderBlock = document.getElementById('order-' + orderId);
+        if(statusEl){
+          statusEl.textContent = 'Cancelled ❌ by you';
+          statusEl.className = 'text-red-600';
+        }
+        if(orderBlock) orderBlock.dataset.status = 'cancelled';
+      } else {
+        showAdminPopup('Error', verifyData.error || 'OTP verification failed');
+      }
+    };
+
+    popup.querySelector('#adminPopupMessage').appendChild(verifyBtn);
+
+  } catch(err){
+    showAdminPopup('Error', err.toString());
+  }
+}
+
+
+async function confirmOnTheWay(orderId, currentStatus){
+  if(currentStatus !== "pending"){
+    updateStatus(orderId, "on_the_way");
+    return;
+  }
+
+  if(!confirm("Are you sure you want to mark this order as 'On the Way'?\nThis will set arrival time to +30 minutes.")) return;
+
+  try{
+    const resp = await fetch("{% url 'delivery:update_order_status' 0 %}".replace('/0/', '/' + orderId + '/'), {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({status: "on_the_way", force_init: "1"})
+    });
+    const data = await resp.json();
+    if(data.success){
+      const orderBlock = document.getElementById("order-" + orderId);
+      const statusEl = document.getElementById("status-" + orderId);
+      const arrivalEl = document.getElementById("arrival-" + orderId);
+
+      if(orderBlock) orderBlock.dataset.status = "on_the_way";
+      if(statusEl){
+        statusEl.textContent = "On The Way";
+        statusEl.className = "text-orange-600";
+      }
+      if(arrivalEl && data.arrival_ts){
+        arrivalEl.dataset.arrivalTs = data.arrival_ts;
+        arrivalEl.textContent = data.arrival_str;
+      }
+
+      // ✅ Restart countdown immediately
+      if(data.arrival_ts){
+        const timerEl = document.getElementById("remaining-" + orderId);
+        if(timerEl){
+          timerEl.dataset.arrivalTs = data.arrival_ts;
+          startCountdown(orderId, data.arrival_ts);
+        }
+      }
+
+      showAdminPopup("Updated", "Order moved to On The Way with +30 min arrival.");
+      const activeBtn = document.querySelector(".filter-btn.bg-blue-600");
+      if(activeBtn) filterOrders(activeBtn.dataset.filter);
+    } else {
+      showAdminPopup("Error", data.error || "Failed to update status");
+    }
+  } catch(err){
+    showAdminPopup("Error", err.toString());
+  }
+}
+
+</script>
+
+{% endblock %}

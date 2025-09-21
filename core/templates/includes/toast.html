@@ -1,0 +1,60 @@
+{# templates/includes/toast.html #}
+
+<!-- Success Toast -->
+<div id="success-toast"
+     class="fixed top-5 right-5 z-50 hidden transition-opacity duration-300">
+  <div class="bg-green-500 text-white rounded-lg shadow-lg p-4 w-72 relative">
+    <p class="font-semibold" id="success-message"></p>
+    <div class="w-full bg-green-200 rounded-full h-2 mt-2">
+      <div id="success-progress" class="bg-white h-2 rounded-full" style="width: 100%"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Error Toast -->
+<div id="error-toast"
+     class="fixed top-5 right-5 z-50 hidden transition-opacity duration-300">
+  <div class="bg-red-500 text-white rounded-lg shadow-lg p-4 w-72">
+    <p class="font-semibold" id="error-message"></p>
+  </div>
+</div>
+
+<script>
+function showToast(id, duration = 2500, message = null) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    // set message text
+    if (message) {
+        if (id === "success-toast") {
+            document.getElementById("success-message").textContent = message;
+        } else if (id === "error-toast") {
+            document.getElementById("error-message").textContent = message;
+        }
+    }
+
+    // show
+    el.classList.remove("hidden");
+
+    // handle progress bar for success toast
+    if (id === "success-toast") {
+        const bar = document.getElementById("success-progress");
+        bar.style.width = "100%";
+        bar.style.transition = `width ${duration}ms linear`;
+        // trigger animation
+        setTimeout(() => { bar.style.width = "0%"; }, 50);
+    }
+
+    // hide after duration
+    setTimeout(() => {
+        el.classList.add("hidden");
+        if (id === "success-toast") {
+            const bar = document.getElementById("success-progress");
+            bar.style.transition = "none";
+            bar.style.width = "100%";
+        }
+    }, duration);
+}
+</script>
+
+

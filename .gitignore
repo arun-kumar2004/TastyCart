@@ -1,0 +1,15 @@
+# Python
+*.pyc
+__pycache__/
+
+# Django
+db.sqlite3
+media/
+
+# Secrets
+TastyCart/settings.py
+.env
+
+# OS
+.DS_Store
+Thumbs.db

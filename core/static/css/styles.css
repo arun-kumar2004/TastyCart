@@ -1,0 +1,107 @@
+body {
+  font-family: 'Poppins', sans-serif;
+}
+.font-logo {
+  font-family: 'Great Vibes', cursive;
+}
+.font-pacifico { 
+  font-family: 'Pacifico', cursive;
+}
+.font-lobster {
+  font-family: 'Lobster', cursive;
+}
+.font-dancing {
+  font-family: 'Dancing Script', cursive;
+}
+.footer-text {
+  font-family: 'Pacifico', cursive;
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-bar input {
+  padding: 8px 12px;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  font-family: 'Pacifico', cursive;
+  font-size: 16px;
+}
+
+.search-bar img {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.search-bar img.active {
+  opacity: 1;
+}
+
+
+
+/* body {
+  font-family: "Segoe UI", sans-serif;
+}
+
+nav a {
+  font-weight: 500;
+}
+
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+
+/* Logo font */
+.font-logo {
+  font-family: 'Great Vibes', cursive;
+  letter-spacing: 1px;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.font-logo {
+  font-family: 'Great Vibes', cursive;
+  letter-spacing: 1px;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.font-logo {
+  font-family: 'Great Vibes', cursive;
+  letter-spacing: 1px;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

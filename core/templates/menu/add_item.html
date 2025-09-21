@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="flex justify-center p-8">
+  <div class="form-container w-full max-w-2xl">
+    <form id="addItemForm" method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      <h2 class="title">➕ Add New Item</h2>
+
+      <!-- Name -->
+      <div class="form-group">
+        <label for="id_name">Name</label>
+        {{ form.name }}
+        {% if form.name.errors %}
+          <p class="error">{{ form.name.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="id_description">Description</label>
+        {{ form.description }}
+        {% if form.description.errors %}
+          <p class="error">{{ form.description.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Image source options -->
+      <div class="form-group">
+        <label>Image Source</label>
+        <div class="image-options">
+          <label class="image-opt">
+            <input type="radio" name="image_option" value="url" checked>
+            URL
+          </label>
+          <label class="image-opt">
+            <input type="radio" name="image_option" value="file">
+            Upload file
+          </label>
+        </div>
+      </div>
+
+      <!-- Image URL -->
+      <div class="form-group" id="image-url-group">
+        <label for="image-url">Image URL</label>
+        <input id="image-url" name="image_url" type="url" placeholder="https://example.com/image.jpg">
+      </div>
+
+      <!-- File input -->
+      <div class="form-group hidden" id="image-file-group">
+        <label for="id_image">Upload Image</label>
+        {{ form.image }}
+        {% if form.image.errors %}
+          <p class="error">{{ form.image.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Preview -->
+      <div id="image-preview-container" class="image-preview hidden">
+        <img id="image-preview" src="#" alt="Preview">
+      </div>
+
+      <!-- Price and Category -->
+      <div class="grid">
+        <div class="form-group">
+          <label for="id_price">Price</label>
+          {{ form.price }}
+          {% if form.price.errors %}
+            <p class="error">{{ form.price.errors|striptags }}</p>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          {{ form.category }}
+          {% if form.category.errors %}
+            <p class="error">{{ form.category.errors|striptags }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Popular checkbox -->
+      <div class="checkbox-group" id="popular-checkbox-row">
+        {{ form.popular }} <label id="popular-label" for="{{ form.popular.id_for_label }}"> Add to Home (Popular)</label>
+        {% if form.popular.errors %}
+          <p class="error">{{ form.popular.errors|striptags }}</p>
+        {% endif %}
+      </div>
+
+      <div class="form-actions">
+        <button id="submitBtn" type="submit" disabled>Save Item</button>
+        <a href="{% url 'menu:menu_list' %}" class="link">Back to menu</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 🎉 Confetti container -->
+<div id="confetti-container" class="confetti-container" aria-hidden="true"></div>
+
+
+
+<!-- Inline styles (from your modern UI) -->
+<style>
+  :root{
+    --primary:#ff6347;
+    --bg:#f8fafc;
+    --card:#fff;
+    --muted:#6b7280;
+    --err:#ef4444;
+  }
+  body { background: var(--bg); }
+  .form-container{
+    background: linear-gradient(180deg,#fff,#f7fbff);
+    border-radius:16px;
+    padding:28px;
+    box-shadow:0 10px 30px rgba(2,6,23,0.06);
+    border:1px solid #e6eef6;
+  }
+  .title { text-align:center; color:var(--primary); font-size:1.6rem; margin-bottom:1rem; font-weight:700; }
+  .form-group { margin-bottom:14px; }
+  label { display:block; margin-bottom:6px; font-weight:600; color:var(--muted); }
+  input[type="text"], input[type="url"], input[type="number"], textarea, select, input[type="file"] {
+    width:100%; padding:10px 12px; border:1px solid #e6eef6; border-radius:10px; background:#fbfdff;
+    box-sizing:border-box; font-size:0.95rem;
+  }
+  textarea { min-height:90px; resize:vertical; }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  .image-options { display:flex; gap:12px; align-items:center; }
+  .image-opt { font-weight:500; color:var(--muted); display:flex; gap:6px; align-items:center; cursor:pointer; }
+  .checkbox-group { display:flex; gap:8px; align-items:center; margin-top:10px; }
+  .form-actions { margin-top:18px; display:flex; flex-direction:column; gap:8px; }
+  #submitBtn { background:var(--primary); color:#fff; padding:12px 16px; border-radius:10px; border:0; font-weight:700; cursor:pointer; width:100%; }
+  #submitBtn:disabled { background:#ccc; cursor:not-allowed; opacity:0.85; }
+  .link { text-align:center; display:inline-block; margin-top:6px; color:#374151; text-decoration:underline; font-size:0.93rem; }
+  .hidden{display:none !important;}
+  .image-preview img { max-width:100%; max-height:240px; border-radius:10px; margin-top:8px; border:2px dashed var(--primary); object-fit:contain; background:#fff; padding:6px; }
+
+  .error { color:var(--err); margin-top:6px; font-size:0.9rem; }
+  /* CONFETTI STYLES */
+  .confetti-container{ position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; overflow:hidden; z-index:9999; }
+  .confetti-piece{ position:absolute; width:10px; height:14px; opacity:1; transform-origin:center; border-radius:2px; }
+  /* keyframes used by JS inline styling (randomized), fallback: generic */
+  @keyframes confetti-fly {
+    0% { transform: translateY(0) rotate(0deg); opacity:1; }
+    25% { transform: translateY(-10vh) rotate(90deg); opacity:1; }
+    60% { transform: translateY(-120vh) rotate(270deg); opacity:1; }
+    100% { transform: translateY(-180vh) rotate(540deg); opacity:0; }
+  }
+</style>
+
+<script>
+(function(){
+  // Utility - get form fields robustly (by name fallback id)
+  function qs(name){ return document.querySelector('[name="'+name+'"]') || document.getElementById('id_'+name); }
+
+  // Fields (try both select/radio)
+  const form = document.getElementById('addItemForm');
+  const submitBtn = document.getElementById('submitBtn');
+
+  // try robust selectors:
+  const nameField = qs('name') || qs('title') || qs('id_name');
+  const descField = qs('description') || qs('desc') || qs('id_description') || document.querySelector('textarea[name="description"]');
+  const priceField = qs('price') || qs('id_price');
+  const categoryField = document.querySelector('[name="category"], select[name="category"], input[name="category"]'); // may be select or radios
+  const categoryRadios = document.querySelectorAll('input[name="category"]');
+  const imageUrlGroup = document.getElementById('image-url-group');
+  const imageFileGroup = document.getElementById('image-file-group');
+  const imageUrlInput = document.getElementById('image-url');
+  const imageFileInput = document.querySelector('#image-file-group input[type="file"], input[type="file"][name="image"], input[name="image"]');
+  const imagePreview = document.getElementById('image-preview');
+  const imagePreviewContainer = document.getElementById('image-preview-container');
+  const imageOptionRadios = document.querySelectorAll('input[name="image_option"]');
+  const popularLabel = document.getElementById('popular-label');
+  const popularCheckboxRow = document.getElementById('popular-checkbox-row');
+
+  // If some fields aren't found, still guard code to avoid breaks
+  function exists(el){ return !!el && (typeof el !== 'undefined'); }
+
+  // === Image option toggle ===
+  function setImageMode(mode){
+    if(mode === 'url'){
+      imageUrlGroup.classList.remove('hidden');
+      if(imageFileGroup) imageFileGroup.classList.add('hidden');
+      if(imageUrlInput) imageUrlInput.required = true;
+      if(imageFileInput) imageFileInput.required = false;
+    } else {
+      imageUrlGroup.classList.add('hidden');
+      if(imageFileGroup) imageFileGroup.classList.remove('hidden');
+      if(imageUrlInput) imageUrlInput.required = false;
+      if(imageFileInput) imageFileInput.required = true;
+    }
+    clearPreview();
+    validateForm();
+  }
+  imageOptionRadios.forEach(r => r.addEventListener('change', () => setImageMode(r.value)));
+
+  // === Preview handlers ===
+  function showPreview(src){
+    if(!imagePreview || !imagePreviewContainer) return;
+    imagePreview.src = src;
+    imagePreviewContainer.classList.remove('hidden');
+  }
+  function clearPreview(){
+    if(!imagePreview || !imagePreviewContainer) return;
+    imagePreview.src = '#';
+    imagePreviewContainer.classList.add('hidden');
+  }
+
+  if(imageUrlInput){
+    imageUrlInput.addEventListener('input', function(){
+      const v = this.value.trim();
+      try {
+        if(v && (new URL(v))) {
+          showPreview(v);
+        } else clearPreview();
+      } catch(e){ clearPreview(); }
+      validateForm();
+    });
+  }
+
+  if(imageFileInput){
+    imageFileInput.addEventListener('change', function(){
+      if(this.files && this.files[0]){
+        const fr = new FileReader();
+        fr.onload = function(e){ showPreview(e.target.result); validateForm(); }
+        fr.readAsDataURL(this.files[0]);
+      } else clearPreview();
+    });
+  }
+
+  // === Category change: update checkbox label ===
+  function updatePopularLabel(){
+    // Determine selected category
+    let cat = null;
+    if(categoryRadios && categoryRadios.length){
+      categoryRadios.forEach(r => { if(r.checked) cat = r.value; });
+    } else if(categoryField && categoryField.tagName === 'SELECT'){
+      cat = categoryField.value;
+    } else if(categoryField && categoryField.type === 'radio'){
+      // handled above
+    }
+    if(!cat){
+      popularLabel.textContent = 'Add to Home (Popular)';
+      return;
+    }
+    if(cat.toLowerCase().includes('dish') || cat.toLowerCase()==='dish'){
+      popularLabel.textContent = 'Add to Home (Popular Dishes)';
+    } else if(cat.toLowerCase().includes('sweet') || cat.toLowerCase()==='sweet'){
+      popularLabel.textContent = 'Add to Home (Traditional Sweets)';
+    } else {
+      popularLabel.textContent = 'Add to Home (Popular)';
+    }
+  }
+
+  if(categoryRadios && categoryRadios.length){
+    categoryRadios.forEach(r => r.addEventListener('change', updatePopularLabel));
+  }
+  if(categoryField && categoryField.tagName === 'SELECT'){
+    categoryField.addEventListener('change', updatePopularLabel);
+  }
+
+  // initial label update
+  updatePopularLabel();
+
+  // === Validation ===
+  function isValidURL(u){
+    try { new URL(u); return true; } catch(e){ return false; }
+  }
+
+  function validateForm(){
+    let ok = true;
+    if(exists(nameField) && (!nameField.value || !nameField.value.trim())) ok = false;
+    if(exists(descField) && (!descField.value || !descField.value.trim())) ok = false;
+    if(exists(priceField) && (!priceField.value || isNaN(parseFloat(priceField.value)) || parseFloat(priceField.value) <= 0)) ok = false;
+
+    // Category check
+    let catSelected = false;
+    if(categoryRadios && categoryRadios.length){
+      catSelected = [...categoryRadios].some(r=>r.checked);
+    } else if(categoryField && categoryField.tagName === 'SELECT'){
+      catSelected = !!categoryField.value;
+    }
+    if(!catSelected) ok = false;
+
+    // Image valid depending on mode
+    const mode = document.querySelector('input[name="image_option"]:checked')?.value;
+    if(mode === 'url'){
+      if(!imageUrlInput || !imageUrlInput.value || !isValidURL(imageUrlInput.value)) ok = false;
+    } else {
+      if(!imageFileInput) ok = false;
+      else if(!imageFileInput.files || imageFileInput.files.length === 0) ok = false;
+    }
+
+    submitBtn.disabled = !ok;
+    return ok;
+  }
+
+  // Attach input listeners robustly
+  [nameField, descField, priceField, imageUrlInput, imageFileInput].forEach(el => {
+    if(!exists(el)) return;
+    el.addEventListener('input', validateForm);
+    el.addEventListener('change', validateForm);
+  });
+  if(categoryRadios && categoryRadios.length) categoryRadios.forEach(r => r.addEventListener('change', validateForm));
+  if(categoryField && categoryField.tagName === 'SELECT') categoryField.addEventListener('change', validateForm);
+
+  // initial mode
+  setImageMode('url');
+
+  // ==== CONFETTI LAUNCH FUNCTION ====
+  const confettiContainer = document.getElementById('confetti-container');
+  function launchConfetti() {
+    if(!confettiContainer) return;
+    const colors = ['#ff6347','#ffd166','#06d6a0','#4D6CFA','#FF4D6D','#7F00FF'];
+    const pieceCount = 180; // more pieces
+    const duration = 10000; // ✅ increased time
+
+
+    // helper to create pieces with random properties
+    function spawnFrom(xPercent) {
+      for(let i=0;i<pieceCount/2;i++){
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        const w = Math.floor(Math.random()*10)+6;
+        const h = Math.floor(Math.random()*12)+8;
+        el.style.width = w+'px';
+        el.style.height = h+'px';
+        el.style.left = xPercent + (Math.random()*6 - 3) + 'vw'; // slight horizontal jitter
+        el.style.bottom = (Math.random()*6 + 2) + 'vh'; // spawn slightly above bottom (2-8vh)
+        el.style.background = colors[Math.floor(Math.random()*colors.length)];
+        el.style.opacity = 1;
+        el.style.transform = `rotate(${Math.random()*360}deg)`;
+        // random trajectory
+        const dx = (Math.random()*60 - 30); // -30 to 30 vw (horizontal travel)
+        const peak = Math.random()*80 + 40; // 40 - 120 vh upward
+        const rotate = (Math.random()*720 - 360); // rotation degrees
+        const delay = (Math.random()*120); // ms
+        const pieceDuration = Math.random()*800 + duration; // ms
+
+        // Use CSS animation via keyframes (inline)
+        el.style.transition = `transform ${pieceDuration}ms cubic-bezier(.17,.67,.83,.67) ${delay}ms, opacity ${pieceDuration}ms linear ${delay}ms`;
+        // set initial transform
+        el.style.transform = `translate3d(0,0,0) rotate(${Math.random()*360}deg)`;
+        confettiContainer.appendChild(el);
+
+        // trigger movement on next tick
+        setTimeout(()=>{
+          el.style.transform = `translate3d(${dx}vw, -${peak}vh, 0) rotate(${rotate}deg)`;
+          el.style.opacity = '0';
+        }, 20 + delay);
+
+        // cleanup
+        setTimeout(()=> el.remove(), pieceDuration + delay + 200);
+      }
+    }
+
+    // Spawn from left (around 6vw) and right (around 94vw)
+    spawnFrom(6); // left
+    spawnFrom(94); // right
+  }
+
+  // ==== AJAX submit handler ====
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if(!validateForm()) {
+      // show quick client error (browser fallback)
+      alert('Please complete required fields correctly.');
+      return;
+    }
+
+    // Prepare form data
+    const fd = new FormData(form);
+
+    // Add the image_url to FormData (backend may ignore, but harmless)
+    if(imageUrlInput && imageUrlInput.value) fd.set('image_url', imageUrlInput.value);
+
+    // CSRF token (fetch)
+    function getCookie(name){
+      const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return v ? v.pop() : '';
+    }
+    const csrf = getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+
+    // disable UI while posting
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving...';
+
+    fetch(form.action || window.location.href, {
+      method: 'POST',
+      body: fd,
+      credentials: 'same-origin',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': csrf
+      },
+      redirect: 'follow'
+    }).then(async res => {
+      // If server redirected (typical on success), treat as success
+      if (res.redirected) {
+        // Show confetti & success toast quickly then allow browser to navigate to redirected page
+        // read redirect target
+        const redirectUrl = res.url;
+        // small delay to show confetti and toast
+        launchConfetti();
+        // short toast (optional), using alert fallback
+        setTimeout(()=> {
+          // navigate to server final URL
+          window.location.href = redirectUrl;
+        }, 1200);
+        return;
+      }
+
+      // If not redirected, we probably have HTML with form & errors -> render it (so Django errors show)
+      const text = await res.text();
+      // Replace document content with returned HTML so server-rendered form errors are visible
+      document.open();
+      document.write(text);
+      document.close();
+    }).catch(err => {
+      console.error('Add item error:', err);
+      alert('Server error occurred while adding item. Try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Save Item';
+    });
+  });
+
+  // initial validation run
+  setTimeout(validateForm, 120);
+})();
+</script>
+{% endblock %}

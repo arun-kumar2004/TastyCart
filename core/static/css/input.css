@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* small custom styles */
+.banner-gradient {
+  background: linear-gradient(180deg, rgba(255,248,240,0.9), rgba(255,255,255,0.9));
+}
+.card-shadow {
+  box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+}
+.footer-bg {
+  background: linear-gradient(90deg,#f8fafc,#fff7f0);
+}
+
+
+/* npx @tailwindcss/cli -i ./food/static/food/css/input.css -o ./food/static/food/css/style.css --watch */
+/* npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/style.css --watch */

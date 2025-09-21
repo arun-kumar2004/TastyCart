@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-6 py-8 text-center">
+  <h1 class="text-3xl mb-4 font-bold">🎉 Order Confirmed 🎉</h1>
+  <p class="mb-4">
+    Your order is confirmed. Estimated delivery in
+    <strong>{{ order.eta_minutes }} minutes</strong>
+    (around <strong id="etaTime"></strong>).
+  </p>
+  <h2 class="text-xl mb-2">Order Summary</h2>
+  <div class="mb-4">
+    <table class="w-full border">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="p-2">Item</th>
+          <th class="p-2">Qty</th>
+          <th class="p-2">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for it in order.items.all %}
+        <tr class="border-t">
+          <td class="p-2 flex items-center justify-center">
+            {% if it.image %}
+              <img src="{{ it.image }}" alt="{{ it.name }}" class="h-10 w-10 object-cover mr-2 rounded">
+            {% endif %}
+            {{ it.name }}
+          </td>
+          <td class="p-2">{{ it.quantity }}</td>
+          <td class="p-2">₹{{ it.total }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot class="bg-gray-100">
+        <tr>
+          <td colspan="2" class="text-right font-bold p-2">Grand Total</td>
+          <td class="font-bold p-2">₹{{ order.grand_total }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Popup -->
+  <div id="thankyouPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 hidden">
+    <div class="bg-white rounded-2xl shadow-lg p-8 text-center relative max-w-md w-full">
+      <h2 class="text-2xl font-bold mb-4 text-green-600">🎉 Thank You 🎉</h2>
+      <p id="popupMessage" class="mb-2 text-blue-600">Your order is confirmed — see you next time!</p>
+      <p class="mb-4 text-orange-600">
+        Your order is confirmed. Estimated delivery in
+        <strong>{{ order.eta_minutes }} minutes</strong>
+        (around <strong id="popupEtaTime"></strong>).
+      </p>
+      <div class="w-full bg-gray-200 rounded-full h-6 mt-4 relative">
+          <div id="progressBar" class="bg-green-600 h-6 rounded-full absolute top-0 left-0" style="width:100%;"></div>
+          <div class="absolute inset-0 flex items-center justify-center text-white font-bold text-xs">
+            Redirecting to home in-> <span id="countdownText">10</span> sec
+          </div>
+      </div>
+
+      <div class="mt-4">
+        <a href="{% url 'home' %}" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded-md">Go Home</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const orderId = {{ order.id }};
+    const actualTs = {{ actual_ts|default:"0" }};
+    const etaMinutes = {{ order.eta_minutes }};
+    const popup = document.getElementById('thankyouPopup');
+    const bar = document.getElementById('progressBar');
+    const countdownEl = document.getElementById('countdownText');
+    const etaEl = document.getElementById('etaTime');
+    const popupEta = document.getElementById('popupEtaTime');
+
+    function formatTimeFromTs(ts) {
+        const d = new Date(ts * 1000);
+        let hours = d.getHours();
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        const ampm = hours >= 12 ? "PM" : "AM";
+        hours = (hours % 12) || 12;
+        return `${hours}:${minutes} ${ampm}`;
+    }
+
+    let arrivalTs = actualTs;
+    if (!arrivalTs || arrivalTs <= 0) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + etaMinutes);
+        arrivalTs = Math.floor(now.getTime() / 1000);
+        fetch(`/order/${orderId}/save-arrival/`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}"},
+            body: JSON.stringify({arrival_ts: arrivalTs})
+        });
+    }
+
+    const formatted = formatTimeFromTs(arrivalTs);
+    etaEl.textContent = formatted;
+    popupEta.textContent = formatted;
+
+    const duration = 10;
+    let remaining = duration;
+
+    setTimeout(() => {
+        popup.classList.remove('hidden');
+        const interval = setInterval(() => {
+            remaining--;
+            countdownEl.textContent = remaining;
+            bar.style.width = ((remaining / duration) * 100) + "%";
+
+            // 🔥 Change color dynamically
+            if (remaining > 5) {
+                bar.className = "bg-green-600 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center";
+            } else if (remaining > 2) {
+                bar.className = "bg-yellow-500 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center";
+            } else {
+                bar.className = "bg-red-600 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center";
+            }
+
+            if (remaining <= 0) {
+                clearInterval(interval);
+                popup.classList.add('hidden');
+                window.location.href = "{% url 'home' %}";
+            }
+        }, 1000);
+    }, 2000);
+});
+</script>
+{% endblock %}

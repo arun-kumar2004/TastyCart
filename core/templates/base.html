@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TastyCart</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-orange-50 to-orange-100">
+
+{% block navbar %}
+<nav class="fixed top-0 left-0 w-full flex justify-between items-center px-8 py-4 bg-gradient-to-r from-orange-400 via-pink-400 to-red-400 shadow-lg z-50 text-white">
+  <!-- Logo -->
+  <a href="{% url 'home' %}" class="text-4xl font-bold" style="font-family:'Dancing Script', cursive;">
+    TastyCart
+  </a>
+
+  <!-- Center Menu -->
+      <div class="flex gap-4 items-center font-semibold text-white text-lg">
+      <a href="{% url 'home' %}" class="px-4 py-2 rounded transition-colors duration-300 {% if request.resolver_match.url_name == 'home' %}bg-white text-orange-600{% else %}hover:bg-white hover:text-orange-600{% endif %}">Home</a>
+
+      <a href="{% url 'home' %}#about" class="px-4 py-2 rounded transition-colors duration-300 hover:bg-white hover:text-orange-600">About</a>
+
+      <a href="{% url 'menu:menu_list' %}" class="px-4 py-2 rounded transition-colors duration-300
+        {% if request.resolver_match.url_name == 'menu_list' or request.resolver_match.url_name == 'add_item' or request.resolver_match.url_name == 'order_from_menu' %}
+            bg-white text-orange-600
+        {% else %}
+            hover:bg-white hover:text-orange-600
+        {% endif %}">
+        Menu
+      </a>
+
+      <a href="{% url 'contact:contact' %}" class="px-4 py-2 rounded transition-colors duration-300 {% if request.resolver_match.url_name == 'contact' %}bg-white text-orange-600{% else %}hover:bg-white hover:text-orange-600{% endif %}">Contact</a>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'orders:order' %}" class="px-4 py-2 rounded transition-colors duration-300 {% if request.resolver_match.url_name == 'orders' %}bg-white text-orange-600{% else %}hover:bg-white hover:text-orange-600{% endif %}">Orders</a>
+        <a href="{% url 'delivery:delivery' %}" class="px-4 py-2 rounded transition-colors duration-300 {% if request.resolver_match.url_name == 'delivery' %}bg-white text-orange-600{% else %}hover:bg-white hover:text-orange-600{% endif %}">Delivery</a>
+        {% if user.is_superuser %}
+          <a href="{% url 'menu:add_item' %}" class="px-4 py-2 rounded transition-colors duration-300 {% if request.resolver_match.url_name == 'add_item' %}bg-white text-orange-600{% else %}hover:bg-white hover:text-orange-600{% endif %}">Add Items</a>
+        {% endif %}
+      {% endif %}
+    </div>
+
+  <!-- Right Side -->
+  <div class="flex items-center gap-3 text-white font-semibold relative">
+    {% if user.is_authenticated %}
+      <div class="relative">
+        <a href="{% url 'cart:cart' %}" class="text-2xl">🛒</a>
+        {% if cart_count > 0 %}
+          <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5">{{ cart_count }}</span>
+        {% endif %}
+      </div>
+
+      <div class="relative">
+        <button id="user-profile-btn" class="flex items-center gap-2 focus:outline-none">
+          {% if user.profile_pic %}
+            <img src="{{ user.profile_pic.url }}" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-white">
+          {% else %}
+            <div class="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-lg border-2 border-white">
+              {% if user.last_name %}{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}{% else %}{{ user.first_name|slice:":2"|upper }}{% endif %}
+            </div>
+          {% endif %}
+          <span class="text-yellow-300 font-bold text-lg">{{ user.first_name }}{% if user.last_name %} {{ user.last_name }}{% endif %}</span>
+        </button>
+
+        <div id="profile-popup" class="hidden absolute right-0 mt-2 w-48 bg-gray-100 rounded-lg shadow-lg py-2 z-50">
+          <a href="{% url 'update_profile' %}" class="flex items-center gap-2 px-4 py-2 hover:bg-orange-200 rounded text-gray-900 font-semibold transition-colors duration-200">Update Profile</a>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="flex items-center gap-2 w-full px-4 py-2 hover:bg-red-200 rounded text-red-600 font-semibold transition-colors duration-200">
+              Logout <img src="{% static 'images/logout.png' %}" alt="Logout" class="w-5 h-5">
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <script>
+        const profileBtn = document.getElementById('user-profile-btn');
+        const profilePopup = document.getElementById('profile-popup');
+        profileBtn.addEventListener('click', () => profilePopup.classList.toggle('hidden'));
+        document.addEventListener('click', e => {
+          if (!profileBtn.contains(e.target) && !profilePopup.contains(e.target)) profilePopup.classList.add('hidden');
+        });
+      </script>
+
+    {% else %}
+      <a href="{% url 'login' %}" class="px-4 py-1 bg-white text-orange-500 rounded font-semibold hover:bg-orange-100 transition-colors duration-200">Login</a>
+      <a href="{% url 'signup' %}" class="px-4 py-1 bg-white text-orange-500 rounded font-semibold hover:bg-orange-100 transition-colors duration-200">Signup</a>
+      <a href="{% url 'login' %}" class="text-2xl">🛒</a>
+    {% endif %}
+  </div>
+</nav>
+{% endblock %}
+
+<div class="pt-20">{% block content %}{% endblock %}</div>
+
+{% block footer %}
+<footer class="text-center py-6 bg-gradient-to-r from-orange-300 via-pink-300 to-red-300 mt-10 shadow-inner">
+  <p class="text-gray-800" style="font-family:'Pacifico', cursive;">© 2025 <span class="text-white">TastyCart</span>. All rights reserved.</p>
+  <p class="text-purple-800" style="font-family:'Dancing Script', cursive;">✨ Developed by Arun Kumar in Django ✨</p>
+</footer>
+{% endblock %}
+
+{% include "includes/toast.html" %}
+
+<script>
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == "success" %}
+        showToast("success-toast", 3000, "{{ message|escapejs }}");
+      {% elif message.tags == "error" %}
+        showToast("error-toast", 3000, "{{ message|escapejs }}");
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  document.querySelectorAll('a[href*="#about"]').forEach(a => {
+    a.addEventListener('click', function(e){
+      if(window.location.pathname != "{% url 'home' %}"){
+        e.preventDefault();
+        window.location.href = "{% url 'home' %}#about";
+      }
+    });
+  });
+
+  window.addEventListener('pageshow', function(event) {
+    if (event.persisted) window.location.reload();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-6 py-8">
+  <h1 class="text-3xl mb-6 font-bold">Confirm Your Order</h1>
+
+  <form method="post" id="orderForm">
+    {% csrf_token %}
+    <table class="w-full border border-gray-300">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="p-2">Select</th>
+          <th class="p-2">Image</th>
+          <th class="p-2">Name</th>
+          <th class="p-2">Price</th>
+          <th class="p-2">Qty</th>
+          <th class="p-2">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td class="p-2 text-center">
+            <input type="checkbox" class="item-select" name="selected_items" value="{{ item.id }}" data-id="{{ item.id }}" checked>
+          </td>
+          <td class="p-2 text-center">
+            {% if item.image %}
+            <img src="{{ item.image }}" class="w-16 h-16 object-cover rounded">
+            {% endif %}
+          </td>
+          <td class="p-2">{{ item.name }}</td>
+          <td class="p-2">₹{{ item.price }}</td>
+          <td class="p-2">
+            <input type="number" name="qty_{{ item.id }}" class="qty-input border px-2 w-20" data-id="{{ item.id }}"
+                  value="{{ item.quantity }}" min="1">
+          </td>
+          <td class="p-2 font-semibold total-cell">₹{{ item.total }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="mt-4 text-right text-xl font-bold">
+      Grand Total: ₹<span id="grandTotal">{{ grand_total }}</span>
+    </div>
+
+    <div class="mt-6 flex justify-between">
+      <a href="{{ back_url }}" class="bg-gray-500 text-white px-5 py-2 rounded">← Go Back</a>
+      <button type="submit" class="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700">
+      Confirm Order
+    </button>
+</div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const qtyInputs = document.querySelectorAll('.qty-input');
+  const totalCells = document.querySelectorAll('.total-cell');
+  const grandTotalEl = document.getElementById('grandTotal');
+
+  function recalc() {
+    let grand = 0;
+    document.querySelectorAll('tbody tr').forEach(row => {
+      const cb = row.querySelector('.item-select');
+      const qty = row.querySelector('.qty-input');
+      const price = parseFloat(row.querySelector('td:nth-child(4)').innerText.replace('₹',''));
+      const totalCell = row.querySelector('.total-cell');
+      if (cb.checked) {
+        const qtyVal = parseInt(qty.value) || 1;
+        const rowTotal = price * qtyVal;
+        totalCell.innerText = "₹" + rowTotal.toFixed(2);
+        grand += rowTotal;
+      } else {
+        totalCell.innerText = "₹0.00";
+      }
+    });
+    grandTotalEl.innerText = grand.toFixed(2);
+  }
+
+  qtyInputs.forEach(inp => inp.addEventListener('input', recalc));
+  document.querySelectorAll('.item-select').forEach(cb => cb.addEventListener('change', recalc));
+});
+</script>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-md mx-auto text-center py-10">
+  <h2 class="text-2xl mb-4 font-bold">Confirm Your Order</h2>
+
+  {% if error %}
+    <p class="text-red-500">{{ error }}</p>
+  {% endif %}
+
+  <p class="mb-4">A confirmation code has been sent to <strong>{{ email }}</strong></p>
+
+  <form method="POST" action="{% url 'orders:verify_code' %}" id="confirmForm">
+    {% csrf_token %}
+    <input type="hidden" name="email" value="{{ email }}">
+
+    <!-- Example Cart Items -->
+    <div id="order-items" class="mb-4">
+      {% for item in cart_items %}
+        <div class="flex items-center justify-between mb-2">
+          <span class="item-name">{{ item.name }}</span>
+          <input type="number" name="quantity_{{ item.id }}" 
+                value="{{ item.quantity }}" 
+                min="0"
+                class="border px-2 py-1 rounded w-20 item-qty"
+                data-name="{{ item.name }}">
+        </div>
+      {% endfor %}
+    </div>
+
+    <input type="text" name="code" placeholder="Enter confirmation code"
+          class="border px-3 py-2 rounded w-full mb-4" required>
+
+    <button type="submit" id="confirmBtn"
+            class="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled>
+      Verify & Confirm
+    </button>
+  </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const quantities = document.querySelectorAll(".item-qty");
+  const confirmBtn = document.getElementById("confirmBtn");
+  const form = document.getElementById("confirmForm");
+
+  function validateItems() {
+    let valid = false;
+    quantities.forEach(qty => {
+      const value = qty.value.trim();
+      if (value !== "" && parseInt(value, 10) >= 1) {
+        valid = true;
+      }
+    });
+    confirmBtn.disabled = !valid;
+  }
+
+  // Prevent form submit if empty qty
+  form.addEventListener("submit", function (e) {
+    let hasEmpty = false;
+    quantities.forEach(qty => {
+      const value = qty.value.trim();
+      const itemName = qty.getAttribute("data-name");
+      if (value === "" || parseInt(value, 10) < 1) {
+        alert("pls select the quantity of " + itemName);
+        hasEmpty = true;
+      }
+    });
+    if (hasEmpty) {
+      e.preventDefault(); // stop form submit
+    }
+  });
+
+  // Check on load + whenever quantity changes
+  validateItems();
+  quantities.forEach(qty => qty.addEventListener("input", validateItems));
+});
+</script>
+{% endblock %}

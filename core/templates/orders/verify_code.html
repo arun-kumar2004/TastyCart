@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-6 py-8">
+  <h1 class="text-2xl font-[Dancing Script] mb-4">Verify your order</h1>
+
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="mb-2 p-2 {{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <h2 class="font-semibold mb-2">Order summary</h2>
+  <table class="w-full mb-4">
+    <thead>
+      <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+    </thead>
+    <tbody>
+      {% for it in pending.items %}
+      <tr>
+        <td class="py-2">
+          {% if it.image %}
+            <img src="{{ it.image }}" alt="{{ it.name }}" style="height:40px; width:40px; object-fit:cover; margin-right:8px;">
+          {% endif %}
+          {{ it.name }}
+        </td>
+        <td>{{ it.quantity }}</td>
+        <td>₹{{ it.price }}</td>
+        <td>₹{{ it.total }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="3" class="text-right font-bold">Grand total</td><td class="font-bold">₹{{ pending.grand_total }}</td></tr>
+    </tfoot>
+  </table>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-4">
+      <label>Enter verification code sent to your email</label>
+      <input type="text" name="code" class="border p-2 rounded w-48" maxlength="10" required>
+    </div>
+    <div class="flex gap-3">
+      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Verify & Confirm</button>
+      <a href="{% url 'orders:resend' %}" class="px-4 py-2 bg-yellow-400 rounded">Resend Code</a>
+      <a href="{% url 'orders:order' %}" class="px-4 py-2 bg-gray-200 rounded">Edit Order</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static %}
+{% load socialaccount %}
+
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+
+<div class="main-container">
+    <div class="left-section">
+        <img src="{% static 'images/signup_image.png' %}" alt="Order Food Online">
+        <h2>Order Your Favourite Dishes Quickly!</h2>
+        <p>Create an account to browse menus, customize your orders, and get delicious food delivered right to your door. Fast, fresh, and convenient.</p>
+    </div>
+
+    <div class="right-section">
+        <a href="{% url 'home' %}" class="logo">
+            <i class="fas fa-utensils"></i> TastyCart
+        </a>
+        <h1>Create Your Account</h1>
+        <p>Use email or mobile to sign up — we'll keep your data safe.</p>
+
+        <form method="post" id="signup-form" action="{% url 'signup' %}" novalidate enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+            <!-- Profile Pic Upload -->
+            <div class="form-group mb-6 text-center">
+                <label for="profilePhoto" class="cursor-pointer inline-block relative">
+                    <div id="photoPreview" class="w-32 h-32 mx-auto rounded-full border-2 border-gray-300 flex items-center justify-center overflow-hidden bg-gray-100 hover:bg-gray-200 transition-all relative">
+                        <span id="photoText" class="text-gray-500 text-center px-2 absolute z-10">Upload Your Profile Pic</span>
+                        <img id="placeholderFrame" src="{% static 'images/profile_pic.png' %}" alt="Profile Frame" class="w-full h-full object-cover">
+                        <img id="profileImg" src="" alt="Profile Photo" class="w-full h-full object-cover hidden absolute top-0 left-0">
+                    </div>
+                </label>
+                <input type="file" name="profile_pic" id="profilePhoto" accept="image/*" class="hidden">
+                <div id="uploadProgress" class="w-full bg-gray-200 rounded-full mt-2 hidden">
+                    <div class="bg-blue-500 text-xs leading-none py-1 text-center text-white rounded-full" style="width: 0%;">0%</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" data-field="first_name">
+                    <label for="id_first_name">Full Name</label>
+                    <input type="text" name="first_name" id="id_first_name" class="form-control" placeholder="John Doe" required>
+                    <div class="error-message"></div>
+                </div>
+                <div class="form-group" data-field="phone">
+                    <label for="id_phone">Phone Number</label>
+                    <input type="tel" name="phone" id="id_phone" class="form-control" placeholder="+91 9876543210" required>
+                    <div class="error-message"></div>
+                </div>
+            </div>
+
+            <div class="form-group" data-field="email">
+                <label for="id_email">Email Address</label>
+                <input type="email" name="email" id="id_email" class="form-control" placeholder="example@email.com" required>
+                <div class="error-message"></div>
+            </div>
+
+            <div class="form-group" data-field="address">
+                <label for="id_address">Delivery Address</label>
+                <input type="text" name="address" id="id_address" class="form-control" placeholder="123 Main St, Apt 4B, Anytown, India" required>
+                <div class="error-message"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group password-group" data-field="password1">
+                    <label for="id_password1">Password</label>
+                    <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Create a strong password" required>
+                    <i class="fas fa-eye-slash input-icon password-toggle"></i>
+                    <div class="error-message"></div>
+                </div>
+                <div class="form-group password-group" data-field="password2">
+                    <label for="id_password2">Confirm Password</label>
+                    <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirm your password" required>
+                    <i class="fas fa-eye-slash input-icon password-toggle"></i>
+                    <div class="error-message"></div>
+                </div>
+            </div>
+
+            <div id="password-strength" style="display: none; margin-bottom: 15px;">
+                <div style="font-size:12px; color:var(--text-color);">Password Strength:</div>
+                <div class="strength-meter">
+                    <div class="strength-bar" style="width: 0%;"></div>
+                </div>
+                <div class="strength-text"></div>
+            </div>
+
+            <button type="submit" class="btn-signup" id="submitBtn" disabled>Create Account</button>
+        </form>
+
+        <div class="divider"><span>or</span></div>
+
+        <div class="social-signup">
+            <a href="{% provider_login_url 'google' %}" class="social-btn" aria-label="Sign up with Google"><i class="fab fa-google"></i></a>
+        </div>
+
+        <div class="login-link">
+            Already have an account? <a href="{% url 'login' %}">Log in</a>
+        </div>
+    </div>
+</div>
+
+{% include "includes/toast.html" %}
+
+<script src="{% static 'js/signup.js' %}"></script>
+<script>
+const profilePhotoInput = document.getElementById('profilePhoto');
+const profileImg = document.getElementById('profileImg');
+const photoText = document.getElementById('photoText');
+const placeholderFrame = document.getElementById('placeholderFrame');
+const uploadProgress = document.getElementById('uploadProgress');
+const progressBar = uploadProgress.querySelector('div');
+
+profilePhotoInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        profileImg.src = e.target.result;
+        profileImg.classList.remove('hidden');       // show uploaded photo
+        photoText.remove();                           // remove text
+        placeholderFrame.classList.add('hidden');    // hide frame
+    }
+    reader.readAsDataURL(file);
+
+    // Show progress bar
+    uploadProgress.classList.remove('hidden');
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        progressBar.textContent = progress + '%';
+        if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => uploadProgress.classList.add('hidden'), 500);
+        }
+    }, 100);
+});
+</script>
+
+{% endblock %}

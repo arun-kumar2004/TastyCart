@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<!-- Search Bar -->
+<div class="px-12 py-6 text-center">
+  <div class="relative w-2/3 md:w-1/2 mx-auto">
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Search dishes & sweets..."
+      class="w-full p-3 pr-12 border rounded-lg shadow-lg font-[Pacifico] text-lg"
+      aria-label="Search dishes and sweets"
+    />
+    <button
+      id="searchBtn"
+      class="absolute right-2 top-1/2 transform -translate-y-1/2 w-9 h-9 p-0 bg-transparent border-0 disabled:opacity-40 disabled:cursor-not-allowed"
+      disabled
+      aria-label="Search"
+      title="Search"
+    >
+      <img src="{% static 'images/search-icon.png' %}" alt="Search" class="w-full h-full object-contain"/>
+    </button>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto py-12 px-4">
+  
+
+  <!-- Tabs row (Dishes | Sweets | Add Another List (admin only)) -->
+  <div class="flex justify-center items-center gap-4 mb-8">
+    <button id="btn-dishes" class="tab-btn px-5 py-2 rounded-md text-white active" data-target="dishesArea">Dishes</button>
+    <button id="btn-sweets" class="tab-btn px-5 py-2 rounded-md text-white" data-target="sweetsArea">Sweets</button>
+    {% if request.user.is_superuser %}
+      <button id="btn-others" class="tab-btn px-5 py-2 rounded-md text-white" data-target="othersArea">Add Another List</button>
+    {% endif %}
+  </div>
+
+  <!-- Admin add item quick link (kept for convenience) -->
+  {% if request.user.is_superuser %}
+    <div class="text-center mb-6">
+      <a href="{% url 'menu:add_item' %}" class="inline-block px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md shadow">
+        Add Item
+      </a>
+    </div>
+  {% endif %}
+
+  <!-- === DISHES AREA (two rows) === -->
+  <div id="dishesArea" class="tab-area">
+
+    <!-- Row 1 controls -->
+    <div class="relative mb-6">
+      <img src="{% static 'images/left-arrow.png' %}" id="dishesRow1Left" onclick="manualScroll('dishesRow1', -1)" 
+          class="arrow left-arrow hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="left">
+      <img src="{% static 'images/right-arrow.png' %}" id="dishesRow1Right" onclick="manualScroll('dishesRow1', 1)" 
+          class="arrow right-arrow hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="right">
+
+      <div id="dishesRow1" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
+        {# distribute dishes into two rows by even/odd index -> row1 uses even indices #}
+        {% for dish in dishes %}
+          {% if forloop.counter0|divisibleby:2 %}
+          <div class="item-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+            {% if dish.image %}<img src="{{ dish.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
+            <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ dish.name }}</h3>
+            <p class="mb-3 font-[Pacifico] text-gray-600">{{ dish.description|truncatechars:80 }}</p>
+            <p class="font-bold mb-3 text-red-600">₹{{ dish.price }}</p>
+            <div class="flex justify-between">
+              {% if user.is_authenticated %}
+                <a href="{% url 'menu:order_from_menu' dish.id %}" 
+                  class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+
+                {% if dish.id in cart_item_ids %}
+                  <button disabled 
+                    class="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-lg">
+                    Added ✔️
+                  </button>
+                {% else %}
+                  <button onclick="addToCartHandler('{{ dish.name }}', {{ dish.id }}, this)" 
+                    class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">
+                    Add to Cart
+                  </button>
+                {% endif %}
+
+              {% else %}
+                <a href="{% url 'login' %}" 
+                  class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+                <a href="{% url 'login' %}" 
+                  class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
+              {% endif %}
+
+            </div>
+          </div>
+          {% endif %}
+        {% empty %}
+          <p class="text-center w-full text-gray-500">No dishes yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Row 2 controls -->
+    <div class="relative">
+      <img src="{% static 'images/left-arrow.png' %}" id="dishesRow2Left" onclick="manualScroll('dishesRow2', -1)" 
+          class="arrow left-arrow hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="left">
+      <img src="{% static 'images/right-arrow.png' %}" id="dishesRow2Right" onclick="manualScroll('dishesRow2', 1)" 
+          class="arrow right-arrow hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="right">
+
+      <div id="dishesRow2" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
+        {# row2: odd indices #}
+        {% for dish in dishes %}
+          {% if not forloop.counter0|divisibleby:2 %}
+          <div class="item-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+            {% if dish.image %}<img src="{{ dish.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
+            <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ dish.name }}</h3>
+            <p class="mb-3 font-[Pacifico] text-gray-600">{{ dish.description|truncatechars:80 }}</p>
+            <p class="font-bold mb-3 text-red-600">₹{{ dish.price }}</p>
+            <div class="flex justify-between">
+              {% if user.is_authenticated %}
+                <a href="{% url 'menu:order_from_menu' dish.id %}" 
+                  class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+
+                {% if dish.id in cart_item_ids %}
+                  <button disabled 
+                    class="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-lg">
+                    Added ✔️
+                  </button>
+                {% else %}
+                  <button onclick="addToCartHandler('{{ dish.name }}', {{ dish.id }}, this)" 
+                    class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">
+                    Add to Cart
+                  </button>
+                {% endif %}
+
+              {% else %}
+                <a href="{% url 'login' %}" 
+                  class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+                <a href="{% url 'login' %}" 
+                  class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
+              {% endif %}
+
+            </div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+  </div> <!-- end dishesArea -->
+
+  <!-- === SWEETS AREA (two rows) === -->
+  <div id="sweetsArea" class="tab-area hidden">
+
+    <!-- Row 1 controls -->
+    <div class="relative mb-6">
+      <img src="{% static 'images/left-arrow.png' %}" id="sweetsRow1Left" onclick="manualScroll('sweetsRow1', -1)" 
+          class="arrow left-arrow hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="left">
+      <img src="{% static 'images/right-arrow.png' %}" id="sweetsRow1Right" onclick="manualScroll('sweetsRow1', 1)" 
+          class="arrow right-arrow hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="right">
+
+      <div id="sweetsRow1" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
+        {% for sweet in sweets %}
+          {% if forloop.counter0|divisibleby:2 %}
+          <div class="item-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+            {% if sweet.image %}<img src="{{ sweet.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
+            <h3 class="text-xl mb-2 font-[Dancing Script] text-purple-700">{{ sweet.name }}</h3>
+            <p class="mb-3 font-[Pacifico] text-gray-600">{{ sweet.description|truncatechars:80 }}</p>
+            <p class="font-bold mb-3 text-red-600">₹{{ sweet.price }}</p>
+            <div class="flex justify-between">
+               {% if user.is_authenticated %}
+                  <a href="{% url 'menu:order_from_menu' sweet.id %}" 
+                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+
+                  {% if sweet.id in cart_item_ids %}
+                    <button disabled 
+                      class="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-lg">
+                      Added ✔️
+                    </button>
+                  {% else %}
+                    <button onclick="addToCartHandler('{{ sweet.name }}', {{ sweet.id }}, this)" 
+                      class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">
+                      Add to Cart
+                    </button>
+                  {% endif %}
+
+                {% else %}
+                  <a href="{% url 'login' %}" 
+                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+                  <a href="{% url 'login' %}" 
+                    class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
+                {% endif %}
+                        </div>
+
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    
+    <!-- Row 2 controls -->
+    <div class="relative">
+      <img src="{% static 'images/left-arrow.png' %}" id="sweetsRow2Left" onclick="manualScroll('sweetsRow2', -1)" 
+          class="arrow left-arrow hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="left">
+      <img src="{% static 'images/right-arrow.png' %}" id="sweetsRow2Right" onclick="manualScroll('sweetsRow2', 1)" 
+          class="arrow right-arrow hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="right">
+
+      <div id="sweetsRow2" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
+        {% for sweet in sweets %}
+          {% if not forloop.counter0|divisibleby:2 %}
+          <div class="item-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+            {% if sweet.image %}<img src="{{ sweet.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
+            <h3 class="text-xl mb-2 font-[Dancing Script] text-purple-700">{{ sweet.name }}</h3>
+            <p class="mb-3 font-[Pacifico] text-gray-600">{{ sweet.description|truncatechars:80 }}</p>
+            <p class="font-bold mb-3 text-red-600">₹{{ sweet.price }}</p>
+              <div class="flex justify-between">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'menu:order_from_menu' sweet.id %}" 
+                      class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+
+                    {% if sweet.id in cart_item_ids %}
+                      <button disabled 
+                        class="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-lg">
+                        Added ✔️
+                      </button>
+                    {% else %}
+                      <button onclick="addToCartHandler('{{ sweet.name }}', {{ sweet.id }}, this)" 
+                        class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">
+                        Add to Cart
+                      </button>
+                    {% endif %}
+
+                  {% else %}
+                    <a href="{% url 'login' %}" 
+                      class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+                    <a href="{% url 'login' %}" 
+                      class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
+                  {% endif %}
+              </div>
+            
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+  </div> <!-- end sweetsArea -->
+
+  <!-- === OTHERS AREA (admin only) === -->
+  {% if request.user.is_superuser %}
+  <div id="othersArea" class="tab-area hidden">
+    <div class="flex justify-end mb-4">
+      <a href="{% url 'menu:add_item' %}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded">Add Another Item</a>
+    </div>
+
+    <div class="relative">
+      <img src="{% static 'images/left-arrow.png' %}" onclick="manualScroll('othersRow', -1)" 
+           id="othersLeft" class="arrow left-arrow hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20">
+      <img src="{% static 'images/right-arrow.png' %}" onclick="manualScroll('othersRow', 1)" 
+           id="othersRight" class="arrow right-arrow hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20">
+
+      <div id="othersRow" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
+        {% for item in items %}
+          {% if item.category not in "Dish Sweet" %}
+          <div class="item-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+            {% if item.image %}<img src="{{ item.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
+            <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ item.name }}</h3>
+            <p class="mb-3 font-[Pacifico] text-gray-600">{{ item.description|truncatechars:80 }}</p>
+            <p class="font-bold mb-3 text-red-600">₹{{ item.price }}</p>
+            <div class="flex justify-between">
+              {% if user.is_authenticated %}
+                <a href="/order/" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>              
+                <a href="{% url 'cart:add_to_cart' item.id %}" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>              
+                <a href="{% url 'login' %}" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+        {% empty %}
+          <p class="text-center w-full text-gray-500">No other items yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div> <!-- container -->
+
+<!-- Inline CSS for tab styling and active scale -->
+<style>
+  .tab-btn {
+    background: #e5e7eb;
+    color: #374151;
+    transition: transform .18s ease, background .14s ease;
+    font-weight: 600;
+  }
+  .tab-btn.active {
+    background: #4f46e5;
+    color: white;
+    transform: scale(1.08);
+  }
+  .items-row::-webkit-scrollbar { height: 8px; }
+  .items-row::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 8px; }
+  .arrow { width: 48px; height: 48px; object-fit: contain; }
+  @media (max-width: 768px) {
+    .arrow { width: 40px; height: 40px; }
+    .tab-btn { padding-left: 12px; padding-right: 12px; }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const isAuthenticated = {{ request.user.is_authenticated|yesno:"true,false" }};
+
+  // -------- Add to Cart handler --------
+  window.addToCartHandler = function(name, id, btn) {
+    if (!isAuthenticated) {
+      window.location.href = "{% url 'login' %}?next=" + encodeURIComponent(window.location.href);
+      return;
+    }
+
+    fetch(`/cart/add/${id}/`)
+      .then(res => {
+        if (res.ok) {
+          // ✅ Update cart count
+          let cartCountEl = document.getElementById("cart-count");
+          if (cartCountEl) {
+            cartCountEl.textContent = parseInt(cartCountEl.textContent || "0") + 1;
+          } else {
+            const cartLink = document.querySelector('a[href$="/cart/"]');
+            if (cartLink) {
+              const span = document.createElement("span");
+              span.id = "cart-count";
+              span.className = "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
+              span.textContent = "1";
+              cartLink.parentNode.appendChild(span);
+            }
+          }
+
+          // ✅ Update button state
+          btn.disabled = true;
+          btn.innerHTML = "Added ✔️";   // <-- text with tick
+          btn.classList.remove("bg-orange-500", "hover:bg-orange-600");
+          btn.classList.add("bg-gray-400", "cursor-not-allowed");
+        } else {
+          alert("Something went wrong!");
+        }
+      })
+      .catch(err => alert("Error: " + err));
+  };
+
+  // -------- Tabs logic --------
+  const btnDishes = document.getElementById('btn-dishes');
+  const btnSweets = document.getElementById('btn-sweets');
+  const btnOthers = document.getElementById('btn-others');
+  const areaDishes = document.getElementById('dishesArea');
+  const areaSweets = document.getElementById('sweetsArea');
+  const areaOthers = document.getElementById('othersArea');
+
+  function setActiveTab(tab) {
+    [btnDishes, btnSweets, btnOthers].forEach(b => { if(b) b.classList.remove('active'); });
+    [areaDishes, areaSweets, areaOthers].forEach(a => { if(a) a.classList.add('hidden'); });
+
+    if(tab === 'dishes') {
+      btnDishes.classList.add('active');
+      areaDishes.classList.remove('hidden');
+    } else if(tab === 'sweets') {
+      btnSweets.classList.add('active');
+      areaSweets.classList.remove('hidden');
+    } else if(tab === 'others' && areaOthers) {
+      if(btnOthers) btnOthers.classList.add('active');
+      areaOthers.classList.remove('hidden');
+    }
+    setTimeout(updateArrowsForAll, 100);
+  }
+
+  if(btnDishes) btnDishes.addEventListener('click', () => setActiveTab('dishes'));
+  if(btnSweets) btnSweets.addEventListener('click', () => setActiveTab('sweets'));
+  if(btnOthers) btnOthers.addEventListener('click', () => setActiveTab('others'));
+  setActiveTab('dishes');
+
+  // -------- Auto-scroll + manual scroll logic --------
+  const rows = {
+    dishesRow1: document.getElementById('dishesRow1'),
+    dishesRow2: document.getElementById('dishesRow2'),
+    sweetsRow1: document.getElementById('sweetsRow1'),
+    sweetsRow2: document.getElementById('sweetsRow2'),
+    othersRow: document.getElementById('othersRow')
+  };
+
+  const directions = { dishesRow1: 1, dishesRow2: -1, sweetsRow1: 1, sweetsRow2: -1, othersRow: 1 };
+
+  let autoScrollEnabled = true;
+  function manualScroll(rowId, dir) {
+    const el = document.getElementById(rowId);
+    if(!el) return;
+    autoScrollEnabled = false;
+    el.scrollBy({ left: dir * 600, behavior: 'smooth' });
+    setTimeout(() => autoScrollEnabled = true, 1800);
+  }
+  window.manualScroll = manualScroll;
+
+  function updateArrowsForRow(rowId, leftId, rightId) {
+    const row = document.getElementById(rowId);
+    const left = document.getElementById(leftId);
+    const right = document.getElementById(rightId);
+    if(!row) { if(left) left.style.display = 'none'; if(right) right.style.display = 'none'; return; }
+    const overflow = (row.scrollWidth > row.clientWidth + 4);
+    if(!overflow) { if(left) left.style.display = 'none'; if(right) right.style.display = 'none'; return; }
+    if(left) left.style.display = (row.scrollLeft > 4) ? 'block' : 'none';
+    if(right) right.style.display = (row.scrollLeft + row.clientWidth < row.scrollWidth - 4) ? 'block' : 'none';
+  }
+
+  function updateArrowsForAll(){
+    updateArrowsForRow('dishesRow1','dishesRow1Left','dishesRow1Right');
+    updateArrowsForRow('dishesRow2','dishesRow2Left','dishesRow2Right');
+    updateArrowsForRow('sweetsRow1','sweetsRow1Left','sweetsRow1Right');
+    updateArrowsForRow('sweetsRow2','sweetsRow2Left','sweetsRow2Right');
+    updateArrowsForRow('othersRow','othersLeft','othersRight');
+  }
+
+  Object.keys(rows).forEach(r => {
+    const el = rows[r];
+    if(!el) return;
+    el.addEventListener('scroll', () => {
+      if(r === 'dishesRow1') updateArrowsForRow('dishesRow1','dishesRow1Left','dishesRow1Right');
+      if(r === 'dishesRow2') updateArrowsForRow('dishesRow2','dishesRow2Left','dishesRow2Right');
+      if(r === 'sweetsRow1') updateArrowsForRow('sweetsRow1','sweetsRow1Left','sweetsRow1Right');
+      if(r === 'sweetsRow2') updateArrowsForRow('sweetsRow2','sweetsRow2Left','sweetsRow2Right');
+      if(r === 'othersRow') updateArrowsForRow('othersRow','othersLeft','othersRight');
+    });
+    setTimeout(updateArrowsForAll, 200);
+  });
+
+  setInterval(() => {
+    if(!autoScrollEnabled) return;
+    Object.keys(directions).forEach(rowId => {
+      const el = document.getElementById(rowId);
+      if(!el) return;
+      const step = 2;
+      el.scrollBy({ left: directions[rowId] * step, behavior: 'smooth' });
+      if(el.scrollLeft + el.clientWidth >= el.scrollWidth - 2) directions[rowId] = -1;
+      if(el.scrollLeft <= 0) directions[rowId] = 1;
+    });
+  }, 30);
+
+  setTimeout(updateArrowsForAll, 300);
+  window.addEventListener('resize', () => setTimeout(updateArrowsForAll, 200));
+});
+
+<!-- this js is for searvh box -->
+document.addEventListener("DOMContentLoaded", function () {
+  const searchInput = document.getElementById("searchInput");
+  const searchBtn = document.getElementById("searchBtn");
+
+  if (!searchInput || !searchBtn) return;
+
+  // Trigger search on every input
+  searchInput.addEventListener("input", function () {
+    const query = this.value.toLowerCase().trim();
+    searchBtn.disabled = query === "";
+
+    const cards = document.querySelectorAll(".dish-card, .sweet-card, .item-card");
+    let found = false;
+
+    cards.forEach((card) => {
+      const name = card.querySelector("h3").textContent.toLowerCase();
+      if (name.includes(query)) {
+        card.style.display = "block";
+        found = true;
+      } else {
+        card.style.display = "none";
+      }
+    });
+
+    // If no match found → show all items back
+    if (!found && query === "") {
+      cards.forEach((card) => (card.style.display = "block"));
+    }
+  });
+});
+
+</script>
+
+{% endblock %}

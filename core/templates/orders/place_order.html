@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-md mx-auto text-center py-10">
+  <h2 class="text-2xl mb-4 font-bold">Place Your Order</h2>
+
+  {% if error %}
+    <p class="text-red-500">{{ error }}</p>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+    <input type="email" name="email" placeholder="Enter your email"
+           class="border px-3 py-2 rounded w-full mb-4" required>
+    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">
+      Confirm via Email
+    </button>
+  </form>
+</div>
+{% endblock %}
