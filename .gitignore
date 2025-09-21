@@ -7,7 +7,6 @@ db.sqlite3
 media/
 
 # Secrets
-TastyCart/settings.py
 .env
 
 # OS
