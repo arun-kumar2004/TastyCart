@@ -55,7 +55,7 @@ Copy code
    ```bash
    git clone https://github.com/arun-kumar2004/TastyCart.git
    cd TastyCart
-Create Virtual Environment
+Create Virtual Environment 
 
 bash
 Copy code
@@ -73,12 +73,32 @@ Create a .env file
 
 Add your SECRET_KEY, DATABASE_URL, EMAIL_HOST, and API keys.
 
+check on that current virtaul environment have djano or if not then use -> python -m pip install django 
+
 Run Migrations
 
 bash
 Copy code
 python manage.py migrate
 Run Development Server
+
+
+final steps for running this project
+1st type
+git clone <repo-url>
+cd TastyCart
+python -m venv venv
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+
+2nd type 
+python -m venv venv
+.\venv\Scripts\Activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
 
 bash
 Copy code

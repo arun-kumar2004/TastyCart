@@ -10,70 +10,76 @@
     <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">
       Update Your Profile ✨
     </h2>
+    <form
+    id="updateForm"
+    method="POST"
+    enctype="multipart/form-data"
+    action="{% url 'update_profile' %}">
+
+    {% csrf_token %}
 
     <div class="flex flex-col items-center mb-2">
-      <label for="profilePhoto" class="cursor-pointer inline-block relative">
-        <div
-          id="photoPreview"
-          class="w-32 h-32 mx-auto rounded-full border-2 border-gray-300 flex items-center justify-center overflow-hidden bg-gray-100 hover:bg-gray-200 transition-all relative"
-        >
-          <span
-            id="photoText"
-            class="text-gray-500 text-center px-2 absolute z-10"
-          >
-            Upload Your Profile Pic
-          </span>
 
-          <img
-            id="profileImg"
-            src="{% if user.profile_pic %}{{ user.profile_pic.url }}{% else %}{% static 'images/profile_pic.png' %}{% endif %}"
-            alt="Profile Photo"
-            class="w-full h-full object-cover {% if not user.profile_pic %}hidden{% endif %}"
-          />
+        <label for="profilePhoto" class="cursor-pointer inline-block relative">
 
-          {% if not user.profile_pic %}
-          <img
-            id="placeholderFrame"
-            src="{% static 'images/profile_pic.png' %}"
-            alt="Profile Frame"
-            class="w-full h-full object-cover"
-          />
-          {% endif %}
-        </div>
-        <input type="file" id="profilePhoto" name="profile_pic" class="hidden" />
-      </label>
+        <div   id="photoPreview"
+                    class="w-32 h-32 mx-auto rounded-full border-2 border-gray-300 flex items-center justify-center overflow-hidden bg-gray-100 hover:bg-gray-200 transition-all relative">
 
-      <p class="text-gray-500 text-sm mt-2 text-center">
-        To update your image, click on the image above
-      </p>
+                    <span
+                        id="photoText"
+                        class="text-gray-500 text-center px-2 absolute z-10">
 
-      <div
-        id="progressContainer"
-        class="w-full bg-gray-300 rounded-full h-3 mt-4 hidden"
-      >
-        <div
-          id="progressBar"
-          class="bg-green-500 h-3 rounded-full w-0"
-        ></div>
-      </div>
-    </div>
+                        Upload Your Profile Pic
 
-    <form id="updateForm" enctype="multipart/form-data" method="post">
-      {% csrf_token %}
+                    </span>
+
+                    <img
+                        id="profileImg"
+                        src="{% if user.profile_pic %}{{ user.profile_pic.url }}{% else %}{% static 'images/profile_pic.png' %}{% endif %}"
+                        class="w-full h-full object-cover {% if not user.profile_pic %}hidden{% endif %}">
+
+                    {% if not user.profile_pic %}
+                    <img
+                        id="placeholderFrame"
+                        src="{% static 'images/profile_pic.png' %}"
+                        class="w-full h-full object-cover">
+                    {% endif %}
+
+                </div>
+
+                <input
+                    type="file"
+                    id="profilePhoto"
+                    name="profile_pic"
+                    accept="image/*"
+                    class="hidden">
+
+            </label>
+            <div id="progressContainer" class="w-full bg-gray-300 rounded-full h-3 mt-4 hidden">
+    <div id="progressBar" class="bg-green-500 h-3 rounded-full w-0"></div>
+</div>
+
+         </div>
+        <div class="mb-4">
+
+                <label
+                    for="id_first_name"
+                    class="block text-gray-700 font-semibold mb-2">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="id_first_name"
+                    name="first_name"
+                    value="{{ user.first_name }}"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter your full name">
+
+            </div>
+
       <div class="mb-4">
-        <label class="block text-gray-700 font-semibold mb-2">Full Name</label>
-        <input
-          type="text"
-          id="fullName"
-          name="fullName"
-          value="{{ user.first_name }}"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter your full name"
-        />
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-gray-700 font-semibold mb-2">Phone Number</label>
+        <label for="phoneNumber" class="block text-gray-700 font-semibold mb-2">Phone Number</label>
         <input
           type="tel"
           id="phoneNumber"
@@ -85,7 +91,7 @@
       </div>
 
       <div class="mb-4">
-        <label class="block text-gray-700 font-semibold mb-2">Email Address</label>
+        <label for="email" class="block text-gray-700 font-semibold mb-2">Email Address</label>
         <input
           type="email"
           id="email"
@@ -98,7 +104,7 @@
       </div>
 
       <div class="mb-4 relative">
-        <label class="block text-gray-700 font-semibold mb-2">Delivery Address</label>
+        <label for="deliveryAddress" class="block text-gray-700 font-semibold mb-2">Delivery Address</label>
         <textarea
           id="deliveryAddress"
           name="deliveryAddress"
@@ -113,7 +119,7 @@
       </div>
 
       <div class="mb-4 relative">
-        <label class="block text-gray-700 font-semibold mb-2">Current Password (required to authorize)</label>
+        <label for="currentPassword" class="block text-gray-700 font-semibold mb-2">Current Password (required to authorize)</label>
         <input
           type="password"
           id="currentPassword"
@@ -207,6 +213,7 @@ profilePhotoInput.addEventListener("change", function () {
 updateForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const formData = new FormData(updateForm);
+  console.log(formData.get("profile_pic"));
   const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
   const xhr = new XMLHttpRequest();
@@ -273,12 +280,12 @@ currentPasswordInput.addEventListener("input", () => {
     updateBtn.disabled = false;
     updateBtn.classList.remove("bg-gray-400", "cursor-not-allowed");
     updateBtn.classList.add("bg-green-500");
-    updateBtn.textContent = "Update Details";
+    updateBtn.textContent = "✔️ Update Details";
   } else {
     updateBtn.disabled = true;
     updateBtn.classList.remove("bg-green-500");
     updateBtn.classList.add("bg-gray-400", "cursor-not-allowed");
-    updateBtn.textContent = "Update Details";
+    updateBtn.textContent = " 🚫 Update Details";
   }
 });
 

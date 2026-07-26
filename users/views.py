@@ -28,7 +28,7 @@ from django.conf import settings
 from django.urls import reverse
 
 User = get_user_model()
-
+    
 def password_reset(request):
     if request.method == "POST":
         email = request.POST.get('email')
@@ -213,7 +213,7 @@ def update_profile(request):
         phone = request.POST.get("phoneNumber")
         address = request.POST.get("deliveryAddress")
         current_password = request.POST.get("currentPassword")
-        profile_pic = request.FILES.get("profile_pic")  # ✅ must get file here
+        # profile_pic = request.FILES.get("profile_pic")  # ✅ must get file here
 
         if not current_password:
             return JsonResponse({"success": False, "message": "Please enter your current password to update profile."})
@@ -229,16 +229,38 @@ def update_profile(request):
             user.address = address
 
         # Handle profile image update
+        profile_pic = request.FILES.get("profile_pic")
+
+        print("=" * 60)
+        print("FILES :", request.FILES)
+        print("PROFILE PIC :", profile_pic)
+        print("BEFORE :", user.profile_pic)
+
         if profile_pic:
-            if user.profile_pic and user.profile_pic.name:
+
+            if user.profile_pic:
                 try:
-                    user.profile_pic.delete(save=False)  # remove old image file
-                except Exception:
-                    pass
-            user.profile_pic = profile_pic
+                    user.profile_pic.delete(save=False)
+                except Exception as e:
+                    print("Delete Error :", e)
+
+            user.profile_pic.save(
+                profile_pic.name,
+                profile_pic,
+                save=False
+            )
+
+            print("Assigned :", user.profile_pic.name)
+
+        else:
+            print("No profile picture received")
 
         user.save()
 
+        user.refresh_from_db()
+
+        print("AFTER SAVE :", user.profile_pic)
+        print("=" * 60)
         # Return new image URL to update preview dynamically
         new_image_url = user.profile_pic.url if user.profile_pic else ""
 
