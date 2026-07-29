@@ -1,1 +1,1 @@
-web: gunicorn TastyCart.wsgi
+web: gunicorn TastyCart.wsgi:application
