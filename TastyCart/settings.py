@@ -13,13 +13,15 @@ load_dotenv(BASE_DIR / ".env")
 
 # Security
 SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG", "False") == "True"
-ALLOWED_HOSTS = [
+# DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = os.getenv("DEBUG") == "True"
+# ALLOWED_HOSTS = [
     "tastycart-main-e16c0c9.kuberns.cloud",
     "127.0.0.1",
     "localhost"
 ]
 
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -54,6 +56,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,8 +69,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'TastyCart.urls'
 
 SITE_ID = 1
-AUTH_USER_MODEL = "core.CustomUser"
 
+AUTH_USER_MODEL = "core.CustomUser"
 # Email Settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
