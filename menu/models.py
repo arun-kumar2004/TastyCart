@@ -8,8 +8,7 @@ CATEGORY_CHOICES = (
 )
 
 def item_image_upload_to(instance, filename):
-    # store in media/items/<id or timestamp>_filename
-    return f"items/{instance.name}_{filename}"
+    return f"items/{filename}"
 
 class Item(models.Model):
     name = models.CharField(max_length=255)

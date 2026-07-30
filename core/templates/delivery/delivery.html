@@ -7,11 +7,59 @@
   <h1 class="text-3xl font-bold mb-6">🚚 Your Deliveries</h1>
 
   <!-- Tabs (Admin & User) -->
-<div class="flex justify-center gap-4 mb-6">
-  <button type="button" class="filter-btn px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-800" data-filter="on_the_way">On The Way</button>
-  <button type="button" class="filter-btn px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-800" data-filter="completed">Completed</button>
-  <button type="button" class="filter-btn px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-800" data-filter="cancelled">Cancelled</button>
-  <button type="button" class="filter-btn px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-800" data-filter="pending">Pending</button>
+<div class="flex justify-center mb-6 px-2">
+
+    <div class="inline-flex w-full max-w-3xl rounded-xl overflow-hidden border border-gray-300 shadow-sm">
+
+        <button
+            type="button"
+            class="filter-btn flex-1 px-2 sm:px-4 md:px-6 py-2 sm:py-3
+                   text-[11px] sm:text-sm md:text-base
+                   font-semibold bg-gray-200 text-gray-800
+                   hover:bg-blue-600 hover:text-white
+                   transition-all duration-200"
+            data-filter="on_the_way">
+            On The Way
+        </button>
+
+        <button
+            type="button"
+            class="filter-btn flex-1 px-2 sm:px-4 md:px-6 py-2 sm:py-3
+                   text-[11px] sm:text-sm md:text-base
+                   font-semibold bg-gray-200 text-gray-800
+                   border-l border-gray-300
+                   hover:bg-blue-600 hover:text-white
+                   transition-all duration-200"
+            data-filter="completed">
+            Completed
+        </button>
+
+        <button
+            type="button"
+            class="filter-btn flex-1 px-2 sm:px-4 md:px-6 py-2 sm:py-3
+                   text-[11px] sm:text-sm md:text-base
+                   font-semibold bg-gray-200 text-gray-800
+                   border-l border-gray-300
+                   hover:bg-blue-600 hover:text-white
+                   transition-all duration-200"
+            data-filter="cancelled">
+            Cancelled
+        </button>
+
+        <button
+            type="button"
+            class="filter-btn flex-1 px-2 sm:px-4 md:px-6 py-2 sm:py-3
+                   text-[11px] sm:text-sm md:text-base
+                   font-semibold bg-gray-200 text-gray-800
+                   border-l border-gray-300
+                   hover:bg-blue-600 hover:text-white
+                   transition-all duration-200"
+            data-filter="pending">
+            Pending
+        </button>
+
+    </div>
+
 </div>
 
 
@@ -72,41 +120,130 @@
 
         <p class="mt-3">⏰ Time left: <strong id="remaining-{{ order.id }}">--:--</strong></p>
 
-        <!-- Order Items Table -->
-        <table class="w-full border mt-4">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="p-2">Sr</th>
-              <th class="p-2">Item</th>
-              <th class="p-2">Qty</th>
-              <th class="p-2">Price</th>
-              <th class="p-2">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for it in order.items.all %}
-              <tr class="{% cycle 'bg-white' 'bg-gray-50' %} border-t">
-                <td class="p-3">{{ forloop.counter }}</td>
-                <td class="p-3 flex items-center gap-3">
-                  {% if it.image %}
-                    <img src="{{ it.image }}" alt="{{ it.name }}" class="h-10 w-10 object-cover rounded">
-                  {% endif %}
-                  <span class="font-medium">{{ it.name }}</span>
-                </td>
-                <td class="p-3">{{ it.quantity }}</td>
-                <td class="p-3">₹{{ it.price }}</td>
-                <td class="p-3">₹{{ it.total }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-          <tfoot class="bg-gray-100">
-            <tr>
-              <td colspan="4" class="text-right font-bold p-3">Grand Total</td>
-              <td class="font-bold p-3">₹{{ order.grand_total }}</td>
-            </tr>
-          </tfoot>
-        </table>
+        <!-- ================= ORDER ITEMS ================= -->
 
+        <div class="mt-5 space-y-4">
+
+            {% for it in order.items.all %}
+
+            <div class="border rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition">
+
+                <div class="flex flex-col sm:flex-row gap-4">
+
+                    <!-- Product Image -->
+
+                    <div class="flex justify-center sm:justify-start">
+
+                        {% if it.image %}
+
+                        <img
+                            src="{{ it.image }}"
+                            alt="{{ it.name }}"
+                            class="w-24 h-24 rounded-xl object-cover border">
+
+                        {% endif %}
+
+                    </div>
+
+                    <!-- Product Details -->
+
+                    <div class="flex-1">
+
+                        <h3 class="text-lg md:text-xl font-bold text-orange-600 mb-4">
+
+                            {{ it.name }}
+
+                        </h3>
+
+                        <div class="grid grid-cols-3 gap-3">
+
+                            <!-- Quantity -->
+
+                            <div class="bg-gray-100 rounded-lg p-3 text-center">
+
+                                <p class="text-xs md:text-sm text-gray-500">
+
+                                    Qty
+
+                                </p>
+
+                                <p class="font-semibold text-sm md:text-base">
+
+                                    {{ it.quantity }}
+
+                                </p>
+
+                            </div>
+
+                            <!-- Price -->
+
+                            <div class="bg-gray-100 rounded-lg p-3 text-center">
+
+                                <p class="text-xs md:text-sm text-gray-500">
+
+                                    Price
+
+                                </p>
+
+                                <p class="font-semibold text-sm md:text-base">
+
+                                    ₹{{ it.price }}
+
+                                </p>
+
+                            </div>
+
+                            <!-- Total -->
+
+                            <div class="bg-orange-50 rounded-lg p-3 text-center">
+
+                                <p class="text-xs md:text-sm text-gray-500">
+
+                                    Total
+
+                                </p>
+
+                                <p class="font-bold text-red-600 text-sm md:text-base">
+
+                                    ₹{{ it.total }}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+            <!-- ================= GRAND TOTAL ================= -->
+
+            <div class="border rounded-xl bg-gray-100 p-5">
+
+                <div class="flex justify-between items-center">
+
+                    <h3 class="text-lg md:text-xl font-bold">
+
+                        Grand Total
+
+                    </h3>
+
+                    <h2 class="text-2xl md:text-3xl font-bold text-red-600">
+
+                        ₹{{ order.grand_total }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
         <!-- Action Buttons -->
         <div class="mt-4 flex gap-3 items-center flex-wrap">
           {% if request.user.is_superuser %}
@@ -156,27 +293,33 @@
 
 <script>
 // Popup
-function showAdminPopup(title, msg, autoClose=false){
-  document.getElementById('adminPopupTitle').textContent = title;
-  document.getElementById('adminPopupMessage').textContent = msg;
-  document.getElementById('adminPopup').classList.remove('hidden');
+function showAdminPopup(title, msg, autoClose = false, reload = false) {
 
-  // reset OTP error each time
-  document.getElementById('otpError').classList.add('hidden');
+    document.getElementById("adminPopupTitle").textContent = title;
+    document.getElementById("adminPopupMessage").textContent = msg;
+    document.getElementById("adminPopup").classList.remove("hidden");
 
-  // ✅ auto-close in 5 sec only if asked
-  if(autoClose){
-    setTimeout(()=>{
-      document.getElementById('adminPopup').classList.add('hidden');
-    }, 5000);
-  }
+    document.getElementById("okAdminPopup").onclick = function () {
+
+        document.getElementById("adminPopup").classList.add("hidden");
+
+        if (reload) {
+            location.reload();
+        }
+    };
 }
-
 // Hide button (just close the popup)
 document.getElementById("hideAdminPopup").addEventListener("click", function() {
   document.getElementById("adminPopup").classList.add("hidden");
 });
 
+document.getElementById("okAdminPopup").addEventListener("click", function () {
+
+    document.getElementById("adminPopup").classList.add("hidden");
+
+    location.reload();
+
+});
 
 document.getElementById('closeAdminPopup')?.addEventListener('click', function(){
   document.getElementById('adminPopup').classList.add('hidden');
@@ -451,7 +594,7 @@ async function updateStatus(orderId, status){
         arrivalEl.dataset.arrivalTs = data.arrival_ts;
       }
 
-      showAdminPopup('Status Updated', 'Order status updated to '+ (data.status || status).replace('_',' '));
+      showAdminPopup('Status Updated', 'Order status updated to '+ (data.status || status).replace('_',' '), false, true);
       const activeBtn = document.querySelector('.filter-btn.bg-blue-600');
       if(activeBtn) filterOrders(activeBtn.dataset.filter);
     } else {
@@ -500,7 +643,7 @@ async function deleteOrder(orderId){
     });
     const data = await resp.json();
     if(data.success){
-      showAdminPopup('Deleted', 'Order deleted successfully.');
+      showAdminPopup('Deleted', 'Order deleted successfully.', false, true);
       const el = document.getElementById('order-' + orderId);
       if(el) el.remove();
     } else {
@@ -637,7 +780,7 @@ async function confirmOnTheWay(orderId, currentStatus){
         }
       }
 
-      showAdminPopup("Updated", "Order moved to On The Way with +30 min arrival.");
+      showAdminPopup("Updated", "Order moved to On The Way with +30 min arrival.", false, true);
       const activeBtn = document.querySelector(".filter-btn.bg-blue-600");
       if(activeBtn) filterOrders(activeBtn.dataset.filter);
     } else {

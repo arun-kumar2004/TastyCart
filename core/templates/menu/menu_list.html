@@ -58,8 +58,35 @@
         {# distribute dishes into two rows by even/odd index -> row1 uses even indices #}
         {% for dish in dishes %}
           {% if forloop.counter0|divisibleby:2 %}
-          <div class="item-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
-            {% if dish.image %}<img src="{{ dish.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
+          <div class="item-card relative min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+            {% if request.user.is_superuser %}
+<div class="absolute top-3 right-3 z-30">
+
+    <button class="menu-btn text-2xl font-bold rounded hover:bg-gray-100">
+        ⋮
+    </button>
+
+    <div class="menu-dropdown hidden absolute right-0 mt-2 w-36 bg-white border rounded-lg shadow-lg">
+
+        <a href="{% url 'menu:edit_item' dish.id %}"
+           class="block px-4 py-2 hover:bg-blue-100">
+            ✏️ Edit
+        </a>
+
+        <a href="{% url 'menu:delete_item' dish.id %}"
+           onclick="return confirm('Delete this item?')"
+           class="block px-4 py-2 text-red-600 hover:bg-red-100">
+            🗑 Delete
+        </a>
+
+    </div>
+
+</div>
+{% endif %}
+
+{% if dish.image %}
+<img src="{{ dish.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">
+{% endif %}
             <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ dish.name }}</h3>
             <p class="mb-3 font-[Pacifico] text-gray-600">{{ dish.description|truncatechars:80 }}</p>
             <p class="font-bold mb-3 text-red-600">₹{{ dish.price }}</p>
@@ -107,8 +134,35 @@
         {# row2: odd indices #}
         {% for dish in dishes %}
           {% if not forloop.counter0|divisibleby:2 %}
-          <div class="item-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
-            {% if dish.image %}<img src="{{ dish.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
+          <div class="item-card relative min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+            {% if request.user.is_superuser %}
+<div class="absolute top-3 right-3 z-30">
+
+    <button class="menu-btn text-2xl font-bold rounded hover:bg-gray-100">
+        ⋮
+    </button>
+
+    <div class="menu-dropdown hidden absolute right-0 mt-2 w-36 bg-white border rounded-lg shadow-lg">
+
+        <a href="{% url 'menu:edit_item' dish.id %}"
+           class="block px-4 py-2 hover:bg-blue-100">
+            ✏️ Edit
+        </a>
+
+        <a href="{% url 'menu:delete_item' dish.id %}"
+           onclick="return confirm('Delete this item?')"
+           class="block px-4 py-2 text-red-600 hover:bg-red-100">
+            🗑 Delete
+        </a>
+
+    </div>
+
+</div>
+{% endif %}
+
+{% if dish.image %}
+<img src="{{ dish.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">
+{% endif %}
             <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ dish.name }}</h3>
             <p class="mb-3 font-[Pacifico] text-gray-600">{{ dish.description|truncatechars:80 }}</p>
             <p class="font-bold mb-3 text-red-600">₹{{ dish.price }}</p>
@@ -158,7 +212,32 @@
       <div id="sweetsRow1" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
         {% for sweet in sweets %}
           {% if forloop.counter0|divisibleby:2 %}
-          <div class="item-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+          <div class="item-card relative min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+            {% if request.user.is_superuser %}
+<div class="absolute top-3 right-3 z-30">
+
+    <button class="menu-btn text-2xl font-bold rounded hover:bg-gray-100">
+        ⋮
+    </button>
+
+    <div class="menu-dropdown hidden absolute right-0 mt-2 w-36 bg-white border rounded-lg shadow-lg">
+
+        <a href="{% url 'menu:edit_item' sweet.id %}"
+           class="block px-4 py-2 hover:bg-blue-100">
+            ✏️ Edit
+        </a>
+
+        <a href="{% url 'menu:delete_item' sweet.id %}"
+           onclick="return confirm('Delete this item?')"
+           class="block px-4 py-2 text-red-600 hover:bg-red-100">
+            🗑 Delete
+        </a>
+
+    </div>
+
+</div>
+{% endif %}
+
             {% if sweet.image %}<img src="{{ sweet.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
             <h3 class="text-xl mb-2 font-[Dancing Script] text-purple-700">{{ sweet.name }}</h3>
             <p class="mb-3 font-[Pacifico] text-gray-600">{{ sweet.description|truncatechars:80 }}</p>
@@ -204,7 +283,32 @@
       <div id="sweetsRow2" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
         {% for sweet in sweets %}
           {% if not forloop.counter0|divisibleby:2 %}
-          <div class="item-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+          <div class="item-card relative min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+                        {% if request.user.is_superuser %}
+<div class="absolute top-3 right-3 z-30">
+
+    <button class="menu-btn text-2xl font-bold rounded hover:bg-gray-100">
+        ⋮
+    </button>
+
+    <div class="menu-dropdown hidden absolute right-0 mt-2 w-36 bg-white border rounded-lg shadow-lg">
+
+        <a href="{% url 'menu:edit_item' sweet.id %}"
+           class="block px-4 py-2 hover:bg-blue-100">
+            ✏️ Edit
+        </a>
+
+        <a href="{% url 'menu:delete_item' sweet.id %}"
+           onclick="return confirm('Delete this item?')"
+           class="block px-4 py-2 text-red-600 hover:bg-red-100">
+            🗑 Delete
+        </a>
+
+    </div>
+
+</div>
+{% endif %}
+
             {% if sweet.image %}<img src="{{ sweet.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
             <h3 class="text-xl mb-2 font-[Dancing Script] text-purple-700">{{ sweet.name }}</h3>
             <p class="mb-3 font-[Pacifico] text-gray-600">{{ sweet.description|truncatechars:80 }}</p>
@@ -258,7 +362,7 @@
       <div id="othersRow" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
         {% for item in items %}
           {% if item.category not in "Dish Sweet" %}
-          <div class="item-card min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
+          <div class="item-card relative min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
             {% if item.image %}<img src="{{ item.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
             <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ item.name }}</h3>
             <p class="mb-3 font-[Pacifico] text-gray-600">{{ item.description|truncatechars:80 }}</p>
@@ -478,6 +582,35 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+document.querySelectorAll(".menu-btn").forEach(btn=>{
+
+    btn.addEventListener("click",function(e){
+
+        e.stopPropagation();
+
+        document.querySelectorAll(".menu-dropdown").forEach(d=>{
+
+            if(d!==this.nextElementSibling){
+                d.classList.add("hidden");
+            }
+
+        });
+
+        this.nextElementSibling.classList.toggle("hidden");
+
+    });
+
+});
+
+document.addEventListener("click",function(){
+
+    document.querySelectorAll(".menu-dropdown").forEach(d=>{
+
+        d.classList.add("hidden");
+
+    });
+
+});
 </script>
 
 {% endblock %}

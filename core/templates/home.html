@@ -34,18 +34,45 @@
 
 <!-- Hero Section -->
 <section id="home" class="flex flex-col md:flex-row justify-between items-center px-16 py-20 bg-gradient-to-r from-yellow-50 to-orange-100">
-  <div class="max-w-lg">
-    <h2 class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-red-500 font-[Cinzel]">
+  <div class="max-w-lg w-full px-5 sm:px-6 lg:px-0">
+    <h2 class="text-3xl sm:text-4xl md:text-5xl
+font-extrabold
+bg-clip-text
+text-transparent
+bg-gradient-to-r
+from-orange-600
+to-red-500
+font-[Cinzel]
+leading-tight">
       Enjoy Delicious
     </h2>
-    <h1 class="text-7xl font-extrabold text-orange-700 font-[Dancing Script] mt-2">
+    <h1 class="text-4xl sm:text-6xl md:text-7xl
+font-extrabold
+text-orange-700
+font-[Dancing Script]
+mt-2
+leading-tight">
       Traditional Food
     </h1>
-    <p class="text-gray-700 mt-4 text-lg leading-relaxed font-[Poppins]">
+    <p class="text-gray-700
+mt-4
+text-base
+sm:text-lg
+leading-relaxed
+font-[Poppins]">
       Good food warms the heart and mends the soul. At TastyCart, every dish is made fresh with love, spices, and tradition – 
       because food is not just to fill your stomach, but to create memories that last forever.
     </p>
-    <a href="/menu/" class="mt-6 inline-block bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg shadow-md">Order Now ⏭️ </a>
+   <a href="/menu/"
+class="mt-6 inline-block
+bg-orange-600
+hover:bg-orange-700
+text-white
+px-5
+sm:px-6
+py-3
+rounded-lg
+shadow-md">Order Now ⏭</a>
   </div>
   <div class="w-full md:w-1/2 mt-8 md:mt-0">
     <img id="heroImage" src="{% static 'images/about1.jpg' %}" class="rounded-lg shadow-lg w-full h-96 object-cover">
@@ -224,19 +251,39 @@
     .then(res => {
       if (res.ok) {
         // ✅ Update cart count
-        let cartCountEl = document.getElementById("cart-count");
-        if (cartCountEl) {
-          cartCountEl.textContent = parseInt(cartCountEl.textContent || "0") + 1;
-        } else {
-          const cartLink = document.querySelector('a[href$="/cart/"]');
-          if (cartLink) {
-            const span = document.createElement("span");
-            span.id = "cart-count";
-            span.className = "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
-            span.textContent = "1";
-            cartLink.parentNode.appendChild(span);
-          }
-        }
+       // ================= Desktop =================
+let cartCountEl = document.getElementById("cart-count");
+
+if (cartCountEl) {
+    cartCountEl.textContent = parseInt(cartCountEl.textContent || "0") + 1;
+} else {
+    const cartLink = document.querySelector(".lg\\:flex a[href*='/cart/']");
+
+    if (cartLink) {
+        const span = document.createElement("span");
+        span.id = "cart-count";
+        span.className = "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
+        span.textContent = "1";
+        cartLink.parentNode.appendChild(span);
+    }
+}
+
+// ================= Mobile =================
+let mobileCartCount = document.getElementById("mobile-cart-count");
+
+if (mobileCartCount) {
+    mobileCartCount.textContent = parseInt(mobileCartCount.textContent || "0") + 1;
+} else {
+    const mobileCartLink = document.querySelector(".lg\\:hidden a[href*='/cart/']");
+
+    if (mobileCartLink) {
+        const span = document.createElement("span");
+        span.id = "mobile-cart-count";
+        span.className = "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
+        span.textContent = "1";
+        mobileCartLink.parentNode.appendChild(span);
+    }
+}
 
         // ✅ Update button state
         btn.disabled = true;

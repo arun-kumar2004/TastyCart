@@ -5,6 +5,12 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .forms import ItemForm
 from .models import Item
+from django.core.files.storage import default_storage
+
+import os
+import requests
+from urllib.parse import urlparse
+from django.core.files.base import ContentFile
 
 def is_superuser(user):
     return user.is_authenticated and user.is_superuser
@@ -15,22 +21,69 @@ def is_superuser(user):
 def add_item(request):
     """
     Admin-only view to add/edit menu items.
-    Admin can check 'popular' to make item appear on home popular sections.
+    Supports:
+    - Upload file
+    - Image URL (downloads image and stores locally)
     """
     if request.method == "POST":
+
         form = ItemForm(request.POST, request.FILES)
+
         if form.is_valid():
             item = form.save(commit=False)
             item.created_by = request.user
             item.save()
-            messages.success(request, f"Item '{item.name}' saved successfully.")
+
+            uploaded_image = request.FILES.get("image")
+
+            if uploaded_image:
+
+                safe_name = "".join(
+                    c if c.isalnum() else "_"
+                    for c in (item.name or "tastycart")
+                )
+
+                ext = os.path.splitext(uploaded_image.name)[1].lower()
+
+                if not ext:
+                    ext = ".jpg"
+
+                filename = f"{safe_name}_{item.id}{ext}"
+                filepath = f"items/{filename}"
+
+                if default_storage.exists(filepath):
+                    default_storage.delete(filepath)
+
+                item.image.save(
+                    filename,
+                    uploaded_image,
+                    save=False
+                )
+
+            else:
+                # Default placeholder image
+                item.image.name = "items/item_placeholder.png"
+
+            item.save()
+
+            messages.success(
+                request,
+                f"Item '{item.name}' saved successfully."
+            )
+
             return redirect("menu:add_item")
+
         else:
             messages.error(request, "Please fix the errors below.")
+
     else:
         form = ItemForm()
-    return render(request, "menu/add_item.html", {"form": form})
 
+    return render(
+        request,
+        "menu/add_item.html",
+        {"form": form},
+    )
 # # Public menu list (all items)
 # def menu_list(request):
 #     items = Item.objects.all()
@@ -63,6 +116,72 @@ def menu_list(request):
 def get_popular_items(limit=6):
     return Item.objects.filter(popular=True).order_by("-updated_at")[:limit]
 
+@login_required
+@user_passes_test(is_superuser)
+def edit_item(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+
+    if request.method == "POST":
+        form = ItemForm(request.POST, request.FILES, instance=item)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+
+            uploaded_image = request.FILES.get("image")
+
+            if uploaded_image:
+
+                # delete old image
+                if item.image and default_storage.exists(item.image.name):
+                    default_storage.delete(item.image.name)
+
+                safe_name = "".join(
+                    c if c.isalnum() else "_"
+                    for c in (item.name or "tastycart")
+                )
+
+                ext = os.path.splitext(uploaded_image.name)[1].lower()
+
+                if not ext:
+                    ext = ".jpg"
+
+                filename = f"{safe_name}_{item.id}{ext}"
+
+                item.image.save(
+                    filename,
+                    uploaded_image,
+                    save=False
+                )
+
+            item.save()
+
+            messages.success(request, "Item updated successfully.")
+            return redirect("menu:menu_list")
+
+    else:
+        form = ItemForm(instance=item)
+
+    return render(request, "menu/add_item.html", {
+        "form": form,
+        "edit_mode": True,
+        "item": item,
+    })
+
+
+@login_required
+@user_passes_test(is_superuser)
+def delete_item(request, item_id):
+
+    item = get_object_or_404(Item, id=item_id)
+
+    if item.image and default_storage.exists(item.image.name):
+        default_storage.delete(item.image.name)
+
+    item.delete()
+
+    messages.success(request, "Item deleted successfully.")
+
+    return redirect("menu:menu_list")
 
 @login_required
 def order_from_menu(request, item_id):

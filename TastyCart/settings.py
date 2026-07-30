@@ -15,13 +15,13 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("SECRET_KEY")
 # DEBUG = os.getenv("DEBUG", "False") == "True"
 DEBUG = os.getenv("DEBUG") == "True"
-#  ALLOWED_HOSTS = [
-#     "tastycart-main-e16c0c9.kuberns.cloud",
-#     "127.0.0.1",
-#     "localhost"
-# ]
+ALLOWED_HOSTS = [
+    "tastycart-main-e16c0c9.kuberns.cloud",
+    "127.0.0.1",
+    "localhost"
+]
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+# ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 INSTALLED_APPS = [
     'django.contrib.admin',

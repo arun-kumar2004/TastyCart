@@ -4,9 +4,18 @@
 
 <div class="flex justify-center p-8">
   <div class="form-container w-full max-w-2xl">
+     <div class="text-center mb-6">
+      <a href="{% url 'home' %}" class="text-2xl font-bold text-blue-600 hover:text-blue-800">
+        🍴TastyCart
+      </a>
+    </div>
     <form id="addItemForm" method="post" enctype="multipart/form-data" novalidate>
       {% csrf_token %}
-      <h2 class="title">➕ Add New Item</h2>
+      <h2 class="title">{% if edit_mode %}
+Update Item
+{% else %}
+➕ Add New Item
+{% endif %}</h2>
 
       <!-- Name -->
       <div class="form-group">
@@ -31,26 +40,53 @@
         <label>Image Source</label>
         <div class="image-options">
           <label class="image-opt">
-            <input type="radio" name="image_option" value="url" checked>
-            URL
-          </label>
-          <label class="image-opt">
-            <input type="radio" name="image_option" value="file">
+            <input type="radio" name="image_option" value="file" checked>
             Upload file
           </label>
+          <label class="image-opt">
+            <input type="radio" name="image_option" value="url" >
+            URL
+          </label>          
         </div>
       </div>
 
       <!-- Image URL -->
-      <div class="form-group" id="image-url-group">
-        <label for="image-url">Image URL</label>
+      <div class="form-group hidden" id="image-url-group">
+        <label for="image-url">Image URL (Only Preview Available)</label>
         <input id="image-url" name="image_url" type="url" placeholder="https://example.com/image.jpg">
       </div>
 
       <!-- File input -->
-      <div class="form-group hidden" id="image-file-group">
+      <div class="form-group " id="image-file-group">
         <label for="id_image">Upload Image</label>
-        {{ form.image }}
+        {% if edit_mode and item.image and item.image.name != "items/item_placeholder.png" %}
+    <div class="mb-3">
+      <img
+    id="existing-image-preview"
+    src="{{ item.image.url }}"
+    style="
+        max-width: 100%;
+        max-height: 240px;
+        border-radius: 10px;
+        margin-top: 8px;
+        border: 2px dashed var(--primary);
+        object-fit: contain;
+        background: #fff;
+        padding: 6px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    ">
+    </div>
+
+    <input
+        type="file"
+        name="image"
+        id="id_image"
+        accept="image/*">
+{% else %}
+    {{ form.image }}
+{% endif %}
         {% if form.image.errors %}
           <p class="error">{{ form.image.errors|striptags }}</p>
         {% endif %}
@@ -88,9 +124,22 @@
       </div>
 
       <div class="form-actions">
-        <button id="submitBtn" type="submit" disabled>Save Item</button>
-        <a href="{% url 'menu:menu_list' %}" class="link">Back to menu</a>
-      </div>
+       <button id="submitBtn" type="submit" disabled>
+{% if edit_mode %}
+Update Item
+{% else %}
+Save Item
+{% endif %}
+</button>
+        <a href="{% url 'menu:menu_list' %}"
+       class="inline-flex items-center justify-center px-6 py-3
+              bg-blue-600 text-white font-semibold
+              rounded-full shadow-md
+              hover:bg-blue-700 hover:shadow-lg
+              transition-all duration-300">
+        ← Back to Menu
+    </a>
+   </div>
     </form>
   </div>
 </div>
@@ -133,7 +182,7 @@
   #submitBtn { background:var(--primary); color:#fff; padding:12px 16px; border-radius:10px; border:0; font-weight:700; cursor:pointer; width:100%; }
   #submitBtn:disabled { background:#ccc; cursor:not-allowed; opacity:0.85; }
   .link { text-align:center; display:inline-block; margin-top:6px; color:#374151; text-decoration:underline; font-size:0.93rem; }
-  .hidden{display:none !important;}
+  {% comment %} .hidden{display:none !important;} {% endcomment %}
   .image-preview img { max-width:100%; max-height:240px; border-radius:10px; margin-top:8px; border:2px dashed var(--primary); object-fit:contain; background:#fff; padding:6px; }
 
   .error { color:var(--err); margin-top:6px; font-size:0.9rem; }
@@ -188,7 +237,10 @@
       imageUrlGroup.classList.add('hidden');
       if(imageFileGroup) imageFileGroup.classList.remove('hidden');
       if(imageUrlInput) imageUrlInput.required = false;
-      if(imageFileInput) imageFileInput.required = true;
+      if(imageFileInput)if(!{{ edit_mode|yesno:"true,false" }})
+    imageFileInput.required = true;
+else
+    imageFileInput.required = false;
     }
     clearPreview();
     validateForm();
@@ -202,10 +254,17 @@
     imagePreviewContainer.classList.remove('hidden');
   }
   function clearPreview(){
-    if(!imagePreview || !imagePreviewContainer) return;
-    imagePreview.src = '#';
-    imagePreviewContainer.classList.add('hidden');
-  }
+
+    if({{ edit_mode|yesno:"true,false" }}){
+
+        return;
+
+    }
+
+    imagePreview.src = "#";
+    imagePreviewContainer.classList.add("hidden");
+
+}
 
   if(imageUrlInput){
     imageUrlInput.addEventListener('input', function(){
@@ -268,33 +327,70 @@
     try { new URL(u); return true; } catch(e){ return false; }
   }
 
-  function validateForm(){
+function validateForm(){
+
     let ok = true;
-    if(exists(nameField) && (!nameField.value || !nameField.value.trim())) ok = false;
-    if(exists(descField) && (!descField.value || !descField.value.trim())) ok = false;
-    if(exists(priceField) && (!priceField.value || isNaN(parseFloat(priceField.value)) || parseFloat(priceField.value) <= 0)) ok = false;
 
-    // Category check
+    if(exists(nameField) && !nameField.value.trim())
+        ok = false;
+
+    if(exists(descField) && !descField.value.trim())
+        ok = false;
+
+    if(exists(priceField)){
+        const price = parseFloat(priceField.value);
+
+        if(isNaN(price) || price<=0)
+            ok = false;
+    }
+
+    // Category
+
     let catSelected = false;
-    if(categoryRadios && categoryRadios.length){
-      catSelected = [...categoryRadios].some(r=>r.checked);
-    } else if(categoryField && categoryField.tagName === 'SELECT'){
-      catSelected = !!categoryField.value;
-    }
-    if(!catSelected) ok = false;
 
-    // Image valid depending on mode
+    if(categoryRadios.length){
+
+        catSelected = [...categoryRadios].some(r=>r.checked);
+
+    }else if(categoryField){
+
+        catSelected = categoryField.value !== "";
+
+    }
+
+    if(!catSelected)
+        ok = false;
+
+    // Image
+
     const mode = document.querySelector('input[name="image_option"]:checked')?.value;
-    if(mode === 'url'){
-      if(!imageUrlInput || !imageUrlInput.value || !isValidURL(imageUrlInput.value)) ok = false;
-    } else {
-      if(!imageFileInput) ok = false;
-      else if(!imageFileInput.files || imageFileInput.files.length === 0) ok = false;
+
+    const editMode = {{ edit_mode|yesno:"true,false" }};
+
+    if(mode==="url"){
+
+        if(!imageUrlInput.value || !isValidURL(imageUrlInput.value))
+            ok=false;
+
+    }
+    else{
+
+        // Only Add mode requires image
+
+        if(!editMode){
+
+            if(!imageFileInput.files.length)
+                ok=false;
+
+        }
+
     }
 
-    submitBtn.disabled = !ok;
+    submitBtn.disabled=!ok;
+
     return ok;
-  }
+
+}
 
   // Attach input listeners robustly
   [nameField, descField, priceField, imageUrlInput, imageFileInput].forEach(el => {
@@ -306,7 +402,7 @@
   if(categoryField && categoryField.tagName === 'SELECT') categoryField.addEventListener('change', validateForm);
 
   // initial mode
-  setImageMode('url');
+  setImageMode('file');
 
   // ==== CONFETTI LAUNCH FUNCTION ====
   const confettiContainer = document.getElementById('confetti-container');

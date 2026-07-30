@@ -33,22 +33,38 @@ def password_reset(request):
     if request.method == "POST":
         email = request.POST.get('email')
         try:
-            user = User.objects.get(email=email)
-            token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            users = User.objects.filter(email=email)
 
-            # ✅ No namespace here
-            reset_link = request.build_absolute_uri(
-                reverse("password_reset_confirm", kwargs={"uidb64": uid, "token": token})
-            )
+            if users.exists():
+                for user in users:
+                    token = default_token_generator.make_token(user)
+                    uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-            subject = "Password Reset Request"
-            message = render_to_string('auth/registration/password_reset_email.html', {
-                'user': user,
-                'reset_link': reset_link
-            })
-            send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email])
-            return redirect('password_reset_done')
+                    reset_link = request.build_absolute_uri(
+                        reverse(
+                            "password_reset_confirm",
+                            kwargs={"uidb64": uid, "token": token},
+                        )
+                    )
+
+                    subject = "Password Reset Request"
+
+                    message = render_to_string(
+                        "auth/registration/password_reset_email.html",
+                        {
+                            "user": user,
+                            "reset_link": reset_link,
+                        },
+                    )
+
+                    send_mail(
+                        subject,
+                        message,
+                        settings.EMAIL_HOST_USER,
+                        [user.email],
+                    )
+
+            return redirect("password_reset_done")
 
         except User.DoesNotExist:
             messages.error(request, "Email not found")
