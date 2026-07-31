@@ -1,6 +1,8 @@
 
 # orders/views.py
 
+from urllib import request
+
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -13,6 +15,7 @@ from decimal import Decimal
 from .models import Order, OrderItem
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from cart.models import Cart
 
 
 User = get_user_model()
@@ -36,9 +39,18 @@ def order_view(request):
     Build pending order from session, validate quantities and user profile,
     generate a verification code and send it to user's email.
     """
-    pending = request.session.get("pending_order")
-    if not pending:
+    # Check cart first
+    cart_count = Cart.objects.filter(user=request.user).count()
+
+    if cart_count < 1:
         messages.error(request, "No items selected. Please add items from cart.")
+        return redirect("cart:cart")
+
+    pending = request.session.get("pending_order")
+
+    # If session missing but cart has items,
+    # redirect back so Buy Now / Buy All creates session again.
+    if not pending:
         return redirect("cart:cart")
 
     back_url = request.META.get("HTTP_REFERER", None)

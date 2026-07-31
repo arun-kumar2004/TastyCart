@@ -424,19 +424,62 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(`/cart/add/${id}/`)
       .then(res => {
         if (res.ok) {
-          // ✅ Update cart count
+         // ================= Desktop =================
+
           let cartCountEl = document.getElementById("cart-count");
+
           if (cartCountEl) {
-            cartCountEl.textContent = parseInt(cartCountEl.textContent || "0") + 1;
+
+              cartCountEl.textContent =
+                  parseInt(cartCountEl.textContent || "0") + 1;
+
           } else {
-            const cartLink = document.querySelector('a[href$="/cart/"]');
-            if (cartLink) {
-              const span = document.createElement("span");
-              span.id = "cart-count";
-              span.className = "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
-              span.textContent = "1";
-              cartLink.parentNode.appendChild(span);
-            }
+
+              const cartLink = document.querySelector(".lg\\:flex a[href*='/cart/']");
+
+              if (cartLink) {
+
+                  const span = document.createElement("span");
+
+                  span.id = "cart-count";
+
+                  span.className =
+                      "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
+
+                  span.textContent = "1";
+
+                  cartLink.parentNode.appendChild(span);
+              }
+          }
+
+
+          // ================= Mobile =================
+
+          let mobileCartCount = document.getElementById("mobile-cart-count");
+
+          if (mobileCartCount) {
+
+              mobileCartCount.textContent =
+                  parseInt(mobileCartCount.textContent || "0") + 1;
+
+          } else {
+
+              const mobileCartLink =
+                  document.querySelector(".lg\\:hidden a[href*='/cart/']");
+
+              if (mobileCartLink) {
+
+                  const span = document.createElement("span");
+
+                  span.id = "mobile-cart-count";
+
+                  span.className =
+                      "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
+
+                  span.textContent = "1";
+
+                  mobileCartLink.parentNode.appendChild(span);
+              }
           }
 
           // ✅ Update button state
