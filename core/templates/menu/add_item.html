@@ -59,7 +59,7 @@ Update Item
       <!-- File input -->
       <div class="form-group " id="image-file-group">
         <label for="id_image">Upload Image</label>
-        {% if edit_mode and item.image and item.image.name != "items/item_placeholder.png" %}
+        {% if edit_mode and item.image %}
     <div class="mb-3">
       <img
     id="existing-image-preview"
@@ -107,14 +107,194 @@ Update Item
           {% endif %}
         </div>
         <div class="form-group">
-          <label>Category</label>
-          {{ form.category }}
-          {% if form.category.errors %}
-            <p class="error">{{ form.category.errors|striptags }}</p>
-          {% endif %}
-        </div>
-      </div>
 
+    <label>Category</label>
+
+    <div class="flex gap-3 items-center">
+
+        {{ form.category }}
+
+        <button
+            type="button"
+            id="openCategoryModal"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg whitespace-nowrap">
+
+            + Add Another List
+
+        </button>
+
+    </div>
+
+    {% if form.category.errors %}
+        <p class="error">{{ form.category.errors|striptags }}</p>
+    {% endif %}
+
+</div>
+      </div>
+<div
+id="categoryModal"
+class="fixed inset-0 bg-black/50 hidden justify-center items-center z-50">
+
+<div
+class="bg-white rounded-xl shadow-xl w-full max-w-lg">
+
+<div class="flex justify-between items-center p-5 border-b">
+
+<h2 class="text-xl font-bold">
+
+Manage Categories
+
+</h2>
+
+<button
+id="closeCategoryModal"
+class="text-3xl">
+
+&times;
+
+</button>
+
+</div>
+
+<div class="flex border-b">
+
+    <button type="button" id="addTab"
+        class="tab-btn flex-1 p-3 bg-white-500 text-blue --hover:bg-blue-600 hover:text-blue active:bg-blue-700 active:text-white">
+        Add
+    </button>
+
+    <button type="button" id="updateTab"
+        class="tab-btn flex-1 p-3 bg-white-500 text-blue --hover:bg-blue-600 hover:text-blue active:bg-blue-700 active:text-white">
+        Update
+    </button>
+
+    <button type="button" id="deleteTab"
+        class="tab-btn flex-1 p-3 bg-white-500 text-blue --hover:bg-blue-600 hover:text-blue active:bg-blue-700 active:text-white">
+        Delete
+    </button>
+    <div id="deleteContent" class="hidden p-6">
+
+    <label>Select Category</label>
+
+    <select id="deleteCategorySelect"
+            class="w-full border rounded-lg p-3 mt-2">
+
+        {% for c in categories %}
+        <option value="{{ c.id }}">
+            {{ c.name }}
+        </option>
+        {% endfor %}
+
+    </select>
+
+    <button
+        type="button"
+        id="deleteCategoryBtn"
+        class="mt-5 w-full bg-red-600 text-white rounded-lg p-3">
+
+        Delete Category
+
+    </button>
+
+</div>
+
+</div>
+<!-- ADD -->
+
+<div
+id="addContent"
+class="p-6">
+
+<label>
+
+Enter New Category
+
+</label>
+
+<input
+type="text"
+id="newCategoryName"
+class="w-full border rounded-lg p-3 mt-2">
+
+<button type="button"
+id="saveCategoryBtn"
+class="mt-5 w-full bg-green-600 hover:bg-green-700 text-white rounded-lg p-3">
+
+Save Category
+
+</button>
+
+</div>
+
+<!-- UPDATE -->
+
+<div
+id="updateContent"
+class="hidden p-6">
+
+<label>
+
+Select Category
+
+</label>
+
+<select
+id="updateCategorySelect"
+class="w-full border rounded-lg p-3 mt-2">
+
+{% for c in categories %}
+
+<option value="{{ c.id }}">
+
+{{ c.name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+<label class="block mt-4">
+
+New Name
+
+</label>
+
+<input
+id="updateCategoryName"
+type="text"
+class="w-full border rounded-lg p-3 mt-2">
+
+<div class="mt-4">
+
+    <label class="flex items-center gap-3 cursor-pointer">
+
+        <input
+            type="checkbox"
+            id="showCategoryHome">
+
+        <span id="showHomeText">
+
+            Add to Home
+
+        </span>
+
+    </label>
+
+</div>
+<button type="button"
+id="updateCategoryBtn"
+class="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-3">
+
+Update Category
+
+</button>
+
+</div>
+
+</div>
+
+</div>
       <!-- Popular checkbox -->
       <div class="checkbox-group" id="popular-checkbox-row">
         {{ form.popular }} <label id="popular-label" for="{{ form.popular.id_for_label }}"> Add to Home (Popular)</label>
@@ -196,9 +376,136 @@ Save Item
     60% { transform: translateY(-120vh) rotate(270deg); opacity:1; }
     100% { transform: translateY(-180vh) rotate(540deg); opacity:0; }
   }
+  #categoryModal{
+
+display:flex;
+
+backdrop-filter:blur(4px);
+
+}
+
+#categoryModal.hidden{
+
+display:none;
+
+}
+
+.tab-btn{
+
+font-weight:bold;
+
+transition:.3s;
+
+}
+
+.tab-btn.active{
+
+background:#f97316;
+
+color:white;
+
+}
 </style>
 
 <script>
+  const modal=document.getElementById("categoryModal");
+
+const openBtn=document.getElementById("openCategoryModal");
+
+const closeBtn=document.getElementById("closeCategoryModal");
+
+const addTab=document.getElementById("addTab");
+
+const updateTab=document.getElementById("updateTab");
+
+const addContent=document.getElementById("addContent");
+
+const updateContent=document.getElementById("updateContent");
+const deleteTab=document.getElementById("deleteTab");
+const deleteContent=document.getElementById("deleteContent");
+const updateSelect=document.getElementById("updateCategorySelect");
+
+const homeCheckbox=document.getElementById("showCategoryHome");
+
+const homeText=document.getElementById("showHomeText");
+function closeCategoryPopup(){
+
+    modal.classList.add("hidden");
+
+    document.getElementById("newCategoryName").value="";
+    document.getElementById("updateCategoryName").value="";
+
+}
+
+openBtn.onclick = () => {
+
+    modal.classList.remove("hidden");
+activateTab("add");
+
+};
+{% if open_category_popup %}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    setTimeout(function () {
+
+        document.getElementById("categoryModal").classList.remove("hidden");
+
+        activateTab("add");
+
+    }, 500);
+
+});
+
+{% endif %}
+closeBtn.onclick = closeCategoryPopup;
+
+window.onclick=(e)=>{
+
+    if(e.target===modal){
+
+        closeCategoryPopup();
+
+    }
+
+};
+
+function activateTab(tab){
+
+    addContent.classList.add("hidden");
+    updateContent.classList.add("hidden");
+    deleteContent.classList.add("hidden");
+
+    addTab.classList.remove("active");
+    updateTab.classList.remove("active");
+    deleteTab.classList.remove("active");
+
+    if(tab==="add"){
+
+        addContent.classList.remove("hidden");
+        addTab.classList.add("active");
+
+    }
+
+    if(tab==="update"){
+
+        updateContent.classList.remove("hidden");
+        updateTab.classList.add("active");
+
+    }
+
+    if(tab==="delete"){
+
+        deleteContent.classList.remove("hidden");
+        deleteTab.classList.add("active");
+
+    }
+
+}
+addTab.onclick=()=>activateTab("add");
+updateTab.onclick=()=>activateTab("update");
+deleteTab.onclick=()=>activateTab("delete");
+
 (function(){
   // Utility - get form fields robustly (by name fallback id)
   function qs(name){ return document.querySelector('[name="'+name+'"]') || document.getElementById('id_'+name); }
@@ -290,27 +597,16 @@ else
 
   // === Category change: update checkbox label ===
   function updatePopularLabel(){
-    // Determine selected category
-    let cat = null;
-    if(categoryRadios && categoryRadios.length){
-      categoryRadios.forEach(r => { if(r.checked) cat = r.value; });
-    } else if(categoryField && categoryField.tagName === 'SELECT'){
-      cat = categoryField.value;
-    } else if(categoryField && categoryField.type === 'radio'){
-      // handled above
-    }
-    if(!cat){
-      popularLabel.textContent = 'Add to Home (Popular)';
-      return;
-    }
-    if(cat.toLowerCase().includes('dish') || cat.toLowerCase()==='dish'){
-      popularLabel.textContent = 'Add to Home (Popular Dishes)';
-    } else if(cat.toLowerCase().includes('sweet') || cat.toLowerCase()==='sweet'){
-      popularLabel.textContent = 'Add to Home (Traditional Sweets)';
-    } else {
-      popularLabel.textContent = 'Add to Home (Popular)';
-    }
-  }
+
+    const txt =
+        categoryField.options[
+            categoryField.selectedIndex
+        ].text;
+
+    popularLabel.innerText =
+        "Add Item to Home (" + txt + ")";
+
+}
 
   if(categoryRadios && categoryRadios.length){
     categoryRadios.forEach(r => r.addEventListener('change', updatePopularLabel));
@@ -524,5 +820,232 @@ function validateForm(){
   // initial validation run
   setTimeout(validateForm, 120);
 })();
+// ================= CATEGORY AJAX =================
+
+function getCSRFToken() {
+    return document.querySelector("[name=csrfmiddlewaretoken]").value;
+}
+
+// -------- ADD CATEGORY --------
+
+document.getElementById("saveCategoryBtn").addEventListener("click", function () {
+
+    const name = document.getElementById("newCategoryName").value.trim();
+
+    if (!name) {
+        alert("Enter category name.");
+        return;
+    }
+
+    fetch("{% url 'menu:add_category' %}", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCSRFToken()
+        },
+
+        body: new URLSearchParams({
+            name: name
+        })
+
+    })
+
+    .then(res => res.json())
+
+    .then(data => {
+
+        if (data.success) {
+
+            // Main Category Dropdown
+            const mainSelect = document.getElementById("id_category");
+
+            const option = new Option(data.name, data.id);
+
+            mainSelect.add(option);
+
+            mainSelect.value = data.id;
+
+            // Update Tab Dropdown
+            const updateSelect = document.getElementById("updateCategorySelect");
+
+            const option2 = new Option(data.name, data.id);
+
+            updateSelect.add(option2);
+
+            updateSelect.value = data.id;
+
+            document.getElementById("newCategoryName").value = "";
+            closeCategoryPopup();
+          setTimeout(()=>{
+              alert("Category Added Successfully.");
+
+          },100);}
+
+        else{
+
+            alert("Unable to add category.");
+
+        }
+
+    });
+
+});
+
+document.getElementById("deleteCategoryBtn").addEventListener("click",function(e){
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if(!confirm("Delete this category?"))
+        return;
+
+    fetch("{% url 'menu:delete_category' %}",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded",
+            "X-CSRFToken":getCSRFToken()
+        },
+
+        body:new URLSearchParams({
+            category:document.getElementById("deleteCategorySelect").value
+        })
+
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        if(data.success){
+
+            location.reload();
+
+        }else{
+
+            alert(data.message);
+
+        }
+
+    });
+
+});
+
+// -------- UPDATE CATEGORY --------
+
+document.getElementById("updateCategoryBtn").addEventListener("click", function(){
+const id = document.getElementById("updateCategorySelect").value;
+
+const name = document.getElementById("updateCategoryName").value.trim();
+
+const currentName =
+document.getElementById("updateCategorySelect")
+.options[
+document.getElementById("updateCategorySelect").selectedIndex
+].text;
+
+const finalName =
+name || currentName;
+
+    fetch("{% url 'menu:update_category' %}",{
+
+        method:"POST",
+
+        headers:{
+
+            "Content-Type":"application/x-www-form-urlencoded",
+
+            "X-CSRFToken":getCSRFToken()
+
+        },
+
+       body:new URLSearchParams({
+
+    category:id,
+
+    name:finalName,
+
+    show_on_home:homeCheckbox.checked
+
+})
+
+    })
+
+    .then(res=>res.json())
+
+    .then(data=>{
+
+        if(data.success){
+
+         const selects = [
+    document.getElementById("id_category"),
+    document.getElementById("updateCategorySelect"),
+    document.getElementById("deleteCategorySelect")
+];
+
+selects.forEach(select => {
+
+    [...select.options].forEach(option => {
+
+        if (option.value == data.id) {
+
+            option.text = data.name;
+
+        }
+
+    });
+
+});
+            closeCategoryPopup();
+
+setTimeout(()=>{
+
+    alert("Category Updated Successfully.");
+
+},100);
+
+        }
+
+        else{
+
+            alert("Unable to update category.");
+
+        }
+
+    });
+
+});
+function updateHomeCheckboxLabel(){
+
+    const txt =
+        updateSelect.options[
+            updateSelect.selectedIndex
+        ].text;
+
+    homeText.innerText =
+        "Add to Home (" + txt + ")";
+
+}
+updateHomeCheckboxLabel();
+
+updateSelect.addEventListener(
+
+    "change",
+
+    updateHomeCheckboxLabel
+
+);
+document.querySelectorAll(".category-btn").forEach(btn => {
+
+    if (btn.dataset.tab == data.id) {
+
+        btn.textContent = data.name;
+
+    }
+
+});
 </script>
 {% endblock %}

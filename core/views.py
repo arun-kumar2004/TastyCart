@@ -2,24 +2,45 @@ from django.shortcuts import render
 from menu.models import Item
 from cart.models import Cart
 
-def home(request):
-    # Select only popular items
-    popular_items = Item.objects.filter(popular=True).exclude(name__isnull=True).exclude(name__exact='').order_by("-updated_at")
-    
-    # Separate into dishes and sweets
-    popular_dishes = popular_items.filter(category="Dish")[:6]
-    popular_sweets = popular_items.filter(category="Sweet")[:6]
+from django.shortcuts import render
+from django.db.models import Prefetch
 
-    # Get cart item IDs safely
+from menu.models import Category, Item
+from cart.models import Cart
+
+
+def home(request):
+
+    # Categories selected for Home
+    home_categories = (
+        Category.objects.filter(show_on_home=True)
+        .prefetch_related(
+            Prefetch(
+                "items",
+                queryset=Item.objects.filter(
+                    popular=True
+                )
+                .exclude(name__isnull=True)
+                .exclude(name__exact="")
+                .order_by("-updated_at"),
+            )
+        )
+        .order_by("name")
+    )
+
+    # Cart items
     if request.user.is_authenticated:
-        cart_ids = Cart.objects.filter(user=request.user).values_list('item_id', flat=True)
+        cart_ids = list(
+            Cart.objects.filter(user=request.user)
+            .values_list("item_id", flat=True)
+        )
     else:
-        cart_ids = []  # Empty list for anonymous users
+        cart_ids = []
 
     context = {
-        "dishes": popular_dishes,
-        "sweets": popular_sweets,
-        "cart_ids": list(cart_ids),
+        "home_categories": home_categories,
+        "cart_ids": cart_ids,
     }
 
     return render(request, "home.html", context)
+

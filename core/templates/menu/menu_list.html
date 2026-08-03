@@ -1,659 +1,2526 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block content %}
-<!-- Search Bar -->
-<div class="px-12 py-6 text-center">
-  <div class="relative w-2/3 md:w-1/2 mx-auto">
-    <input
-      id="searchInput"
-      type="text"
-      placeholder="Search dishes & sweets..."
-      class="w-full p-3 pr-12 border rounded-lg shadow-lg font-[Pacifico] text-lg"
-      aria-label="Search dishes and sweets"
-    />
-    <button
-      id="searchBtn"
-      class="absolute right-2 top-1/2 transform -translate-y-1/2 w-9 h-9 p-0 bg-transparent border-0 disabled:opacity-40 disabled:cursor-not-allowed"
-      disabled
-      aria-label="Search"
-      title="Search"
-    >
-      <img src="{% static 'images/search-icon.png' %}" alt="Search" class="w-full h-full object-contain"/>
-    </button>
-  </div>
-</div>
 
-<div class="max-w-7xl mx-auto py-12 px-4">
-  
+<!-- ========================= -->
+<!-- SEARCH BAR -->
+<!-- ========================= -->
 
-  <!-- Tabs row (Dishes | Sweets | Add Another List (admin only)) -->
-  <div class="flex justify-center items-center gap-4 mb-8">
-    <button id="btn-dishes" class="tab-btn px-5 py-2 rounded-md text-white active" data-target="dishesArea">Dishes</button>
-    <button id="btn-sweets" class="tab-btn px-5 py-2 rounded-md text-white" data-target="sweetsArea">Sweets</button>
-    {% if request.user.is_superuser %}
-      <button id="btn-others" class="tab-btn px-5 py-2 rounded-md text-white" data-target="othersArea">Add Another List</button>
-    {% endif %}
-  </div>
+<section class="w-full bg-white py-8 shadow-sm">
 
-  <!-- Admin add item quick link (kept for convenience) -->
-  {% if request.user.is_superuser %}
-    <div class="text-center mb-6">
-      <a href="{% url 'menu:add_item' %}" class="inline-block px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md shadow">
-        Add Item
-      </a>
-    </div>
-  {% endif %}
+    <div class="max-w-7xl mx-auto px-4">
 
-  <!-- === DISHES AREA (two rows) === -->
-  <div id="dishesArea" class="tab-area">
+        <div
+            id="searchContainer"
+            data-id="{{ item.id }}"
+            class="relative max-w-2xl mx-auto">
 
-    <!-- Row 1 controls -->
-    <div class="relative mb-6">
-      <img src="{% static 'images/left-arrow.png' %}" id="dishesRow1Left" onclick="manualScroll('dishesRow1', -1)" 
-          class="arrow left-arrow hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="left">
-      <img src="{% static 'images/right-arrow.png' %}" id="dishesRow1Right" onclick="manualScroll('dishesRow1', 1)" 
-          class="arrow right-arrow hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="right">
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search Products..."
+                class="w-full rounded-full border-2 border-orange-300 bg-white py-4 pl-6 pr-16 text-lg outline-none transition focus:border-orange-500 focus:ring-4 focus:ring-orange-100">
 
-      <div id="dishesRow1" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
-        {# distribute dishes into two rows by even/odd index -> row1 uses even indices #}
-        {% for dish in dishes %}
-          {% if forloop.counter0|divisibleby:2 %}
-          <div class="item-card relative min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
-            {% if request.user.is_superuser %}
-<div class="absolute top-3 right-3 z-30">
+            <button
+                id="searchBtn"
+                class="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-orange-500 hover:bg-orange-600 flex items-center justify-center transition disabled:opacity-50"
+                disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+            </button>
 
-    <button class="menu-btn text-2xl font-bold rounded hover:bg-gray-100">
-        ⋮
-    </button>
-
-    <div class="menu-dropdown hidden absolute right-0 mt-2 w-36 bg-white border rounded-lg shadow-lg">
-
-        <a href="{% url 'menu:edit_item' dish.id %}"
-           class="block px-4 py-2 hover:bg-blue-100">
-            ✏️ Edit
-        </a>
-
-        <a href="{% url 'menu:delete_item' dish.id %}"
-           onclick="return confirm('Delete this item?')"
-           class="block px-4 py-2 text-red-600 hover:bg-red-100">
-            🗑 Delete
-        </a>
+        </div>
 
     </div>
 
-</div>
-{% endif %}
+</section>
 
-{% if dish.image %}
-<img src="{{ dish.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">
-{% endif %}
-            <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ dish.name }}</h3>
-            <p class="mb-3 font-[Pacifico] text-gray-600">{{ dish.description|truncatechars:80 }}</p>
-            <p class="font-bold mb-3 text-red-600">₹{{ dish.price }}</p>
-            <div class="flex justify-between">
-              {% if user.is_authenticated %}
-                <a href="{% url 'menu:order_from_menu' dish.id %}" 
-                  class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
 
-                {% if dish.id in cart_item_ids %}
-                  <button disabled 
-                    class="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-lg">
-                    Added ✔️
-                  </button>
-                {% else %}
-                  <button onclick="addToCartHandler('{{ dish.name }}', {{ dish.id }}, this)" 
-                    class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">
-                    Add to Cart
-                  </button>
-                {% endif %}
 
-              {% else %}
-                <a href="{% url 'login' %}" 
-                  class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
-                <a href="{% url 'login' %}" 
-                  class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
-              {% endif %}
+<!-- ========================= -->
+<!-- CATEGORY SECTION -->
+<!-- ========================= -->
 
-            </div>
-          </div>
-          {% endif %}
+<section class="max-w-7xl mx-auto px-4 lg:px-8 py-12">
+
+    <!-- CATEGORY BUTTONS -->
+
+    <div
+        class="flex flex-wrap justify-center gap-4 mb-10">
+
+        {% for category in categories %}
+
+        <button
+
+            class="tab-btn category-btn {% if forloop.first %}active{% endif %}"
+
+            data-tab="{{ category.id }}">
+
+            {{ category.name|title }}
+
+        </button>
         {% empty %}
-          <p class="text-center w-full text-gray-500">No dishes yet.</p>
-        {% endfor %}
-      </div>
-    </div>
 
-    <!-- Row 2 controls -->
-    <div class="relative">
-      <img src="{% static 'images/left-arrow.png' %}" id="dishesRow2Left" onclick="manualScroll('dishesRow2', -1)" 
-          class="arrow left-arrow hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="left">
-      <img src="{% static 'images/right-arrow.png' %}" id="dishesRow2Right" onclick="manualScroll('dishesRow2', 1)" 
-          class="arrow right-arrow hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="right">
+<div class="col-span-full text-center py-16">
 
-      <div id="dishesRow2" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
-        {# row2: odd indices #}
-        {% for dish in dishes %}
-          {% if not forloop.counter0|divisibleby:2 %}
-          <div class="item-card relative min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
-            {% if request.user.is_superuser %}
-<div class="absolute top-3 right-3 z-30">
-
-    <button class="menu-btn text-2xl font-bold rounded hover:bg-gray-100">
-        ⋮
-    </button>
-
-    <div class="menu-dropdown hidden absolute right-0 mt-2 w-36 bg-white border rounded-lg shadow-lg">
-
-        <a href="{% url 'menu:edit_item' dish.id %}"
-           class="block px-4 py-2 hover:bg-blue-100">
-            ✏️ Edit
-        </a>
-
-        <a href="{% url 'menu:delete_item' dish.id %}"
-           onclick="return confirm('Delete this item?')"
-           class="block px-4 py-2 text-red-600 hover:bg-red-100">
-            🗑 Delete
-        </a>
-
-    </div>
+    <h3 class="text-2xl font-bold text-gray-500">
+        No products available
+    </h3>
 
 </div>
-{% endif %}
 
-{% if dish.image %}
-<img src="{{ dish.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">
-{% endif %}
-            <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ dish.name }}</h3>
-            <p class="mb-3 font-[Pacifico] text-gray-600">{{ dish.description|truncatechars:80 }}</p>
-            <p class="font-bold mb-3 text-red-600">₹{{ dish.price }}</p>
-            <div class="flex justify-between">
-              {% if user.is_authenticated %}
-                <a href="{% url 'menu:order_from_menu' dish.id %}" 
-                  class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+        {% endfor %}
 
-                {% if dish.id in cart_item_ids %}
-                  <button disabled 
-                    class="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-lg">
-                    Added ✔️
-                  </button>
-                {% else %}
-                  <button onclick="addToCartHandler('{{ dish.name }}', {{ dish.id }}, this)" 
-                    class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">
-                    Add to Cart
-                  </button>
-                {% endif %}
+        {% if request.user.is_superuser %}
 
-              {% else %}
-                <a href="{% url 'login' %}" 
-                  class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
-                <a href="{% url 'login' %}" 
-                  class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
-              {% endif %}
+        <a
+
+            href="{% url 'menu:add_item' %}?manage_category=1"
+
+            class="px-6 py-3 rounded-full bg-gray-900 hover:bg-blue-600 text-white font-bold transition shadow-lg">
+
+            ⚙ Manage Categories
+
+        </a>
+
+        <a
+
+            href="{% url 'menu:add_item' %}"
+
+            class="px-6 py-3 rounded-full bg-green-600 hover:bg-green-700 text-white font-bold transition shadow-lg">
+
+            + Add Item
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+
+
+    <!-- CATEGORY LOOP -->
+
+    {% for category in categories %}
+
+    <section
+
+        id="tab{{ category.id }}"
+
+        class="category-section {% if not forloop.first %}hidden{% endif %}">
+
+        <!-- HEADER -->
+
+        <div
+            class="flex flex-col lg:flex-row justify-between lg:items-center gap-5 mb-8">
+
+            <div>
+
+                <h2
+                    class="text-4xl font-extrabold text-gray-800">
+
+                    {{ category.name|title }}
+
+                </h2>
+
+                <p
+                    class="text-gray-500 mt-2">
+
+                    Explore our delicious {{ category.name|lower }} collection.
+
+                </p>
 
             </div>
-          </div>
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
 
-  </div> <!-- end dishesArea -->
+            <a
 
-  <!-- === SWEETS AREA (two rows) === -->
-  <div id="sweetsArea" class="tab-area hidden">
+                href="{% url 'menu:menu_list' %}?category={{ category.id }}"
 
-    <!-- Row 1 controls -->
-    <div class="relative mb-6">
-      <img src="{% static 'images/left-arrow.png' %}" id="sweetsRow1Left" onclick="manualScroll('sweetsRow1', -1)" 
-          class="arrow left-arrow hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="left">
-      <img src="{% static 'images/right-arrow.png' %}" id="sweetsRow1Right" onclick="manualScroll('sweetsRow1', 1)" 
-          class="arrow right-arrow hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="right">
+                class="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition">
 
-      <div id="sweetsRow1" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
-        {% for sweet in sweets %}
-          {% if forloop.counter0|divisibleby:2 %}
-          <div class="item-card relative min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
-            {% if request.user.is_superuser %}
-<div class="absolute top-3 right-3 z-30">
+                All {{ category.name|title }} Products 
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.99 16.5 3.75 3.75m0 0 3.75-3.75m-3.75 3.75V3.75H4.49" />
+                </svg>
+            </a>
 
-    <button class="menu-btn text-2xl font-bold rounded hover:bg-gray-100">
-        ⋮
-    </button>
+        </div>
 
-    <div class="menu-dropdown hidden absolute right-0 mt-2 w-36 bg-white border rounded-lg shadow-lg">
 
-        <a href="{% url 'menu:edit_item' sweet.id %}"
-           class="block px-4 py-2 hover:bg-blue-100">
-            ✏️ Edit
-        </a>
 
-        <a href="{% url 'menu:delete_item' sweet.id %}"
-           onclick="return confirm('Delete this item?')"
-           class="block px-4 py-2 text-red-600 hover:bg-red-100">
-            🗑 Delete
-        </a>
+        <!-- PRODUCT GRID -->
 
-    </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
 
-</div>
-{% endif %}
+            {% for item in category.items.all %}
 
-            {% if sweet.image %}<img src="{{ sweet.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
-            <h3 class="text-xl mb-2 font-[Dancing Script] text-purple-700">{{ sweet.name }}</h3>
-            <p class="mb-3 font-[Pacifico] text-gray-600">{{ sweet.description|truncatechars:80 }}</p>
-            <p class="font-bold mb-3 text-red-600">₹{{ sweet.price }}</p>
-            <div class="flex justify-between">
-               {% if user.is_authenticated %}
-                  <a href="{% url 'menu:order_from_menu' sweet.id %}" 
-                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+            {% if forloop.counter <= 12 %}
+            <div
+    class="item-card relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 hover:-translate-y-2"
+    data-id="{{ item.id }}">
 
-                  {% if sweet.id in cart_item_ids %}
-                    <button disabled 
-                      class="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-lg">
-                      Added ✔️
+              <!-- Admin Menu -->
+
+                {% if request.user.is_superuser %}
+
+                <div class="absolute top-3 right-3 z-30">
+
+                    <button
+                        class="menu-btn w-10 h-10 rounded-full bg-white shadow flex items-center justify-center text-2xl hover:bg-gray-100">
+
+                        ⋮
+
                     </button>
-                  {% else %}
-                    <button onclick="addToCartHandler('{{ sweet.name }}', {{ sweet.id }}, this)" 
-                      class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">
-                      Add to Cart
-                    </button>
-                  {% endif %}
 
-                {% else %}
-                  <a href="{% url 'login' %}" 
-                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
-                  <a href="{% url 'login' %}" 
-                    class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
+                    <div
+                        class="menu-dropdown hidden absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border overflow-hidden">
+
+                        <a
+
+                            href="{% url 'menu:edit_item' item.id %}"
+
+                            class="block px-4 py-3 hover:bg-blue-50">
+
+                            ✏️ Edit Item
+
+                        </a>
+
+                        <a
+
+                            href="{% url 'menu:delete_item' item.id %}"
+
+                            onclick="return confirm('Delete this item?')"
+
+                            class="block px-4 py-3 text-red-600 hover:bg-red-50">
+
+                            🗑 Delete Item
+
+                        </a>
+
+                    </div>
+
+                </div>
+
                 {% endif %}
-                        </div>
 
-          </div>
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-    
-    <!-- Row 2 controls -->
-    <div class="relative">
-      <img src="{% static 'images/left-arrow.png' %}" id="sweetsRow2Left" onclick="manualScroll('sweetsRow2', -1)" 
-          class="arrow left-arrow hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="left">
-      <img src="{% static 'images/right-arrow.png' %}" id="sweetsRow2Right" onclick="manualScroll('sweetsRow2', 1)" 
-          class="arrow right-arrow hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20" alt="right">
 
-      <div id="sweetsRow2" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
-        {% for sweet in sweets %}
-          {% if not forloop.counter0|divisibleby:2 %}
-          <div class="item-card relative min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
-                        {% if request.user.is_superuser %}
-<div class="absolute top-3 right-3 z-30">
 
-    <button class="menu-btn text-2xl font-bold rounded hover:bg-gray-100">
-        ⋮
-    </button>
+                <!-- IMAGE -->
 
-    <div class="menu-dropdown hidden absolute right-0 mt-2 w-36 bg-white border rounded-lg shadow-lg">
+                <div class="overflow-hidden">
 
-        <a href="{% url 'menu:edit_item' sweet.id %}"
-           class="block px-4 py-2 hover:bg-blue-100">
-            ✏️ Edit
-        </a>
+                    {% if item.image %}
 
-        <a href="{% url 'menu:delete_item' sweet.id %}"
-           onclick="return confirm('Delete this item?')"
-           class="block px-4 py-2 text-red-600 hover:bg-red-100">
-            🗑 Delete
-        </a>
+                    <img
 
-    </div>
+                        src="{{ item.image.url }}"
 
-</div>
-{% endif %}
+                        class="w-full h-44 object-cover transition duration-500 hover:scale-110"
 
-            {% if sweet.image %}<img src="{{ sweet.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
-            <h3 class="text-xl mb-2 font-[Dancing Script] text-purple-700">{{ sweet.name }}</h3>
-            <p class="mb-3 font-[Pacifico] text-gray-600">{{ sweet.description|truncatechars:80 }}</p>
-            <p class="font-bold mb-3 text-red-600">₹{{ sweet.price }}</p>
-              <div class="flex justify-between">
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'menu:order_from_menu' sweet.id %}" 
-                      class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
+                        alt="{{ item.name }}">
 
-                    {% if sweet.id in cart_item_ids %}
-                      <button disabled 
-                        class="bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-lg">
-                        Added ✔️
-                      </button>
                     {% else %}
-                      <button onclick="addToCartHandler('{{ sweet.name }}', {{ sweet.id }}, this)" 
-                        class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">
-                        Add to Cart
-                      </button>
+
+                    <img
+
+                        src="{% static 'images/item_placeholder.png' %}"
+
+                        class="w-full h-44 object-cover"
+
+                        alt="No Image">
+
                     {% endif %}
 
-                  {% else %}
-                    <a href="{% url 'login' %}" 
-                      class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>
-                    <a href="{% url 'login' %}" 
-                      class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
-                  {% endif %}
+                </div>
+
+
+
+          <!-- BODY -->
+
+          <div class="p-5">
+
+              <h3
+                  class="text-2xl font-bold text-gray-800 mb-2">
+
+                  {{ item.name }}
+
+              </h3>
+
+              <p
+                  class="text-gray-500 mt-1 h-10 overflow-hidden text-sm">
+
+                  {{ item.description|truncatechars:85 }}
+
+              </p>
+
+              <div
+                  class="flex items-center justify-between mt-5">
+
+                  <span
+                      class="text-2xl font-black text-orange-600">
+
+                      ₹{{ item.price }}
+
+                  </span>
+
               </div>
-            
-          </div>
-          {% endif %}
+
+
+
+              <div
+                  class="grid grid-cols-2 gap-2 mt-3">
+
+                  {% if user.is_authenticated %}
+
+                  <a
+
+                      href="{% url 'menu:order_from_menu' item.id %}"
+
+                      class="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl text-center font-semibold transition">
+
+                      Order Now
+
+                  </a>
+
+            {% if item.id in cart_item_ids %}
+
+            <button
+
+                disabled
+
+                class="bg-gray-400 text-white rounded-xl font-semibold py-3 cursor-not-allowed">
+
+                Added ✔
+
+            </button>
+
+            {% else %}
+
+            <button
+
+                onclick="addToCartHandler('{{ item.name }}',{{ item.id }},this)"
+
+                class="bg-orange-500 hover:bg-orange-600 text-white rounded-xl py-3 font-semibold transition">
+
+                Add To Cart
+
+            </button>
+
+            {% endif %}
+
+            {% else %}
+
+            <a  href="{% url 'login' %}"
+
+                class="bg-green-600 text-white py-3 rounded-xl text-center">
+
+                Order Now
+
+            </a>
+
+            <a
+
+                href="{% url 'login' %}"
+
+                class="bg-orange-500 text-white py-3 rounded-xl text-center">
+
+                Add To Cart
+
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+{% endif %}
+{% empty %}
+
+<div class="col-span-full text-center py-16">
+
+    <h3 class="text-2xl font-bold text-gray-500">
+        No products available
+    </h3>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+<!-- ========================= -->
+<!-- PAGINATION -->
+<!-- ========================= -->
+
+{% if category.items.count > 12 %}
+
+<div
+    class="flex justify-center items-center mt-10">
+
+    <nav
+        class="pagination flex items-center gap-2"
+        data-category="{{ category.id }}">
+
+        <button
+
+            class="page-btn prev-page px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+
+            disabled>
+
+            ◀ Prev
+
+        </button>
+
+        {% widthratio category.items.count 12 1 as total_pages %}
+
+        {% for i in "1234567891011121314151617181920"|make_list %}
+
+            {% if forloop.counter <= total_pages %}
+
+            <button
+
+                class="page-btn page-number {% if forloop.first %}active bg-orange-500 text-white{% else %}bg-gray-200{% endif %}"
+
+                data-page="{{ forloop.counter }}">
+
+                {{ forloop.counter }}
+
+            </button>
+
+            {% endif %}
+            {% empty %}
+
+<div class="col-span-full text-center py-16">
+
+    <h3 class="text-2xl font-bold text-gray-500">
+        No products available
+    </h3>
+
+</div>
+
         {% endfor %}
-      </div>
+
+        <button
+
+            class="page-btn next-page px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600">
+
+            Next ▶
+
+        </button>
+
+    </nav>
+
+</div>
+
+{% endif %}
+
+</section>
+
+{% empty %}
+
+<div class="text-center py-20">
+    <h2 class="text-3xl font-bold text-gray-600">
+        No Categories Available
+    </h2>
+
+    <p class="mt-3 text-gray-500">
+        Please add a category first.
+    </p>
+
+    {% if request.user.is_superuser %}
+    <a href="{% url 'menu:add_item' %}?manage_category=1"
+       class="mt-6 inline-block bg-orange-500 text-white px-6 py-3 rounded-xl">
+        + Create Category
+    </a>
+    {% endif %}
+</div>
+
+
+{% endfor %}
+<!-- ========================= -->
+<!-- SCROLL SECTION START
+(DON'T REMOVE)
+========================= -->
+
+<div class="mt-16">
+
+    <div class="flex items-center justify-between mb-8">
+
+        <div>
+
+            <h2
+                class="text-4xl font-extrabold text-gray-900">
+
+                ⭐ Recommended For You
+
+            </h2>
+
+            <p
+                class="text-gray-500 mt-2">
+
+                Handpicked popular products from every category.
+
+            </p>
+
+        </div>
+
     </div>
 
-  </div> <!-- end sweetsArea -->
+    <!-- Recommended slider starts in Part 2 -->
+<!-- ===================================================== -->
+<!-- ⭐ RECOMMENDED FOR YOU -->
+<!-- ===================================================== -->
 
-  <!-- === OTHERS AREA (admin only) === -->
-  {% if request.user.is_superuser %}
-  <div id="othersArea" class="tab-area hidden">
-    <div class="flex justify-end mb-4">
-      <a href="{% url 'menu:add_item' %}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded">Add Another Item</a>
-    </div>
+{% if recommended_items %}
+
+<div class="space-y-12">
+
+    <!-- ================= FIRST ROW ================= -->
 
     <div class="relative">
-      <img src="{% static 'images/left-arrow.png' %}" onclick="manualScroll('othersRow', -1)" 
-           id="othersLeft" class="arrow left-arrow hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20">
-      <img src="{% static 'images/right-arrow.png' %}" onclick="manualScroll('othersRow', 1)" 
-           id="othersRight" class="arrow right-arrow hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full p-2 shadow cursor-pointer z-20">
 
-      <div id="othersRow" class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
-        {% for item in items %}
-          {% if item.category not in "Dish Sweet" %}
-          <div class="item-card relative min-w-[280px] bg-white shadow-lg p-6 rounded-xl transform transition-transform duration-300 hover:scale-105">
-            {% if item.image %}<img src="{{ item.image.url }}" class="rounded-lg mb-4 w-full h-48 object-cover">{% endif %}
-            <h3 class="text-xl mb-2 font-[Dancing Script] text-gray-800">{{ item.name }}</h3>
-            <p class="mb-3 font-[Pacifico] text-gray-600">{{ item.description|truncatechars:80 }}</p>
-            <p class="font-bold mb-3 text-red-600">₹{{ item.price }}</p>
-            <div class="flex justify-between">
-              {% if user.is_authenticated %}
-                <a href="/order/" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>              
-                <a href="{% url 'cart:add_to_cart' item.id %}" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
-                {% else %}
-                <a href="{% url 'login' %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">Order Now</a>              
-                <a href="{% url 'login' %}" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg">Add to Cart</a>
-              {% endif %}
-            </div>
-          </div>
-          {% endif %}
-        {% empty %}
-          <p class="text-center w-full text-gray-500">No other items yet.</p>
-        {% endfor %}
-      </div>
+        <svg
+            id="recLeft1"
+            onclick="manualScroll('recommendedRow1',-1)"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            class="hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
+
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
+            </svg>
+
+        <svg
+            id="recRight1"
+            onclick="manualScroll('recommendedRow1',1)"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+            stroke="currentColor"
+            class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
+
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+        </svg>
+
+        <div
+
+            id="recommendedRow1"
+
+            class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 px-2">
+
+            {% for item in recommended_items %}
+
+            {% if forloop.counter <= split_index %}
+          <div
+class="item-card recommended-card relative min-w-[270px] max-w-[270px] bg-white rounded-3xl shadow-lg overflow-hidden transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
+data-id="{{ item.id }}">
+
+    {% if request.user.is_superuser %}
+
+    <div class="absolute top-3 right-3 z-30">
+
+        <button
+            class="menu-btn w-10 h-10 rounded-full bg-white shadow flex items-center justify-center text-2xl">
+
+            ⋮
+
+        </button>
+
+        <div
+            class="menu-dropdown hidden absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border">
+
+            <a
+                href="{% url 'menu:edit_item' item.id %}"
+                class="block px-4 py-3 hover:bg-blue-50">
+
+                ✏️ Edit
+
+            </a>
+
+            <a
+                href="{% url 'menu:delete_item' item.id %}"
+                onclick="return confirm('Delete this item?')"
+                class="block px-4 py-3 text-red-600 hover:bg-red-50">
+
+                🗑 Delete
+
+            </a>
+
+        </div>
+
     </div>
-  </div>
-  {% endif %}
 
-</div> <!-- container -->
+    {% endif %}
 
-<!-- Inline CSS for tab styling and active scale -->
+    {% if item.image %}
+
+    <img
+        src="{{ item.image.url }}"
+        class="w-full h-44 object-cover"
+        alt="{{ item.name }}">
+
+    {% else %}
+
+    <img
+        src="{% static 'images/item_placeholder.png' %}"
+        class="w-full h-44 object-cover"
+        alt="No Image">
+
+    {% endif %}
+
+    <div class="p-4">
+
+        <span
+            class="inline-block mb-3 px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-bold">
+
+            {{ item.category.name|title }}
+
+        </span>
+
+        <h3
+            class="text-xl font-bold text-gray-800">
+
+            {{ item.name }}
+
+        </h3>
+
+        <p
+            class="text-gray-500 mt-1 h-10 overflow-hidden text-sm">
+
+            {{ item.description|truncatechars:70 }}
+
+        </p>
+
+        <div
+            class="flex justify-between items-center mt-3">
+
+            <span
+                class="text-2xl font-black text-orange-600">
+
+                ₹{{ item.price }}
+
+            </span>
+
+        </div>
+
+        <div
+            class="grid grid-cols-2 gap-2 mt-3">
+
+            {% if user.is_authenticated %}
+
+            <a
+                href="{% url 'menu:order_from_menu' item.id %}"
+                class="bg-green-600 hover:bg-green-700 text-white text-center py-3 rounded-xl font-semibold">
+
+                Order
+
+            </a>
+
+            {% if item.id in cart_item_ids %}
+
+            <button
+                disabled
+                class="bg-gray-400 text-white rounded-xl">
+
+                Added ✔
+
+            </button>
+
+            {% else %}
+
+            <button
+                onclick="addToCartHandler('{{ item.name }}',{{ item.id }},this)"
+                class="bg-orange-500 hover:bg-orange-600 text-white rounded-xl">
+
+                Add Cart
+
+            </button>
+
+            {% endif %}
+
+            {% else %}
+
+            <a
+                href="{% url 'login' %}"
+                class="bg-green-600 text-white text-center py-3 rounded-xl">
+
+                Order
+
+            </a>
+
+            <a
+                href="{% url 'login' %}"
+                class="bg-orange-500 text-white text-center py-3 rounded-xl">
+
+                Add Cart
+
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+{% endif %}
+{% empty %}
+
+<div class="col-span-full text-center py-16">
+
+    <h3 class="text-2xl font-bold text-gray-500">
+        No products available
+    </h3>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+
+{% if recommended_count > 10 %}
+
+<!-- ================= SECOND ROW ================= -->
+
+<div class="relative mt-10">
+
+    <svg
+        id="recLeft2"
+        onclick="manualScroll('recommendedRow2',-1)"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        class="hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
+
+        <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
+    </svg>
+   <svg
+        id="recRight2"
+        onclick="manualScroll('recommendedRow2',1)"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
+
+        <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+    </svg>
+    <div
+
+        id="recommendedRow2"
+
+        class="items-row reverse-row flex gap-6 overflow-x-auto scroll-smooth pb-4 px-2">
+
+        {% for item in recommended_items %}
+
+        {% if forloop.counter > split_index %}
+
+<div
+class="item-card recommended-card relative min-w-[270px] max-w-[270px] bg-white rounded-3xl shadow-lg overflow-hidden transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
+data-id="{{ item.id }}">
+            {% if request.user.is_superuser %}
+
+            <div class="absolute top-3 right-3 z-30">
+
+                <button
+                    class="menu-btn w-10 h-10 rounded-full bg-white shadow flex items-center justify-center text-2xl">
+
+                    ⋮
+
+                </button>
+
+                <div
+                    class="menu-dropdown hidden absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border">
+
+                    <a
+                        href="{% url 'menu:edit_item' item.id %}"
+                        class="block px-4 py-3 hover:bg-blue-50">
+
+                        ✏️ Edit
+
+                    </a>
+
+                    <a
+                        href="{% url 'menu:delete_item' item.id %}"
+                        onclick="return confirm('Delete this item?')"
+                        class="block px-4 py-3 text-red-600 hover:bg-red-50">
+
+                        🗑 Delete
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+            {% if item.image %}
+
+            <img
+                src="{{ item.image.url }}"
+                class="w-full h-44 object-cover"
+                alt="{{ item.name }}">
+
+            {% endif %}
+
+            <div class="p-4">
+
+                <span
+                    class="inline-block mb-3 px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-bold">
+
+                    {{ item.category.name|title }}
+
+                </span>
+
+                <h3
+                    class="text-xl font-bold text-gray-800">
+
+                    {{ item.name }}
+
+                </h3>
+
+                <p
+                    class="text-gray-500 mt-1 h-10 overflow-hidden text-sm">
+
+                    {{ item.description|truncatechars:70 }}
+
+                </p>
+
+                <div class="flex justify-between items-center mt-3">
+
+                    <span
+                        class="text-2xl font-black text-orange-600">
+
+                        ₹{{ item.price }}
+
+                    </span>
+
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mt-3">
+
+                    {% if user.is_authenticated %}
+
+                    <a
+                        href="{% url 'menu:order_from_menu' item.id %}"
+                        class="bg-green-600 hover:bg-green-700 text-white text-center py-3 rounded-xl">
+
+                        Order
+
+                    </a>
+
+                    {% if item.id in cart_item_ids %}
+
+                    <button
+                        disabled
+                        class="bg-gray-400 text-white rounded-xl">
+
+                        Added ✔
+
+                    </button>
+
+                    {% else %}
+
+                    <button
+                        onclick="addToCartHandler('{{ item.name }}',{{ item.id }},this)"
+                        class="bg-orange-500 hover:bg-orange-600 text-white rounded-xl">
+
+                        Add Cart
+
+                    </button>
+
+                    {% endif %}
+
+                    {% else %}
+
+                    <a
+                        href="{% url 'login' %}"
+                        class="bg-green-600 text-white text-center py-3 rounded-xl">
+
+                        Order
+
+                    </a>
+
+                    <a
+                        href="{% url 'login' %}"
+                        class="bg-orange-500 text-white text-center py-3 rounded-xl">
+
+                        Add Cart
+
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+        {% empty %}
+
+<div class="col-span-full text-center py-16">
+
+    <h3 class="text-2xl font-bold text-gray-500">
+        No products available
+    </h3>
+
+</div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endif %}
 <style>
-  .tab-btn {
-    background: #e5e7eb;
-    color: #374151;
-    transition: transform .18s ease, background .14s ease;
-    font-weight: 600;
-  }
-  .tab-btn.active {
-    background: #4f46e5;
-    color: white;
-    transform: scale(1.08);
-  }
-  .items-row::-webkit-scrollbar { height: 8px; }
-  .items-row::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 8px; }
-  .arrow { width: 48px; height: 48px; object-fit: contain; }
-  @media (max-width: 768px) {
-    .arrow { width: 40px; height: 40px; }
-    .tab-btn { padding-left: 12px; padding-right: 12px; }
-  }
+
+/* ===========================================================
+   PAGE
+=========================================================== */
+
+.category-section{
+
+    animation:fadeIn .35s ease;
+
+}
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+        transform:translateY(15px);
+
+    }
+
+    to{
+
+        opacity:1;
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ===========================================================
+   CATEGORY BUTTONS
+=========================================================== */
+
+.category-btn{
+
+    padding:14px 28px;
+
+    border-radius:999px;
+
+    border:2px solid #e5e7eb;
+
+    background:#ffffff;
+
+    color:#374151;
+
+    font-weight:700;
+
+    transition:.3s;
+
+    white-space:nowrap;
+
+    box-shadow:0 3px 10px rgba(0,0,0,.06);
+
+}
+
+.category-btn:hover{
+
+    background:#2563eb;
+
+    color:#fff;
+
+    border-color:#2563eb;
+
+    transform:translateY(-3px);
+
+}
+
+.category-btn.active{
+
+    background:#ea580c;
+
+    color:#fff;
+
+    border-color:#ea580c;
+
+    transform:scale(1.05);
+
+    box-shadow:0 12px 25px rgba(234,88,12,.35);
+
+}
+
+/* ===========================================================
+   BUTTONS
+=========================================================== */
+
+.manage-btn{
+
+    padding:14px 28px;
+
+    border-radius:999px;
+
+    background:#111827;
+
+    color:#fff;
+
+    font-weight:700;
+
+    transition:.3s;
+
+    box-shadow:0 4px 15px rgba(0,0,0,.2);
+
+}
+
+.manage-btn:hover{
+
+    background:#2563eb;
+
+}
+
+.page-btn{
+
+    padding:10px 18px;
+
+    border-radius:12px;
+
+    font-weight:700;
+
+    transition:.3s;
+
+    border:none;
+
+    cursor:pointer;
+
+}
+
+.page-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.page-btn.active{
+
+    background:#ea580c;
+
+    color:#fff;
+
+}
+
+/* ===========================================================
+   PRODUCT CARD
+=========================================================== */
+
+.item-card{
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    background:#fff;
+
+    transition:.35s;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+}
+
+.item-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 18px 40px rgba(0,0,0,.15);
+
+}
+
+.item-card img{
+
+    transition:.45s;
+
+}
+
+.item-card:hover img{
+
+    transform:scale(1.08);
+
+}
+
+/* ===========================================================
+   ADMIN MENU
+=========================================================== */
+
+.menu-btn{
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    font-size:22px;
+
+    box-shadow:0 3px 10px rgba(0,0,0,.2);
+
+    transition:.25s;
+
+}
+
+.menu-btn:hover{
+
+    background:#f3f4f6;
+
+}
+
+.menu-dropdown{
+
+    border-radius:14px;
+
+    overflow:hidden;
+
+    min-width:160px;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.18);
+
+}
+
+.menu-dropdown a{
+
+    transition:.25s;
+
+}
+
+/* ===========================================================
+   GRID
+=========================================================== */
+
+.grid{
+
+    align-items:stretch;
+
+}
+
+.recommended-card{
+
+    min-width:290px;
+
+    max-width:290px;
+
+}
+
+/* ===========================================================
+   PRICE
+=========================================================== */
+
+.item-card .price{
+
+    font-size:28px;
+
+    font-weight:900;
+
+    color:#ea580c;
+
+}
+
+/* ===========================================================
+   SCROLLBAR
+=========================================================== */
+
+.items-row::-webkit-scrollbar{
+
+    height:8px;
+
+}
+
+.items-row::-webkit-scrollbar-thumb{
+
+    background:#d1d5db;
+
+    border-radius:20px;
+
+}
+
+.items-row{
+
+    scrollbar-width:thin;
+
+}
+
+/* ===========================================================
+   ARROWS
+=========================================================== */
+
+.arrow{
+
+    width:52px;
+
+    height:52px;
+
+    transition:.25s;
+
+}
+
+.arrow:hover{
+
+    transform:translateY(-50%) scale(1.08);
+
+}
+
+
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
+
+@media (max-width:1280px){
+
+    .recommended-card{
+
+        min-width:270px;
+
+        max-width:270px;
+
+    }
+
+}
+
+@media (max-width:1024px){
+
+    .category-btn{
+
+        padding:12px 22px;
+
+        font-size:15px;
+
+    }
+
+    .manage-btn{
+
+        padding:12px 22px;
+
+    }
+
+    .recommended-card{
+
+        min-width:250px;
+
+        max-width:250px;
+
+    }
+
+}
+
+@media (max-width:768px){
+
+    .category-btn{
+
+        padding:10px 18px;
+
+        font-size:14px;
+
+    }
+
+    .manage-btn{
+
+        padding:10px 18px;
+
+        font-size:14px;
+
+    }
+
+    .menu-btn{
+
+        width:36px;
+
+        height:36px;
+
+        font-size:20px;
+
+    }
+
+    .arrow{
+
+        width:42px;
+
+        height:42px;
+
+    }
+
+    .recommended-card{
+
+        min-width:230px;
+
+        max-width:230px;
+
+    }
+
+}
+
+@media (max-width:640px){
+
+    .category-btn{
+
+        width:100%;
+
+    }
+
+    .manage-btn{
+
+        width:100%;
+
+        text-align:center;
+
+    }
+
+    .recommended-card{
+
+        min-width:210px;
+
+        max-width:210px;
+
+    }
+
+}
+
+@media (max-width:480px){
+
+    .recommended-card{
+
+        min-width:190px;
+
+        max-width:190px;
+
+    }
+
+}
+
+/* ===========================================================
+   SEARCH
+=========================================================== */
+
+#searchContainer{
+
+    transition:.35s;
+
+}
+
+#searchInput{
+
+    transition:.35s;
+
+}
+
+#searchInput:focus{
+
+    box-shadow:0 0 0 5px rgba(249,115,22,.15);
+
+}
+
+/* ===========================================================
+   PAGINATION
+=========================================================== */
+
+.pagination{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    margin-top:40px;
+
+}
+
+.pagination button{
+
+    min-width:46px;
+
+}
+
+.pagination button.active{
+
+    background:#ea580c;
+
+    color:#fff;
+
+}
+
+.pagination button:hover{
+
+    background:#2563eb;
+
+    color:#fff;
+
+}
+
+/* ===========================================================
+   RECOMMENDED SECTION
+=========================================================== */
+
+#recommendedRow1,
+#recommendedRow2{
+
+    scroll-behavior:smooth;
+
+    overflow-x:auto;
+
+    overflow-y:hidden;
+
+    scrollbar-width:none;
+
+    -ms-overflow-style:none;
+
+}
+
+#recommendedRow1::-webkit-scrollbar,
+#recommendedRow2::-webkit-scrollbar{
+
+    display:none;
+
+}
+
+/* ===========================================================
+   CATEGORY TITLE
+=========================================================== */
+
+.category-title{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    margin-bottom:35px;
+
+    flex-wrap:wrap;
+
+}
+
+.category-title h2{
+
+    font-size:42px;
+
+    font-weight:900;
+
+    color:#111827;
+
+}
+
+.category-title p{
+
+    color:#6b7280;
+
+    margin-top:6px;
+
+}
+
+/* ===========================================================
+   ALL PRODUCTS BUTTON
+=========================================================== */
+
+.all-products-btn{
+
+    padding:14px 24px;
+
+    border-radius:999px;
+
+    background:#ea580c;
+
+    color:#fff;
+
+    font-weight:700;
+
+    transition:.3s;
+
+    white-space:nowrap;
+
+}
+
+.all-products-btn:hover{
+
+    background:#c2410c;
+
+    transform:translateY(-3px);
+
+}
+
+/* ===========================================================
+   END CSS
+=========================================================== */
+
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const isAuthenticated = {{ request.user.is_authenticated|yesno:"true,false" }};
 
-  // -------- Add to Cart handler --------
-  window.addToCartHandler = function(name, id, btn) {
-    if (!isAuthenticated) {
-      window.location.href = "{% url 'login' %}?next=" + encodeURIComponent(window.location.href);
-      return;
-    }
+/* ==========================================================
+   MENU PAGE JAVASCRIPT
+   PART 4A
+   - Dynamic Tabs
+   - URL Parameter Support
+   - Browser History
+========================================================== */
 
-    fetch(`/cart/add/${id}/`)
-      .then(res => {
-        if (res.ok) {
-         // ================= Desktop =================
-
-          let cartCountEl = document.getElementById("cart-count");
-
-          if (cartCountEl) {
-
-              cartCountEl.textContent =
-                  parseInt(cartCountEl.textContent || "0") + 1;
-
-          } else {
-
-              const cartLink = document.querySelector(".lg\\:flex a[href*='/cart/']");
-
-              if (cartLink) {
-
-                  const span = document.createElement("span");
-
-                  span.id = "cart-count";
-
-                  span.className =
-                      "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
-
-                  span.textContent = "1";
-
-                  cartLink.parentNode.appendChild(span);
-              }
-          }
-
-
-          // ================= Mobile =================
-
-          let mobileCartCount = document.getElementById("mobile-cart-count");
-
-          if (mobileCartCount) {
-
-              mobileCartCount.textContent =
-                  parseInt(mobileCartCount.textContent || "0") + 1;
-
-          } else {
-
-              const mobileCartLink =
-                  document.querySelector(".lg\\:hidden a[href*='/cart/']");
-
-              if (mobileCartLink) {
-
-                  const span = document.createElement("span");
-
-                  span.id = "mobile-cart-count";
-
-                  span.className =
-                      "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
-
-                  span.textContent = "1";
-
-                  mobileCartLink.parentNode.appendChild(span);
-              }
-          }
-
-          // ✅ Update button state
-          btn.disabled = true;
-          btn.innerHTML = "Added ✔️";   // <-- text with tick
-          btn.classList.remove("bg-orange-500", "hover:bg-orange-600");
-          btn.classList.add("bg-gray-400", "cursor-not-allowed");
-        } else {
-          alert("Something went wrong!");
-        }
-      })
-      .catch(err => alert("Error: " + err));
-  };
-
-  // -------- Tabs logic --------
-  const btnDishes = document.getElementById('btn-dishes');
-  const btnSweets = document.getElementById('btn-sweets');
-  const btnOthers = document.getElementById('btn-others');
-  const areaDishes = document.getElementById('dishesArea');
-  const areaSweets = document.getElementById('sweetsArea');
-  const areaOthers = document.getElementById('othersArea');
-
-  function setActiveTab(tab) {
-    [btnDishes, btnSweets, btnOthers].forEach(b => { if(b) b.classList.remove('active'); });
-    [areaDishes, areaSweets, areaOthers].forEach(a => { if(a) a.classList.add('hidden'); });
-
-    if(tab === 'dishes') {
-      btnDishes.classList.add('active');
-      areaDishes.classList.remove('hidden');
-    } else if(tab === 'sweets') {
-      btnSweets.classList.add('active');
-      areaSweets.classList.remove('hidden');
-    } else if(tab === 'others' && areaOthers) {
-      if(btnOthers) btnOthers.classList.add('active');
-      areaOthers.classList.remove('hidden');
-    }
-    setTimeout(updateArrowsForAll, 100);
-  }
-
-  if(btnDishes) btnDishes.addEventListener('click', () => setActiveTab('dishes'));
-  if(btnSweets) btnSweets.addEventListener('click', () => setActiveTab('sweets'));
-  if(btnOthers) btnOthers.addEventListener('click', () => setActiveTab('others'));
-  setActiveTab('dishes');
-
-  // -------- Auto-scroll + manual scroll logic --------
-  const rows = {
-    dishesRow1: document.getElementById('dishesRow1'),
-    dishesRow2: document.getElementById('dishesRow2'),
-    sweetsRow1: document.getElementById('sweetsRow1'),
-    sweetsRow2: document.getElementById('sweetsRow2'),
-    othersRow: document.getElementById('othersRow')
-  };
-
-  const directions = { dishesRow1: 1, dishesRow2: -1, sweetsRow1: 1, sweetsRow2: -1, othersRow: 1 };
-
-  let autoScrollEnabled = true;
-  function manualScroll(rowId, dir) {
-    const el = document.getElementById(rowId);
-    if(!el) return;
-    autoScrollEnabled = false;
-    el.scrollBy({ left: dir * 600, behavior: 'smooth' });
-    setTimeout(() => autoScrollEnabled = true, 1800);
-  }
-  window.manualScroll = manualScroll;
-
-  function updateArrowsForRow(rowId, leftId, rightId) {
-    const row = document.getElementById(rowId);
-    const left = document.getElementById(leftId);
-    const right = document.getElementById(rightId);
-    if(!row) { if(left) left.style.display = 'none'; if(right) right.style.display = 'none'; return; }
-    const overflow = (row.scrollWidth > row.clientWidth + 4);
-    if(!overflow) { if(left) left.style.display = 'none'; if(right) right.style.display = 'none'; return; }
-    if(left) left.style.display = (row.scrollLeft > 4) ? 'block' : 'none';
-    if(right) right.style.display = (row.scrollLeft + row.clientWidth < row.scrollWidth - 4) ? 'block' : 'none';
-  }
-
-  function updateArrowsForAll(){
-    updateArrowsForRow('dishesRow1','dishesRow1Left','dishesRow1Right');
-    updateArrowsForRow('dishesRow2','dishesRow2Left','dishesRow2Right');
-    updateArrowsForRow('sweetsRow1','sweetsRow1Left','sweetsRow1Right');
-    updateArrowsForRow('sweetsRow2','sweetsRow2Left','sweetsRow2Right');
-    updateArrowsForRow('othersRow','othersLeft','othersRight');
-  }
-
-  Object.keys(rows).forEach(r => {
-    const el = rows[r];
-    if(!el) return;
-    el.addEventListener('scroll', () => {
-      if(r === 'dishesRow1') updateArrowsForRow('dishesRow1','dishesRow1Left','dishesRow1Right');
-      if(r === 'dishesRow2') updateArrowsForRow('dishesRow2','dishesRow2Left','dishesRow2Right');
-      if(r === 'sweetsRow1') updateArrowsForRow('sweetsRow1','sweetsRow1Left','sweetsRow1Right');
-      if(r === 'sweetsRow2') updateArrowsForRow('sweetsRow2','sweetsRow2Left','sweetsRow2Right');
-      if(r === 'othersRow') updateArrowsForRow('othersRow','othersLeft','othersRight');
-    });
-    setTimeout(updateArrowsForAll, 200);
-  });
-
-  setInterval(() => {
-    if(!autoScrollEnabled) return;
-    Object.keys(directions).forEach(rowId => {
-      const el = document.getElementById(rowId);
-      if(!el) return;
-      const step = 2;
-      el.scrollBy({ left: directions[rowId] * step, behavior: 'smooth' });
-      if(el.scrollLeft + el.clientWidth >= el.scrollWidth - 2) directions[rowId] = -1;
-      if(el.scrollLeft <= 0) directions[rowId] = 1;
-    });
-  }, 30);
-
-  setTimeout(updateArrowsForAll, 300);
-  window.addEventListener('resize', () => setTimeout(updateArrowsForAll, 200));
-});
-
-<!-- this js is for searvh box -->
 document.addEventListener("DOMContentLoaded", function () {
-  const searchInput = document.getElementById("searchInput");
-  const searchBtn = document.getElementById("searchBtn");
 
-  if (!searchInput || !searchBtn) return;
+    const tabButtons = document.querySelectorAll(".tab-btn");
 
-  // Trigger search on every input
-  searchInput.addEventListener("input", function () {
-    const query = this.value.toLowerCase().trim();
-    searchBtn.disabled = query === "";
+    const sections = document.querySelectorAll(".category-section");
 
-    const cards = document.querySelectorAll(".dish-card, .sweet-card, .item-card");
-    let found = false;
+    if (!tabButtons.length) return;
 
-    cards.forEach((card) => {
-      const name = card.querySelector("h3").textContent.toLowerCase();
-      if (name.includes(query)) {
-        card.style.display = "block";
-        found = true;
-      } else {
-        card.style.display = "none";
-      }
-    });
 
-    // If no match found → show all items back
-    if (!found && query === "") {
-      cards.forEach((card) => (card.style.display = "block"));
-    }
-  });
-});
 
-document.querySelectorAll(".menu-btn").forEach(btn=>{
+    /* ==========================================
+       SHOW TAB
+    ========================================== */
 
-    btn.addEventListener("click",function(e){
+    function showTab(categoryId, updateUrl = true) {
 
-        e.stopPropagation();
+        sections.forEach(section => {
 
-        document.querySelectorAll(".menu-dropdown").forEach(d=>{
+            if (section.id === "tab" + categoryId) {
 
-            if(d!==this.nextElementSibling){
-                d.classList.add("hidden");
+                section.classList.remove("hidden");
+
+            } else {
+
+                section.classList.add("hidden");
+
             }
 
         });
 
-        this.nextElementSibling.classList.toggle("hidden");
+
+
+        tabButtons.forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
+
+
+        const activeButton = document.querySelector(
+
+            '.tab-btn[data-tab="' + categoryId + '"]'
+
+        );
+
+
+
+        if (activeButton) {
+
+            activeButton.classList.add("active");
+
+        }
+
+
+
+        if (updateUrl) {
+
+            const url = new URL(window.location);
+
+            url.searchParams.set("category", categoryId);
+
+            history.replaceState({}, "", url);
+
+        }
+
+
+
+        /* reset pagination */
+
+        if (typeof initializePagination === "function") {
+
+            initializePagination(categoryId);
+
+        }
+
+
+
+        /* reset arrows */
+
+        if (typeof updateAllArrows === "function") {
+
+            setTimeout(updateAllArrows, 100);
+
+        }
+
+
+
+    }
+
+
+
+    /* ==========================================
+       TAB CLICK
+    ========================================== */
+
+    tabButtons.forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            showTab(this.dataset.tab);
+
+        });
+
+    });
+
+
+
+    /* ==========================================
+       URL SUPPORT
+       /menu/?category=5
+    ========================================== */
+
+    const params = new URLSearchParams(window.location.search);
+
+    const categoryFromURL = params.get("category");
+
+
+
+    if (
+
+        categoryFromURL &&
+
+        document.getElementById("tab" + categoryFromURL)
+
+    ) {
+
+        showTab(categoryFromURL, false);
+
+    }
+
+    else {
+
+        showTab(tabButtons[0].dataset.tab, false);
+
+    }
+
+
+
+});
+
+
+
+/* ==========================================================
+   PAGINATION
+========================================================== */
+
+const PAGE_SIZE = 12;
+
+let currentPage = {};
+
+
+
+function initializePagination(categoryId){
+
+    currentPage[categoryId] = 1;
+
+    renderPagination(categoryId);
+
+}
+
+
+
+function renderPagination(categoryId){
+
+    const section = document.getElementById("tab"+categoryId);
+
+    if(!section) return;
+
+
+
+    const cards = Array.from(
+
+        section.querySelectorAll(".item-card")
+
+    );
+
+
+
+    if(cards.length===0) return;
+
+
+
+    const totalPages = Math.ceil(cards.length/PAGE_SIZE);
+
+
+
+    let page = currentPage[categoryId] || 1;
+
+
+
+    if(page>totalPages)
+
+        page=totalPages;
+
+
+
+    currentPage[categoryId]=page;
+
+
+
+    cards.forEach((card,index)=>{
+
+        const start=(page-1)*PAGE_SIZE;
+
+        const end=start+PAGE_SIZE;
+
+        card.style.display=(index>=start && index<end)
+
+            ? ""
+
+            : "none";
+
+    });
+
+
+
+    const nav=section.querySelector(".pagination");
+
+
+
+    if(!nav) return;
+
+
+
+    nav.innerHTML="";
+
+
+
+    /* PREVIOUS */
+
+    const prev=document.createElement("button");
+
+    prev.className="page-btn";
+
+    prev.textContent="◀";
+
+    prev.disabled=(page===1);
+
+
+
+    prev.onclick=()=>{
+
+        currentPage[categoryId]--;
+
+        renderPagination(categoryId);
+
+        window.scrollTo({
+
+            top:section.offsetTop-80,
+
+            behavior:"smooth"
+
+        });
+
+    };
+
+
+
+    nav.appendChild(prev);
+
+
+
+    /* PAGE NUMBERS */
+
+    for(let i=1;i<=totalPages;i++){
+
+        const btn=document.createElement("button");
+
+
+
+        btn.className=
+
+            "page-btn"+
+
+            (i===page ? " active" : "");
+
+
+
+        btn.textContent=i;
+
+
+
+        btn.onclick=()=>{
+
+            currentPage[categoryId]=i;
+
+            renderPagination(categoryId);
+
+            window.scrollTo({
+
+                top:section.offsetTop-80,
+
+                behavior:"smooth"
+
+            });
+
+        };
+
+
+
+        nav.appendChild(btn);
+
+    }
+
+
+
+    /* NEXT */
+
+    const next=document.createElement("button");
+
+
+
+    next.className="page-btn";
+
+    next.textContent="▶";
+
+
+
+    next.disabled=(page===totalPages);
+
+
+
+    next.onclick=()=>{
+
+        currentPage[categoryId]++;
+
+        renderPagination(categoryId);
+
+        window.scrollTo({
+
+            top:section.offsetTop-80,
+
+            behavior:"smooth"
+
+        });
+
+    };
+
+
+
+    nav.appendChild(next);
+
+}
+
+
+
+/* ==========================================================
+   INITIALIZE ALL PAGINATION
+========================================================== */
+
+window.addEventListener("load",()=>{
+      initAdminMenus();
+
+    document.querySelectorAll(".category-section").forEach(sec=>{
+
+        initializePagination(
+
+            sec.id.replace("tab","")
+
+        );
+
+    });
+    document.querySelectorAll(".items-row").forEach(row=>{
+
+        const reverse=row.classList.contains("reverse-row");
+
+
+
+        bindHover(row,reverse);
+
+
+
+        startAutoScroll(row,reverse);
+
+    });
+     setTimeout(() => {
+
+            if (typeof updateAllArrows === "function") {
+
+                updateAllArrows();
+
+            }
+
+        }, 300);
+
+
+
+    updateAllArrows();
+
+});
+
+
+
+/* ==========================================================
+   ADMIN THREE DOT MENU
+========================================================== */
+
+function initAdminMenus() {
+
+    document.querySelectorAll(".menu-btn").forEach(btn => {
+
+        btn.onclick = function (e) {
+
+            e.stopPropagation();
+
+            document.querySelectorAll(".menu-dropdown").forEach(drop => {
+
+                if (drop !== this.nextElementSibling)
+
+                    drop.classList.add("hidden");
+
+            });
+
+            this.nextElementSibling.classList.toggle("hidden");
+
+        };
+
+    });
+
+}
+
+document.addEventListener("click", function () {
+
+    document.querySelectorAll(".menu-dropdown").forEach(drop => {
+
+        drop.classList.add("hidden");
 
     });
 
 });
 
-document.addEventListener("click",function(){
 
-    document.querySelectorAll(".menu-dropdown").forEach(d=>{
 
-        d.classList.add("hidden");
+// ======================================================
+// ADD TO CART
+// ======================================================
+
+window.addToCartHandler = function (itemName, itemId, btn) {
+
+    btn.disabled = true;
+
+    fetch(`/cart/add/${itemId}/`, {
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (!data.success) {
+
+            btn.disabled = false;
+
+            alert("Unable to add item.");
+
+            return;
+
+        }
+
+        // ================= Desktop Counter =================
+
+        let cartCount = document.getElementById("cart-count");
+
+        if (cartCount) {
+
+            cartCount.textContent =
+                parseInt(cartCount.textContent || "0") + 1;
+
+        }
+        else {
+
+            const cartLink = document.querySelector(
+                ".lg\\:flex a[href*='/cart/']"
+            );
+
+            if (cartLink) {
+
+                cartCount = document.createElement("span");
+
+                cartCount.id = "cart-count";
+
+                cartCount.className =
+                    "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
+
+                cartCount.innerText = "1";
+
+                cartLink.parentElement.appendChild(cartCount);
+
+            }
+
+        }
+
+        // ================= Mobile Counter =================
+
+        let mobileCount = document.getElementById("mobile-cart-count");
+
+        if (mobileCount) {
+
+            mobileCount.textContent =
+                parseInt(mobileCount.textContent || "0") + 1;
+
+        }
+        else {
+
+            const mobileLink = document.querySelector(
+                ".lg\\:hidden a[href*='/cart/']"
+            );
+
+            if (mobileLink) {
+
+                mobileCount = document.createElement("span");
+
+                mobileCount.id = "mobile-cart-count";
+
+                mobileCount.className =
+                    "absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5";
+
+                mobileCount.innerText = "1";
+
+                mobileLink.parentElement.appendChild(mobileCount);
+
+            }
+
+        }
+
+        // ================= Button Update =================
+
+        btn.innerHTML = "Added ✔";
+
+        btn.classList.remove(
+            "bg-orange-500",
+            "hover:bg-orange-600"
+        );
+
+        btn.classList.add(
+            "bg-gray-400",
+            "cursor-not-allowed"
+        );
+
+        btn.disabled = true;
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        btn.disabled = false;
+
+        alert("Something went wrong.");
 
     });
 
+};
+
+
+
+
+/* ==========================================================
+   AUTO SCROLL + ARROWS
+========================================================== */
+
+const AUTO_SCROLL_SPEED = 1;
+
+const AUTO_SCROLL_DELAY = 25;
+
+const autoScrollTimers = {};
+
+
+
+/* ==========================================================
+   CHECK IF ARROWS NEEDED
+========================================================== */
+
+
+
+
+/* ==========================================================
+   UPDATE ALL ROWS
+========================================================== */
+
+function updateAllArrows(){
+
+    document.querySelectorAll(".items-row").forEach(row=>{
+
+        updateArrows(row);
+
+    });
+
+}
+
+
+
+/* ==========================================================
+   MANUAL SCROLL
+========================================================== */
+function manualScroll(rowId, direction) {
+
+    const row = document.getElementById(rowId);
+
+    if (!row) return;
+
+    // stop auto scroll first
+    stopAutoScroll(rowId);
+
+    row.scrollBy({
+        left: direction * 350,
+        behavior: "smooth"
+    });
+
+    setTimeout(() => {
+
+        updateArrows(row);
+
+        // restart auto scroll
+        startAutoScroll(
+            row,
+            row.classList.contains("reverse-row")
+        );
+
+    }, 200);
+}
+/* ==========================================================
+   AUTO SCROLL
+========================================================== */
+
+function startAutoScroll(row,reverse=false){
+
+    if(!row) return;
+    stopAutoScroll(row.id);
+    let dir=reverse?-1:1;
+    autoScrollTimers[row.id]=setInterval(()=>{
+
+        if(dir===1){
+
+            if(
+
+                row.scrollLeft+row.clientWidth>=
+
+                row.scrollWidth-2
+
+            ){
+
+                dir=-1;
+
+            }
+
+        }
+
+        else{
+
+            if(row.scrollLeft<=0){
+
+                dir=1;
+
+            }
+
+        }
+
+
+
+        row.scrollLeft+=AUTO_SCROLL_SPEED*dir;
+
+    },AUTO_SCROLL_DELAY);
+
+}
+
+
+
+/* ==========================================================
+   STOP AUTO SCROLL
+========================================================== */
+
+function stopAutoScroll(id){
+
+    if(autoScrollTimers[id]){
+
+        clearInterval(autoScrollTimers[id]);
+
+        delete autoScrollTimers[id];
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   PAUSE ON HOVER
+========================================================== */
+
+function bindHover(row,reverse=false){
+
+    if(!row) return;
+
+
+
+    row.addEventListener("mouseenter",()=>{
+
+        stopAutoScroll(row.id);
+
+    });
+
+
+
+    row.addEventListener("mouseleave",()=>{
+
+        startAutoScroll(row,reverse);
+
+    });
+
+}
+
+
+
+/* ==========================================================
+   START ALL ROWS
+========================================================== */
+
+
+
+
+/* ==========================================================
+   UPDATE ARROWS ON RESIZE
+========================================================== */
+
+function updateArrows(row){
+
+    if(!row) return;
+
+    let left,right;
+
+    if(row.id==="recommendedRow1"){
+        left=document.getElementById("recLeft1");
+        right=document.getElementById("recRight1");
+    }
+    else if(row.id==="recommendedRow2"){
+        left=document.getElementById("recLeft2");
+        right=document.getElementById("recRight2");
+    }
+    else{
+        return;
+    }
+
+    if(!left || !right) return;
+
+    left.style.display =
+        row.scrollLeft <= 5 ? "none" : "block";
+
+    right.style.display =
+        row.scrollLeft + row.clientWidth >= row.scrollWidth - 5
+        ? "none"
+        : "block";
+}
+
+/* ==========================================================
+   PART 4E
+   FINAL INITIALIZATION
+========================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("#recommendedRow1,#recommendedRow2")
+.forEach(row=>{
+
+    row.addEventListener("scroll",()=>updateArrows(row));
+
 });
+
+    /* ==========================================
+       Open category from URL
+    ========================================== */
+
+    const params = new URLSearchParams(window.location.search);
+
+    const category = params.get("category");
+
+    if (category) {
+
+        const btn = document.querySelector(
+            '.tab-btn[data-tab="' + category + '"]'
+        );
+
+        if (btn) {
+
+            btn.click();
+
+        }
+
+    }
+
+
+
+    /* ==========================================
+       Refresh arrows after images load
+    ========================================== */
+
+
+
+
+    /* ==========================================
+       Pagination after search
+    ========================================== */
+
+    if (typeof searchInput !== "undefined" && searchInput) {
+
+        searchInput.addEventListener("keyup", () => {
+
+            const active = document.querySelector(
+
+                ".category-section:not(.hidden)"
+
+            );
+
+            if (!active) return;
+
+            const id = active.id.replace("tab", "");
+
+            if (typeof renderPagination === "function") {
+
+                renderPagination(id);
+
+            }
+
+        });
+
+    }
+
+
+
+    /* ==========================================
+       Close Admin Menu
+    ========================================== */
+
+    document.addEventListener("click", e => {
+
+        if (!e.target.closest(".menu-btn")) {
+
+            document.querySelectorAll(".menu-dropdown")
+
+            .forEach(menu => {
+
+                menu.classList.add("hidden");
+
+            });
+
+        }
+
+    });
+
+
+
+    /* ==========================================
+       Recommended rows
+    ========================================== */
+
+    if (document.getElementById("recommendedRow1")) {
+
+        startAutoScroll(
+
+            document.getElementById("recommendedRow1")
+
+        );
+
+    }
+
+
+
+    if (document.getElementById("recommendedRow2")) {
+
+        startAutoScroll(
+
+            document.getElementById("recommendedRow2"),
+
+            true
+
+        );
+
+    }
+
+
+
+    /* ==========================================
+       Start all category rows
+    ========================================== */
+
+    document.querySelectorAll(".items-row").forEach(row => {
+
+        if (
+
+            row.id === "recommendedRow1" ||
+
+            row.id === "recommendedRow2"
+
+        ) return;
+
+
+
+        const reverse = row.classList.contains(
+
+            "reverse-row"
+
+        );
+
+
+
+        startAutoScroll(
+
+            row,
+
+            reverse
+
+        );
+
+    });
+
+
+
+    /* ==========================================
+       Hover Pause
+    ========================================== */
+
+    document.querySelectorAll(".items-row")
+
+    .forEach(row => {
+
+        row.addEventListener("mouseenter", () => {
+
+            stopAutoScroll(row.id);
+
+        });
+
+
+
+        row.addEventListener("mouseleave", () => {
+
+            startAutoScroll(
+
+                row,
+
+                row.classList.contains("reverse-row")
+
+            );
+
+        });
+
+    });
+
+
+
+    /* ==========================================
+       Arrow refresh
+    ========================================== */
+
+    updateAllArrows();
+
+});
+
+
+
+/* ==========================================
+   Browser Resize
+========================================== */
+
+window.addEventListener("resize", () => {
+
+    updateAllArrows();
+
+});
+
+
+
+/* ==========================================
+   Browser Back / Forward
+========================================== */
+
+window.addEventListener("popstate", () => {
+
+    const params = new URLSearchParams(location.search);
+
+    const category = params.get("category");
+
+
+
+    if (!category) return;
+
+
+
+    const btn = document.querySelector(
+
+        '.tab-btn[data-tab="' + category + '"]'
+
+    );
+
+
+
+    if (btn) {
+
+        btn.click();
+
+    }
+
+});
+
+
+
+
+/* ==========================================
+   End
+========================================== */
+
 </script>
+<script src="{% static 'js/search.js' %}"></script>
 
 {% endblock %}

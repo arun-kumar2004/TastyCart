@@ -78,17 +78,28 @@
 </a>
 
             {% if user.is_superuser %}
-            <a href="{% url 'menu:add_item' %}"
-   class="px-4 py-2 rounded transition-colors duration-300
-   {% if request.resolver_match.url_name == 'add_item' %}
-       bg-white text-orange-600
-   {% else %}
-       hover:bg-white hover:text-orange-600
-   {% endif %}">
+
+<a href="{% url 'menu:add_item' %}"
+class="px-4 py-2 rounded transition-colors duration-300
+{% if request.resolver_match.url_name == 'add_item' %}
+bg-white text-orange-600
+{% else %}
+hover:bg-white hover:text-orange-600
+{% endif %}">
     Add New Items
 </a>
-            {% endif %}
 
+<a href="{% url 'adminpanel:dashboard' %}"
+class="px-4 py-2 rounded transition-colors duration-300
+{% if request.resolver_match.app_name == 'adminpanel' %}
+bg-white text-orange-600
+{% else %}
+hover:bg-white hover:text-orange-600
+{% endif %}">
+    Admin Dashboard
+</a>
+
+{% endif %}
             {% endif %}
 
         </div>
@@ -275,8 +286,7 @@
             </a>
 
             <a href="{% url 'menu:menu_list' %}"
-               class="px-4 py-3 hover:bg-white hover:text-orange-600">
-                🍽 Menu
+               class="px-4 py-3 hover:bg-white hover:text-orange-600"> <span class="text-blue-500"> 🍽 </span> Menu
             </a>
 
             <a href="{% url 'contact:contact' %}"
@@ -300,6 +310,10 @@
             <a href="{% url 'menu:add_item' %}"
                class="px-4 py-3 hover:bg-white hover:text-orange-600">
                 ➕ Add new Items
+            </a>
+            <a href="{% url 'adminpanel:dashboard' %}"
+                class="px-4 py-3 hover:bg-white hover:text-orange-600">
+                    📊 Admin Dashboard
             </a>
             {% endif %}
 
@@ -412,7 +426,7 @@ All rights reserved.
 <p class="text-purple-800"
 style="font-family:'Dancing Script', cursive;">
 
-✨ Developed by <span class="text-white"> <a href="https://www.linkedin.com/in/arun-kumar2004/" target="_blank" class="text-white hover:underline">Arun Kumar Singh</a></span> in Django ✨
+✨ Developed by <span class="text-white"> <a href="https://www.linkedin.com/in/arun-kumar2004/" target="_blank" class="text-white hover:underline">Arun Kumar Singh</a></span> & <span class="text-white"> <a href="https://www.linkedin.com/in/roopsi-shrivastava/" target="_blank" class="text-white hover:underline">Roopsi Shrivastava</a></span> in Django ✨
 
 </p>
 
