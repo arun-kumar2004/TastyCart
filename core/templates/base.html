@@ -86,9 +86,9 @@ bg-white text-orange-600
 {% else %}
 hover:bg-white hover:text-orange-600
 {% endif %}">
-    Add New Items
+    Add Items
 </a>
-
+{% comment %} 
 <a href="{% url 'adminpanel:dashboard' %}"
 class="px-4 py-2 rounded transition-colors duration-300
 {% if request.resolver_match.app_name == 'adminpanel' %}
@@ -97,6 +97,13 @@ bg-white text-orange-600
 hover:bg-white hover:text-orange-600
 {% endif %}">
     Admin Dashboard
+</a> {% endcomment %}
+<a href="/admin/"
+class="px-4 py-2 rounded transition-colors duration-300
+hover:bg-white hover:text-orange-600">
+
+   Admin Dashboard
+
 </a>
 
 {% endif %}
@@ -309,12 +316,19 @@ hover:bg-white hover:text-orange-600
             {% if user.is_superuser %}
             <a href="{% url 'menu:add_item' %}"
                class="px-4 py-3 hover:bg-white hover:text-orange-600">
-                ➕ Add new Items
+                ➕ Add Items
             </a>
-            <a href="{% url 'adminpanel:dashboard' %}"
+            {% comment %} <a href="{% url 'adminpanel:dashboard' %}"
                 class="px-4 py-3 hover:bg-white hover:text-orange-600">
                     📊 Admin Dashboard
-            </a>
+            </a> {% endcomment %}
+            <a href="/admin/"
+class="px-4 py-2 rounded transition-colors duration-300
+hover:bg-white hover:text-orange-600">
+
+   Admin Dashboard
+
+</a>
             {% endif %}
 
             {% endif %}

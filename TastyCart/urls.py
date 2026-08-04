@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
 
     # App urls
     path('', include('core.urls')),        # Home & base pages
@@ -31,7 +31,7 @@ urlpatterns = [
     path("order/", include("orders.urls", namespace="orders")),# Place orders
     path('accounts/', include("allauth.urls")),  # google login
     path("delivery/", include("delivery.urls", namespace="delivery")),
-    path("admin/", include("adminpanel.urls")),
+    # path("admin/", include("adminpanel.urls")),
     
     
 ]
