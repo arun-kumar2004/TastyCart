@@ -14,12 +14,11 @@ load_dotenv(BASE_DIR / ".env")
 # Security
 SECRET_KEY = os.getenv("SECRET_KEY")
 # DEBUG = os.getenv("DEBUG", "False") == "True"
-DEBUG = os.getenv("DEBUG") == "True"
+DEBUG = os.getenv("DEBUG") == "False"  # Convert string to boolean
 ALLOWED_HOSTS = [
-    "tastycart-main-e16c0c9.kuberns.cloud",
+    ".onrender.com",
     "127.0.0.1",
     "localhost",
-    "https://tastycart-1pyu.onrender.com",
 ]
 
 # ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
