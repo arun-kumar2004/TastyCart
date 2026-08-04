@@ -17,8 +17,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG") == "True"  # Convert string to boolean
 ALLOWED_HOSTS = [
     ".onrender.com",
-    "127.0.0.1",
-    "localhost",
+    # "127.0.0.1",
+    # "localhost",
 ]
 
 # ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")

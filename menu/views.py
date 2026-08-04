@@ -347,6 +347,22 @@ def delete_category(request):
 @user_passes_test(is_superuser)
 def update_category(request):
 
+    # ---------- FETCH CATEGORY ----------
+    if request.method == "GET":
+
+        category = get_object_or_404(
+            Category,
+            id=request.GET.get("category")
+        )
+
+        return JsonResponse({
+            "success": True,
+            "id": category.id,
+            "name": category.name,
+            "show_on_home": category.show_on_home
+        })
+
+    # ---------- UPDATE CATEGORY ----------
     if request.method == "POST":
 
         category = get_object_or_404(
@@ -369,11 +385,10 @@ def update_category(request):
             "success": True,
             "id": category.id,
             "name": category.name,
-            "show_on_home":category.show_on_home
+            "show_on_home": category.show_on_home
         })
 
     return JsonResponse({"success": False})
-
 
 @login_required
 def order_from_menu(request, item_id):

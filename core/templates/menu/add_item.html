@@ -428,6 +428,32 @@ const updateSelect=document.getElementById("updateCategorySelect");
 const homeCheckbox=document.getElementById("showCategoryHome");
 
 const homeText=document.getElementById("showHomeText");
+function loadCategoryDetails() {
+
+    fetch(
+        "{% url 'menu:update_category' %}?category=" +
+        updateSelect.value
+    )
+
+    .then(res => res.json())
+
+    .then(data => {
+
+        if (!data.success)
+            return;
+
+        document.getElementById("updateCategoryName").value =
+            data.name;
+
+        homeCheckbox.checked =
+            data.show_on_home;
+
+        updateHomeCheckboxLabel();
+
+    });
+
+}
+
 function closeCategoryPopup(){
 
     modal.classList.add("hidden");
@@ -1031,13 +1057,11 @@ function updateHomeCheckboxLabel(){
 }
 updateHomeCheckboxLabel();
 
-updateSelect.addEventListener(
+updateSelect.addEventListener("change", function () {
 
-    "change",
+    loadCategoryDetails();
 
-    updateHomeCheckboxLabel
-
-);
+});
 document.querySelectorAll(".category-btn").forEach(btn => {
 
     if (btn.dataset.tab == data.id) {
@@ -1047,5 +1071,8 @@ document.querySelectorAll(".category-btn").forEach(btn => {
     }
 
 });
+updateHomeCheckboxLabel();
+
+loadCategoryDetails();
 </script>
 {% endblock %}

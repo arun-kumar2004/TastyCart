@@ -266,9 +266,21 @@ hover:bg-white hover:text-orange-600">
 
             </button>
 
-            {% else %}
+           {% else %}
 
-            <a href="{% url 'login' %}" class="text-2xl">🛒</a>
+                <div class="flex items-center gap-2">
+
+                    <a href="{% url 'login' %}"
+                    class="px-3 py-1 text-sm bg-white text-orange-500 rounded-lg font-semibold shadow hover:bg-orange-100 transition">
+                        Login
+                    </a>
+
+                    <a href="{% url 'login' %}" class="relative text-2xl">
+                        🛒
+                    </a>
+
+                </div>
+
 
             {% endif %}
 
