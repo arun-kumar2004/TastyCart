@@ -188,64 +188,74 @@ def edit_item(request, item_id):
 
             uploaded_image = request.FILES.get("image")
 
-            uploaded_image = request.FILES.get("image")
+            # -------------------------------
+            # If a NEW image is uploaded
+            # -------------------------------
+            if uploaded_image:
 
-        safe_name = "".join(
-            c if c.isalnum() else "_"
-            for c in (item.name or "tastycart")
-        )
+                # Delete old image (if exists)
+                if item.image and default_storage.exists(item.image.name):
+                    default_storage.delete(item.image.name)
 
-        # Extension
-        if uploaded_image:
-            ext = os.path.splitext(uploaded_image.name)[1].lower()
-        else:
-            ext = os.path.splitext(item.image.name)[1].lower()
+                # Safe filename
+                safe_name = "".join(
+                    c if c.isalnum() else "_"
+                    for c in (item.name or "tastycart")
+                )
 
-        if not ext:
-            ext = ".jpg"
+                ext = os.path.splitext(uploaded_image.name)[1].lower()
 
-        filename = f"{safe_name}_{item.id}{ext}"
+                if not ext:
+                    ext = ".jpg"
 
-        # ============================
-        # New image uploaded
-        # ============================
+                filename = f"{safe_name}_{item.id}{ext}"
 
-        if uploaded_image:
+                # Save new image
+                item.image.save(
+                    filename,
+                    uploaded_image,
+                    save=False
+                )
 
-            if item.image and default_storage.exists(item.image.name):
-                default_storage.delete(item.image.name)
+            # -------------------------------
+            # If image NOT changed
+            # -------------------------------
+            elif item.image:
 
-            item.image.save(
-                filename,
-                uploaded_image,
-                save=False
-            )
+                safe_name = "".join(
+                    c if c.isalnum() else "_"
+                    for c in (item.name or "tastycart")
+                )
 
-        # ============================
-        # Only item name changed
-        # ============================
+                old_path = item.image.name
+                ext = os.path.splitext(old_path)[1].lower()
 
-        elif item.image:
+                if not ext:
+                    ext = ".jpg"
 
-            old_path = item.image.name
+                filename = f"{safe_name}_{item.id}{ext}"
+                new_path = f"items/{filename}"
 
-            new_path = f"items/{filename}"
+                # Rename only if name changed
+                if old_path != new_path and default_storage.exists(old_path):
 
-            if old_path != new_path and default_storage.exists(old_path):
+                    with default_storage.open(old_path, "rb") as f:
+                        item.image.save(
+                            filename,
+                            ContentFile(f.read()),
+                            save=False
+                        )
 
-                with default_storage.open(old_path, "rb") as f:
-                    item.image.save(
-                        filename,
-                        ContentFile(f.read()),
-                        save=False
-                    )
+                    default_storage.delete(old_path)
 
-                default_storage.delete(old_path)
-
+            # Save all changes
             item.save()
 
             messages.success(request, "Item updated successfully.")
             return redirect("menu:menu_list")
+
+        else:
+            messages.error(request, "Please correct the errors below.")
 
     else:
         form = ItemForm(instance=item)
@@ -261,8 +271,6 @@ def edit_item(request, item_id):
             "open_category_popup": request.GET.get("manage_category") == "1",
         },
     )
-
-
 
 @login_required
 @user_passes_test(is_superuser)
