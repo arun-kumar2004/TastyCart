@@ -14,7 +14,7 @@ load_dotenv(BASE_DIR / ".env")
 # Security
 SECRET_KEY = os.getenv("SECRET_KEY")
 # DEBUG = os.getenv("DEBUG", "False") == "True"
-DEBUG = os.getenv("DEBUG") == "False"  # Convert string to boolean
+DEBUG = os.getenv("DEBUG") == "True"  # Convert string to boolean
 ALLOWED_HOSTS = [
     ".onrender.com",
     "127.0.0.1",
@@ -22,6 +22,18 @@ ALLOWED_HOSTS = [
 ]
 
 # ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+
+STATIC_URL = "/static/"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = BASE_DIR / "media"
 
 INSTALLED_APPS = [
     'django.contrib.admin',
