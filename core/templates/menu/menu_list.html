@@ -492,7 +492,7 @@
             viewBox="0 0 24 24"
             stroke-width="2"
             stroke="currentColor"
-            class="hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
+            class="arrow hidden lg:block absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
 
             <path
                 stroke-linecap="round"
@@ -508,7 +508,7 @@
             viewBox="0 0 24 24"
             stroke-width="2"
             stroke="currentColor"
-            class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
+            class="arrow hidden lg:block absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
 
             <path
                 stroke-linecap="round"
@@ -709,7 +709,7 @@ data-id="{{ item.id }}">
         viewBox="0 0 24 24"
         stroke-width="2"
         stroke="currentColor"
-        class="hidden absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
+        class="arrow hidden lg:block absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
 
         <path
             stroke-linecap="round"
@@ -724,7 +724,7 @@ data-id="{{ item.id }}">
         viewBox="0 0 24 24"
         stroke-width="2"
         stroke="currentColor"
-        class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
+        class="arrow hidden lg:block absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl p-2 cursor-pointer z-30 text-gray-700 hover:text-orange-600 transition">
 
         <path
             stroke-linecap="round"
@@ -911,6 +911,20 @@ data-id="{{ item.id }}">
 /* ===========================================================
    PAGE
 =========================================================== */
+
+.items-row{
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-x;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+}
+
+.items-row::-webkit-scrollbar{
+    display:none;
+}
 
 .category-section{
 
@@ -1246,6 +1260,9 @@ data-id="{{ item.id }}">
         max-width:250px;
 
     }
+    .arrow{
+    display:none !important;
+    }
 
 }
 
@@ -1491,6 +1508,13 @@ data-id="{{ item.id }}">
 
 }
 
+@media (max-width:1024px){
+
+    .arrow{
+        display:none !important;
+    }
+
+}
 /* ===========================================================
    END CSS
 =========================================================== */

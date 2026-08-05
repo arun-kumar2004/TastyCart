@@ -157,9 +157,9 @@ shadow-md">Order Now ⏭</a>
             d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
     </svg>
 
-    <div
-        id="row{{ category.id }}"
-        class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2">
+   <div
+    id="row{{ category.id }}"
+    class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2 touch-pan-x">
 
         {% for item in category.items.all %}
 
@@ -636,7 +636,25 @@ shadow-md">Order Now ⏭</a>
   @media (max-width: 768px) {
     .arrow { width: 40px; height: 40px; }
   }
- 
+ .items-row{
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-x;
+    scrollbar-width:none;
+}
+
+.items-row::-webkit-scrollbar{
+    display:none;
+}
+
+@media (max-width:1023px){
+
+    .arrow{
+        display:none !important;
+    }
+
+}
 </style>
 
 
