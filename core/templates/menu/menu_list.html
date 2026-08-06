@@ -1964,7 +1964,39 @@ document.addEventListener("click", function () {
 });
 
 
+function bindHover(row, reverse = false) {
 
+    if (!row) return;
+
+    // ---------- Desktop (mouse) ----------
+    row.addEventListener("mouseenter", () => {
+        stopAutoScroll(row.id);
+    });
+
+    row.addEventListener("mouseleave", () => {
+        startAutoScroll(row, reverse);
+    });
+
+    // ---------- Mobile (touch) ----------
+    row.addEventListener("touchstart", () => {
+        stopAutoScroll(row.id);
+    }, { passive: true });
+
+    row.addEventListener("touchend", () => {
+        clearTimeout(row.touchResumeTimer);
+        row.touchResumeTimer = setTimeout(() => {
+            startAutoScroll(row, reverse);
+        }, 1500); // thoda gap do taaki swipe momentum khatam ho jaye
+    }, { passive: true });
+
+    row.addEventListener("touchcancel", () => {
+        clearTimeout(row.touchResumeTimer);
+        row.touchResumeTimer = setTimeout(() => {
+            startAutoScroll(row, reverse);
+        }, 1500);
+    }, { passive: true });
+
+}
 // ======================================================
 // ADD TO CART
 // ======================================================
