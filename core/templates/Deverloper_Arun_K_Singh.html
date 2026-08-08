@@ -1,665 +1,3721 @@
-<!-- Developer Section (Arun Kumar Singh) - This section is designed to introduce the creator of the website, Arun Kumar. It features a visually appealing layout with a gradient background, a glass card effect, and social media links. The section includes a heading, a brief introduction about Arun Kumar, his skills, and links to his portfolio and social media profiles. -->
+{% extends "base.html" %}
 {% load static %}
 
-<section class="relative py-14 overflow-hidden">
+{% block content %}
 
-    <!-- Background -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <div class="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-orange-100"></div>
+<link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+>
 
-    <div class="relative max-w-6xl mx-auto px-5 lg:px-8">
-
-        <!-- Heading -->
-
-        <div class="text-center mb-10">
-
-            <span
-                class="inline-flex items-center gap-2 rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-600 font-['Outfit']">
-
-                👨‍💻 Meet the Creator
-
-            </span>
-
-            <h2
-                class="mt-4 text-3xl md:text-4xl font-black text-gray-800 font-['Sora']">
-
-                Built with ❤️ by
-
-                <span class="text-orange-500">
-
-                    Arun Kumar
-
-                </span>
-
-            </h2>
-
-            <p
-                class="mt-3 text-gray-500 max-w-2xl mx-auto text-base font-['Outfit']">
-
-                Passionate about crafting modern web applications with clean UI,
-                secure backend and exceptional user experience.
-
-            </p>
-
-        </div>
-
-        <!-- Glass Card -->
-
-        <div
-
-            id="developerCard"
-
-            class="
-
-            developer-card
-
-            relative
-
-            z-10
-
-            overflow-hidden
-
-            grid
-
-            lg:grid-cols-2
-
-            gap-10
-
-            items-center
-
-            rounded-[30px]
-
-            p-7
-
-            lg:p-10
-
-            ">
-
-            <!-- LEFT -->
-
-            <div>
-
-                <p
-                    class="uppercase tracking-[5px] text-orange-500 text-sm font-semibold font-['Outfit']">
-
-                    Hi, I'm
-
-                </p>
-
-                <h1
-                    class="mt-2 text-4xl lg:text-5xl font-black text-gray-800 leading-tight font-['Sora']">
-
-                    ARUN KUMAR
-
-                </h1>
-
-                <h3
-                    class="mt-3 text-xl font-semibold text-orange-500 font-['Outfit']">
-
-                    Software Engineer
-
-                </h3>
-                <div class="mt-5 flex flex-wrap gap-3">
-
-    <span class="skill-pill">☕ Java</span>
-
-    <span class="skill-pill">🌱 Spring Boot</span>
-
-    <span class="skill-pill">📱 Android</span>
-
-    <span class="skill-pill">🌐 Django</span>
-
-    <span class="skill-pill">🔐 Cyber Security</span>
-
-</div>
-
-                <div
-                    class="inline-flex items-center mt-4 rounded-full bg-orange-100 text-orange-600 px-4 py-2 text-sm font-semibold font-['Outfit']">
-
-                    🚀 Creator of TastyCart
-
-                </div>
-
-                <p
-                    class="mt-6 text-gray-600 leading-8 text-base font-['Outfit'] max-w-lg">
-
-                    I enjoy building secure, scalable and user-friendly
-                    applications using Django, Spring Boot, Android,
-                    JavaScript and modern frontend technologies.
-
-                    Every project I build focuses on performance,
-                    clean architecture and a great user experience.
-
-                </p>
-
-                <!-- Social Icons -->
-                <div class="mt-8 flex flex-wrap items-center gap-4">
-
-    <!-- Portfolio -->
-
-    <a
-        href="YOUR_PORTFOLIO_LINK"
-        target="_blank"
-        class="developer-social"
-        title="Portfolio">
-
-        <!-- Laptop -->
-        <svg xmlns="http://www.w3.org/2000/svg"
-             fill="none"
-             viewBox="0 0 24 24"
-             stroke-width="1.8"
-             stroke="currentColor"
-             class="w-6 h-6">
-
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3.75 5.25h16.5v10.5H3.75z"/>
-
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 18.75h19.5"/>
-
-        </svg>
-
-    </a>
-
-    <!-- GitHub -->
-
-    <a
-        href="YOUR_GITHUB"
-        target="_blank"
-        class="developer-social"
-        title="GitHub">
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="w-6 h-6">
-
-            <path d="M12 .5C5.65.5.5 5.66.5 12.02c0 5.1 3.29 9.42 7.86 10.95.58.1.79-.25.79-.56v-2.01c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.27-1.69-1.27-1.69-1.04-.72.08-.71.08-.71 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.53-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.1 11.1 0 015.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.24 2.75.12 3.04.74.81 1.18 1.83 1.18 3.09 0 4.43-2.69 5.41-5.25 5.69.41.35.78 1.05.78 2.12v3.14c0 .31.21.67.8.56A11.53 11.53 0 0023.5 12C23.5 5.66 18.35.5 12 .5z"/>
-
-        </svg>
-
-    </a>
-
-    <!-- LinkedIn -->
-
-    <a
-        href="YOUR_LINKEDIN"
-        target="_blank"
-        class="developer-social"
-        title="LinkedIn">
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="w-6 h-6">
-
-            <path d="M4.98 3.5C4.98 4.88 3.87 6 2.49 6S0 4.88 0 3.5 1.11 1 2.49 1s2.49 1.12 2.49 2.5zM.5 8h4v15h-4V8zm7 0h3.84v2.05h.06c.53-1.01 1.84-2.08 3.79-2.08 4.05 0 4.81 2.67 4.81 6.14V23h-4v-7.6c0-1.81-.03-4.14-2.52-4.14-2.52 0-2.91 1.97-2.91 4v7.74h-4V8z"/>
-
-        </svg>
-
-    </a>
-
-    <!-- Email -->
-
-    <a
-        href="mailto:YOUR_EMAIL"
-        target="_blank"
-        class="developer-social"
-        title="Email">
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.8"
-            stroke="currentColor"
-            class="w-6 h-6">
-
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M21.75 7.5v9A2.25 2.25 0 0119.5 18.75h-15A2.25 2.25 0 012.25 16.5v-9"/>
-
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3.75 6.75L12 12.75l8.25-6"/>
-
-        </svg>
-
-    </a>
-
-    <!-- Instagram -->
-
-    <a
-        href="YOUR_INSTAGRAM"
-        target="_blank"
-        class="developer-social"
-        title="Instagram">
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.8"
-            stroke="currentColor"
-            class="w-6 h-6">
-
-            <rect x="3" y="3" width="18" height="18" rx="5"/>
-
-            <circle cx="12" cy="12" r="4"/>
-
-            <circle cx="17.5" cy="6.5" r="1"/>
-
-        </svg>
-
-    </a>
-
-    <!-- Facebook -->
-
-    <a
-        href="YOUR_FACEBOOK"
-        target="_blank"
-        class="developer-social"
-        title="Facebook">
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="w-6 h-6">
-
-            <path d="M22 12A10 10 0 1010.44 21.87v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.19 2.23.19v2.46h-1.26c-1.24 0-1.62.77-1.62 1.56V12h2.77l-.44 2.88h-2.33v6.99A10 10 0 0022 12z"/>
-
-        </svg>
-
-    </a>
-
-    <!-- YouTube -->
-
-    <a
-        href="YOUR_YOUTUBE"
-        target="_blank"
-        class="developer-social"
-        title="YouTube">
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="w-6 h-6">
-
-            <path d="M23.5 6.2s-.23-1.64-.94-2.36c-.9-.95-1.9-.95-2.36-1C16.92 2.5 12 2.5 12 2.5h-.01S7.08 2.5 3.8 2.84c-.46.05-1.46.05-2.36 1C.73 4.56.5 6.2.5 6.2S.25 8.13.25 10.06v1.81c0 1.93.25 3.86.25 3.86s.23 1.64.94 2.36c.9.95 2.08.92 2.61 1.02 1.89.18 7.95.24 7.95.24s4.93-.01 8.2-.35c.46-.05 1.46-.05 2.36-1 .71-.72.94-2.36.94-2.36s.25-1.93.25-3.86v-1.81c0-1.93-.25-3.86-.25-3.86zM9.75 15.02V8.98l5.77 3.02-5.77 3.02z"/>
-
-        </svg>
-
-    </a>
-
-</div>
-
-            </div>
-
-            <!-- RIGHT SIDE STARTS HERE -->
-            <!-- ===========================
-        RIGHT SIDE
-=========================== -->
-
-<div
-class="flex justify-center lg:justify-end">
-
-    <a
-        href="YOUR_PORTFOLIO_LINK"
-        target="_blank"
-        title="Visit Portfolio"
-        class="group relative">
-
-        <!-- Orange Glow -->
-
-        <div
-        class="absolute inset-0 rounded-full bg-orange-400 blur-3xl opacity-0 group-hover:opacity-30 transition duration-500"></div>
-
-        <!-- Image -->
-
-        <img
-
-            src="{% static 'images/arun.jpg' %}"
-
-            alt="Arun Kumar"
-
-            class="
-
-            relative
-
-            w-56
-
-            h-56
-
-            md:w-64
-
-            md:h-64
-
-            lg:w-72
-
-            lg:h-72
-
-            rounded-full
-
-            object-cover
-
-            border-[6px]
-
-            border-white
-
-            shadow-2xl
-
-            transition-all
-
-            duration-500
-
-            group-hover:scale-105
-
-            group-hover:-translate-y-2
-
-            group-hover:rotate-1
-
-            cursor-pointer
-
-            ">
-
-        <!-- Portfolio Badge -->
-
-        <div
-        class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-500">
-
-            View Portfolio →
-
-        </div>
-
-    </a>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
 
 <style>
 
- /*==================================================
-        Meet Developer Section
-==================================================*/
+/* =========================================================
+   TASTYCART — DEVELOPER / MINDSET PAGE
+   Premium centered profile architecture
+========================================================= */
 
-.developer-card{
+.tc-creator-section {
 
-    position:relative;
+    --tc-orange: #f97316;
+    --tc-orange-dark: #ea580c;
+    --tc-amber: #f59e0b;
 
-    border-radius:32px;
+    --tc-dark: #111827;
+    --tc-slate: #475569;
+    --tc-muted: #94a3b8;
 
-    background:rgba(255,255,255,.58);
+    position: relative;
 
-    backdrop-filter:blur(18px);
+    width: 100%;
+    min-height: 100vh;
 
-    -webkit-backdrop-filter:blur(18px);
+    overflow: hidden;
 
-    border:1px solid rgba(255,255,255,.55);
 
-    box-shadow:
+    font-family:
+        'Plus Jakarta Sans',
+        sans-serif;
 
-    0 20px 45px rgba(0,0,0,.08);
+    background:
 
-    transition:.45s;
+        radial-gradient(
+            circle at 8% 12%,
+            rgba(249, 115, 22, .15),
+            transparent 28%
+        ),
 
+        radial-gradient(
+            circle at 92% 82%,
+            rgba(245, 158, 11, .12),
+            transparent 30%
+        ),
+
+        linear-gradient(
+            135deg,
+            #fffaf5 0%,
+            #fff7ed 48%,
+            #ffffff 100%
+        );
+
+    isolation: isolate;
 }
 
-.developer-card:hover{
 
-    transform:translateY(-8px);
+/* =========================================================
+   BACKGROUND GRID
+========================================================= */
 
-    box-shadow:
+.tc-grid-bg {
 
-    0 30px 60px rgba(249,115,22,.18);
+    position: absolute;
 
+    inset: 0;
+
+    pointer-events: none;
+
+    opacity: .38;
+
+    background-image:
+
+        linear-gradient(
+            rgba(249, 115, 22, .045) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(249, 115, 22, .045) 1px,
+            transparent 1px
+        );
+
+    background-size: 42px 42px;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent 90%
+        );
 }
 
-.developer-card::before{
 
-    content:"";
+/* =========================================================
+   BACKGROUND ORBS
+========================================================= */
 
-    position:absolute;
+.tc-orb {
 
-    width:260px;
+    position: absolute;
 
-    height:260px;
+    border-radius: 999px;
 
-    border-radius:50%;
+    pointer-events: none;
 
-    background:rgba(249,115,22,.15);
+    filter: blur(70px);
 
-    top:-90px;
-
-    right:-90px;
-
-    filter:blur(50px);
-
-    z-index:-1;
-
+    opacity: .38;
 }
 
-.developer-card::after{
 
-    content:"";
+.tc-orb-one {
 
-    position:absolute;
+    width: 280px;
+    height: 280px;
 
-    width:220px;
+    left: -120px;
+    top: 12%;
 
-    height:220px;
-
-    border-radius:50%;
-
-    background:rgba(255,180,80,.12);
-
-    bottom:-80px;
-
-    left:-80px;
-
-    filter:blur(45px);
-
-    z-index:-1;
-
-}
-
-/*=============================
-      Social Buttons
-==============================*/
-.developer-social{
-
-    width:58px;
-
-    height:58px;
-
-    border-radius:50%;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    background:#fff;
-
-    transition:.35s;
-
-    box-shadow:
-
-    0 10px 25px rgba(0,0,0,.08);
-
-}
-
-.developer-social:hover{
-
-    transform:
-
-    translateY(-10px)
-
-    scale(1.08);
-
-}
-
-/*=============================
-      Image
-==============================*/
-
-#developerCard img{
-
-    transition:.45s;
-
-}
-
-#developerCard img:hover{
-
-    transform:
-
-    scale(1.06)
-
-    rotate(1deg);
-
-}
-
-/*=============================
-      Floating Animation
-==============================*/
-
-@keyframes developerFloat{
-
-    0%{
-
-        transform:translateY(0);
-
-    }
-
-    50%{
-
-        transform:translateY(-8px);
-
-    }
-
-    100%{
-
-        transform:translateY(0);
-
-    }
-
-}
-
-#developerCard{
+    background:
+        rgba(249, 115, 22, .20);
 
     animation:
-
-    developerFloat
-
-    6s ease-in-out infinite;
-
+        tcOrbOne 11s ease-in-out infinite;
 }
 
-/*=============================
-        Responsive
-==============================*/
 
-@media(max-width:1024px){
+.tc-orb-two {
 
-    #developerCard{
+    width: 320px;
+    height: 320px;
 
-        text-align:center;
+    right: -140px;
+    bottom: 5%;
 
-    }
+    background:
+        rgba(245, 158, 11, .18);
 
+    animation:
+        tcOrbTwo 13s ease-in-out infinite;
 }
 
-@media(max-width:768px){
 
-    #developerCard{
+@keyframes tcOrbOne {
 
-        padding:28px;
-
+    0%, 100% {
+        transform:
+            translate3d(0, 0, 0);
     }
 
-    .developer-social{
-
-        width:52px;
-
-        height:52px;
-
+    50% {
+        transform:
+            translate3d(45px, 35px, 0);
     }
 
 }
 
-@media(max-width:640px){
 
-    .developer-social{
+@keyframes tcOrbTwo {
 
-        width:48px;
-
-        height:48px;
-
+    0%, 100% {
+        transform:
+            translate3d(0, 0, 0);
     }
 
-    .developer-social svg{
-
-        width:20px;
-
-        height:20px;
-
+    50% {
+        transform:
+            translate3d(-35px, -45px, 0);
     }
 
 }
-.skill-pill{
 
-    padding:10px 18px;
 
-    border-radius:999px;
+/* =========================================================
+   PARTICLES
+========================================================= */
 
-    background:#fff7ed;
+.tc-particle {
 
-    color:#ea580c;
+    position: absolute;
 
-    font-family:'Outfit',sans-serif;
+    width: 4px;
+    height: 4px;
 
-    font-weight:600;
+    border-radius: 50%;
 
-    font-size:.95rem;
+    background:
+        rgba(249, 115, 22, .45);
 
-    border:1px solid #fed7aa;
+    pointer-events: none;
 
-    transition:.35s;
+    animation:
+        tcParticleFloat
+        var(--duration)
+        ease-in-out
+        infinite;
+}
 
-    cursor:default;
+
+@keyframes tcParticleFloat {
+
+    0%, 100% {
+
+        transform:
+            translate3d(0, 0, 0)
+            scale(1);
+
+        opacity: .2;
+    }
+
+    50% {
+
+        transform:
+            translate3d(
+                var(--move-x),
+                var(--move-y),
+                0
+            )
+            scale(1.6);
+
+        opacity: .8;
+    }
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.tc-header {
+
+    position: relative;
+
+    z-index: 10;
+
+    max-width: 850px;
+
+    margin:
+        0 auto 110px;
+
+    text-align: center;
+}
+
+
+.tc-eyebrow {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding:
+        8px 14px;
+
+    border-radius: 999px;
+
+    color:
+        #c2410c;
+
+    background:
+        rgba(249, 115, 22, .08);
+
+    border:
+        1px solid
+        rgba(249, 115, 22, .20);
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing:
+        .14em;
+
+    text-transform:
+        uppercase;
+
+    box-shadow:
+        0 8px 30px
+        rgba(249, 115, 22, .08);
+}
+
+
+.tc-status {
+
+    position: relative;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background:
+        #f97316;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(249, 115, 22, .10);
+}
+
+
+.tc-status::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: -5px;
+
+    border:
+        1px solid
+        rgba(249, 115, 22, .35);
+
+    border-radius: 50%;
+
+    animation:
+        tcPulse 2s ease-out infinite;
+}
+
+
+@keyframes tcPulse {
+
+    0% {
+        transform: scale(.7);
+        opacity: .8;
+    }
+
+    100% {
+        transform: scale(1.8);
+        opacity: 0;
+    }
+
+}
+
+
+.tc-title {
+
+    margin-top: 24px;
+
+    font-family:
+        'Space Grotesk',
+        sans-serif;
+
+    font-size:
+        clamp(
+            2.5rem,
+            6vw,
+            5.2rem
+        );
+
+    line-height: 1;
+
+    font-weight: 700;
+
+    letter-spacing:
+        -.055em;
+
+    color:
+        #111827;
+}
+
+
+.tc-gradient {
+
+    background:
+        linear-gradient(
+            100deg,
+            #111827 0%,
+            #ea580c 48%,
+            #f59e0b 100%
+        );
+
+    -webkit-background-clip:
+        text;
+
+    background-clip:
+        text;
+
+    color:
+        transparent;
+}
+
+
+.tc-header-description {
+
+    max-width: 680px;
+
+    margin:
+        25px auto 0;
+
+    color:
+        #64748b;
+
+    font-size:
+        14px;
+
+    line-height:
+        1.9;
+}
+
+
+/* =========================================================
+   CARD WRAPPER
+========================================================= */
+
+.tc-card-wrapper {
+
+    position: relative;
+
+    z-index: 10;
+
+    max-width: 1080px;
+
+    margin:
+        0 auto;
+
+    perspective:
+        1600px;
+}
+
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.tc-main-card {
+
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+
+    position: relative;
+
+    padding:
+        115px 55px 48px;
+
+    border-radius:
+        38px;
+
+    background:
+
+        radial-gradient(
+            circle at
+            var(--mouse-x)
+            var(--mouse-y),
+            rgba(249, 115, 22, .13),
+            transparent 34%
+        ),
+
+        rgba(255, 255, 255, .82);
+
+    border:
+        1px solid
+        rgba(249, 115, 22, .16);
 
     box-shadow:
 
-    0 5px 15px rgba(249,115,22,.08);
+        0 35px 100px
+        rgba(124, 45, 18, .10),
 
+        0 15px 35px
+        rgba(15, 23, 42, .05);
+
+    backdrop-filter:
+        blur(25px);
+
+    -webkit-backdrop-filter:
+        blur(25px);
+
+    transform-style:
+        preserve-3d;
+
+    transition:
+
+        transform
+        180ms
+        ease-out,
+
+        box-shadow
+        400ms
+        ease,
+
+        border-color
+        400ms
+        ease;
+
+    will-change:
+        transform;
+
+    overflow:
+        visible;
 }
 
-.skill-pill:hover{
+
+/* =========================================================
+   CARD SHINE
+========================================================= */
+
+.tc-main-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    border-radius:
+        inherit;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent 20%,
+            rgba(255,255,255,.70),
+            transparent 80%
+        );
 
     transform:
+        translateX(-120%);
 
-    translateY(-6px)
+    transition:
+        transform .9s ease;
 
-    scale(1.05);
+    pointer-events:
+        none;
 
-    background:#f97316;
+    overflow:
+        hidden;
+}
 
-    color:#fff;
+
+.tc-main-card:hover {
+
+    border-color:
+        rgba(249, 115, 22, .34);
 
     box-shadow:
 
-    0 12px 30px rgba(249,115,22,.35);
+        0 50px 110px
+        rgba(124, 45, 18, .15),
+
+        0 20px 45px
+        rgba(249, 115, 22, .08);
+}
+
+
+.tc-main-card:hover::before {
+
+    transform:
+        translateX(120%);
+}
+
+
+/* =========================================================
+   CARD GLOWS
+========================================================= */
+
+.tc-card-glow {
+
+    position: absolute;
+
+    width: 320px;
+    height: 320px;
+
+    top: -160px;
+    right: -110px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(249, 115, 22, .11);
+
+    filter:
+        blur(75px);
+
+    pointer-events:
+        none;
+}
+
+
+.tc-card-glow-bottom {
+
+    position: absolute;
+
+    width: 270px;
+    height: 270px;
+
+    bottom: -150px;
+    left: -120px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(245, 158, 11, .10);
+
+    filter:
+        blur(70px);
+
+    pointer-events:
+        none;
+}
+
+
+/* =========================================================
+   PROFILE PHOTO
+========================================================= */
+
+.tc-profile-photo-wrapper {
+
+    position: absolute;
+
+    top: -92px;
+
+    left: 50%;
+
+    width: 190px;
+    height: 190px;
+
+    transform:
+        translateX(-50%);
+
+    z-index: 20;
+
+    display: flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+}
+
+
+/* Rotating ring */
+
+.tc-profile-ring {
+
+    position: absolute;
+
+    inset: -7px;
+
+    border-radius: 50%;
+
+    background:
+        conic-gradient(
+            from 0deg,
+            #f97316,
+            #f59e0b,
+            #fb923c,
+            #ea580c,
+            #f97316
+        );
+
+    animation:
+        tcRingRotate
+        3s
+        linear
+        infinite;
+
+    filter:
+        drop-shadow(
+            0 15px 30px
+            rgba(249, 115, 22, .25)
+        );
+
+    z-index: 0;
+}
+
+
+.tc-profile-ring::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 7px;
+
+    border-radius: 50%;
+
+    background: #fff7ed;
+
+    z-index: 1;
+}
+
+
+@keyframes tcRingRotate {
+
+    from {
+        transform:
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            rotate(360deg);
+    }
 
 }
+
+
+/* Photo */
+
+.tc-profile-photo {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 176px;
+    height: 176px;
+
+    object-fit:
+        cover;
+
+    border-radius:
+        50%;
+
+    border:
+        6px solid
+        rgba(255,255,255,.96);
+
+    box-shadow:
+
+        0 0 0 1px
+        rgba(249,115,22,.20),
+
+        0 25px 65px
+        rgba(234,88,12,.22);
+
+    transition:
+
+        transform
+        .45s
+        cubic-bezier(.2,.8,.2,1),
+
+        box-shadow
+        .45s
+        ease;
+}
+
+
+.tc-profile-photo-wrapper:hover
+.tc-profile-photo {
+
+    transform:
+        scale(1.045);
+
+    box-shadow:
+
+        0 0 0 6px
+        rgba(249,115,22,.10),
+
+        0 25px 70px
+        rgba(234,88,12,.28);
+}
+
+
+/* =========================================================
+   ONLINE INDICATOR
+========================================================= */
+/* =========================================================
+   TWO ROTATING DOTS AROUND PROFILE RING
+========================================================= */
+
+.tc-online {
+
+    position: absolute;
+
+    inset: -11px;
+
+    width: calc(100% + 22px);
+    height: calc(100% + 22px);
+
+    border-radius: 50%;
+
+    z-index: 10;
+
+    pointer-events: none;
+
+     animation:
+        tcOnlineRotate
+        3s
+        linear
+        infinite;
+
+    transition: none;
+}
+
+/* Stop dots when mouse is over photo */
+.tc-profile-photo-wrapper:hover .tc-online {
+    animation-play-state: paused;
+}
+
+/* First dot */
+.tc-online::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 10px;
+    height: 10px;
+
+    top: 50%;
+    left: -5px;
+
+    transform: translateY(-50%);
+
+    border-radius: 50%;
+
+    background: #f97316;
+
+    box-shadow:
+        0 0 0 3px rgba(249,115,22,.15),
+        0 0 14px rgba(249,115,22,.75);
+}
+
+
+/* Second dot */
+.tc-online::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 10px;
+    height: 10px;
+
+    top: 50%;
+    right: -5px;
+
+    transform: translateY(-50%);
+
+    border-radius: 50%;
+
+    background: #f59e0b;
+
+    box-shadow:
+        0 0 0 3px rgba(245,158,11,.15),
+        0 0 14px rgba(245,158,11,.75);
+}
+
+
+/* =========================================================
+   SAY HELLO POPUP
+========================================================= */
+
+.tc-profile-photo-wrapper::after {
+
+    content: "Say Hello 👋";
+
+    position: absolute;
+
+    left: 50%;
+
+    bottom: -8px;
+
+    transform:
+        translateX(-50%)
+        translateY(8px);
+
+    z-index: 30;
+
+    padding: 6px 11px;
+
+    border-radius: 999px;
+
+    background: #111827;
+
+    color: white;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: .04em;
+
+    white-space: nowrap;
+
+    box-shadow:
+        0 8px 20px
+        rgba(15,23,42,.18);
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease;
+}
+
+
+/* Show popup on photo hover */
+
+.tc-profile-photo-wrapper::after {
+
+    content: "Say Hello 👋";
+
+    position: absolute;
+
+    left: 50%;
+
+    bottom: 12px;
+
+    transform:
+        translateX(-50%)
+        translateY(8px);
+
+    z-index: 30;
+
+    padding: 9px 16px;
+
+    border-radius: 999px;
+
+    background: #111827;
+
+    color: white;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: .04em;
+
+    white-space: nowrap;
+
+    box-shadow:
+        0 10px 25px
+        rgba(15,23,42,.20);
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease;
+}
+.tc-profile-photo-wrapper:hover::after {
+
+    opacity: 1;
+
+    transform:
+        translateX(-50%)
+        translateY(0);
+}
+
+@keyframes tcOnlineRotate {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+/* =========================================================
+   PROFILE CONTENT
+========================================================= */
+
+.tc-profile {
+
+    position: relative;
+
+    z-index: 5;
+
+    max-width: 850px;
+
+    margin:
+        0 auto;
+
+    text-align:
+        center;
+}
+
+
+/* Expert badge */
+
+.tc-expert-badge {
+
+    display: inline-flex;
+
+    align-items:
+        center;
+
+    gap: 8px;
+
+    padding:
+        8px 14px;
+
+    border-radius:
+        999px;
+
+    color:
+        #c2410c;
+
+    background:
+        rgba(249,115,22,.08);
+
+    border:
+        1px solid
+        rgba(249,115,22,.18);
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        .10em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.tc-expert-icon {
+
+    width: 15px;
+    height: 15px;
+
+    color:
+        #f97316;
+
+    animation:
+        tcSpark
+        1.8s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes tcSpark {
+
+    0%,100% {
+        transform:
+            scale(1)
+            rotate(0);
+    }
+
+    50% {
+        transform:
+            scale(1.2)
+            rotate(5deg);
+    }
+
+}
+
+
+/* Name */
+
+.tc-profile-name {
+
+    margin-top:
+        20px;
+
+    font-family:
+        'Space Grotesk',
+        sans-serif;
+
+    font-size:
+        clamp(
+            2.3rem,
+            5vw,
+            4.1rem
+        );
+
+    line-height:
+        1;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        -.055em;
+
+    color:
+        #111827;
+}
+
+
+/* Role */
+
+.tc-profile-role {
+
+    margin-top:
+        14px;
+
+    font-size:
+        clamp(
+            1rem,
+            2vw,
+            1.25rem
+        );
+
+    font-weight:
+        700;
+
+    color:
+        #ea580c;
+}
+
+
+.tc-role-divider {
+
+    color:
+        #cbd5e1;
+
+    margin:
+        0 9px;
+}
+
+
+/* Description */
+
+.tc-profile-description {
+
+    max-width:
+        730px;
+
+    margin:
+        22px auto 0;
+
+    color:
+        #64748b;
+
+    font-size:
+        14px;
+
+    line-height:
+        1.9;
+}
+
+
+/* =========================================================
+   EXPERTISE
+========================================================= */
+
+.tc-expertise {
+
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    justify-content:
+        center;
+
+    gap:
+        8px;
+
+    margin-top:
+        25px;
+}
+
+
+.tc-expertise span {
+
+    padding:
+        8px 13px;
+
+    border-radius:
+        10px;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    color:
+        #c2410c;
+
+    background:
+        #fff7ed;
+
+    border:
+        1px solid
+        #fed7aa;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
+}
+
+
+.tc-expertise span:first-child {
+
+    color:
+        white;
+
+    background:
+        #111827;
+
+    border-color:
+        #111827;
+}
+
+
+.tc-expertise span:hover {
+
+    transform:
+        translateY(-3px);
+
+    background:
+        #ffedd5;
+
+    box-shadow:
+        0 10px 22px
+        rgba(249,115,22,.10);
+}
+
+
+/* =========================================================
+   SECTION LABEL
+========================================================= */
+
+.tc-section-label {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        12px;
+
+    margin-bottom:
+        14px;
+}
+
+
+.tc-section-label span:first-child {
+
+    font-size:
+        9px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        .16em;
+
+    text-transform:
+        uppercase;
+
+    color:
+        #94a3b8;
+}
+
+
+.tc-section-line {
+
+    width:
+        42px;
+
+    height:
+        1px;
+
+    background:
+        #fdba74;
+}
+
+
+/* =========================================================
+   TECH STACK
+========================================================= */
+
+.tc-tech-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap:
+        9px;
+
+    margin-top:
+        30px;
+}
+
+
+.tc-tech-item {
+
+    position:
+        relative;
+
+    min-height:
+        68px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        9px;
+
+    padding:
+        11px;
+
+    border-radius:
+        15px;
+
+    background:
+        rgba(255,255,255,.76);
+
+    border:
+        1px solid
+        rgba(148,163,184,.16);
+
+    overflow:
+        hidden;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease,
+        background .25s ease;
+}
+
+
+.tc-tech-item::after {
+
+    content: "";
+
+    position:
+        absolute;
+
+    width:
+        80px;
+
+    height:
+        80px;
+
+    top:
+        -40px;
+
+    right:
+        -40px;
+
+    border-radius:
+        50%;
+
+    background:
+        rgba(249,115,22,.10);
+
+    filter:
+        blur(18px);
+
+    transition:
+        transform .3s ease;
+}
+
+
+.tc-tech-item:hover {
+
+    transform:
+        translateY(-5px)
+        scale(1.025);
+
+    background:
+        white;
+
+    border-color:
+        rgba(249,115,22,.30);
+
+    box-shadow:
+        0 15px 30px
+        rgba(234,88,12,.10);
+}
+
+
+.tc-tech-item:hover::after {
+
+    transform:
+        scale(2);
+}
+
+
+.tc-tech-icon {
+
+    width:
+        32px;
+
+    height:
+        32px;
+
+    flex-shrink:
+        0;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border-radius:
+        9px;
+
+    background:
+        #fff7ed;
+
+    font-size:
+        15px;
+
+    transition:
+        transform .25s ease;
+}
+
+
+.tc-tech-item:hover
+.tc-tech-icon {
+
+    transform:
+        rotate(-7deg)
+        scale(1.12);
+}
+
+
+.tc-tech-name {
+
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    color:
+        #334155;
+}
+
+
+.tc-tech-type {
+
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    margin-top:
+        2px;
+
+    font-size:
+        8px;
+
+    color:
+        #94a3b8;
+}
+
+
+/* =========================================================
+   PROJECTS
+========================================================= */
+
+.tc-project-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap:
+        12px;
+
+    margin-top:
+        30px;
+}
+
+
+.tc-project-card {
+
+    position:
+        relative;
+
+    display:
+        block;
+
+    min-height:
+        155px;
+
+    padding:
+        17px;
+
+    border-radius:
+        18px;
+
+    text-decoration:
+        none;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.94),
+            rgba(255,247,237,.70)
+        );
+
+    border:
+        1px solid
+        rgba(249,115,22,.13);
+
+    overflow:
+        hidden;
+
+    transition:
+        transform .28s
+        cubic-bezier(.2,.8,.2,1),
+
+        box-shadow .28s ease,
+
+        border-color .28s ease;
+}
+
+
+.tc-project-card::before {
+
+    content: "";
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(249,115,22,.16),
+            transparent 42%
+        );
+
+    opacity:
+        0;
+
+    transition:
+        opacity .25s ease;
+}
+
+
+.tc-project-card:hover {
+
+    transform:
+        translateY(-7px);
+
+    border-color:
+        rgba(249,115,22,.32);
+
+    box-shadow:
+        0 20px 40px
+        rgba(234,88,12,.12);
+}
+
+
+.tc-project-card:hover::before {
+
+    opacity:
+        1;
+}
+
+
+.tc-project-icon {
+
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    width:
+        40px;
+
+    height:
+        40px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border-radius:
+        12px;
+
+    background:
+        #fff7ed;
+
+    color:
+        #ea580c;
+
+    margin-bottom:
+        12px;
+
+    transition:
+        transform .25s ease;
+}
+
+
+.tc-project-card:hover
+.tc-project-icon {
+
+    transform:
+        rotate(-5deg)
+        scale(1.08);
+}
+
+
+.tc-project-title {
+
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    font-family:
+        'Space Grotesk',
+        sans-serif;
+
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+
+    color:
+        #111827;
+}
+
+
+.tc-project-description {
+
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    margin-top:
+        5px;
+
+    max-width:
+        230px;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.6;
+
+    color:
+        #64748b;
+}
+
+
+.tc-project-arrow {
+
+    position:
+        absolute;
+
+    right:
+        14px;
+
+    bottom:
+        14px;
+
+    width:
+        29px;
+
+    height:
+        29px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border-radius:
+        50%;
+
+    color:
+        #ea580c;
+
+    background:
+        rgba(249,115,22,.08);
+
+    transition:
+        transform .25s ease,
+        background .25s ease;
+}
+
+
+.tc-project-card:hover
+.tc-project-arrow {
+
+    transform:
+        translate(4px,-4px);
+
+    background:
+        #ffedd5;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.tc-actions {
+
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    justify-content:
+        center;
+
+    gap:
+        9px;
+
+    margin-top:
+        32px;
+}
+
+
+.tc-primary-cta,
+.tc-action-btn {
+
+    position:
+        relative;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        8px;
+
+    min-height:
+        43px;
+
+    padding:
+        0 16px;
+
+    border-radius:
+        13px;
+
+    text-decoration:
+        none;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    overflow:
+        hidden;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+
+.tc-primary-cta {
+
+    color:
+        white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f97316,
+            #ea580c
+        );
+
+    box-shadow:
+        0 12px 28px
+        rgba(234,88,12,.22);
+}
+
+
+.tc-primary-cta:hover {
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 18px 38px
+        rgba(234,88,12,.30);
+}
+
+
+.tc-action-btn {
+
+    color:
+        #475569;
+
+    background:
+        rgba(255,255,255,.82);
+
+    border:
+        1px solid
+        rgba(148,163,184,.18);
+}
+
+
+.tc-action-btn:hover {
+
+    transform:
+        translateY(-4px);
+
+    color:
+        white;
+
+    border-color:
+        transparent;
+
+    box-shadow:
+        0 12px 25px
+        var(--btn-shadow);
+}
+
+
+.tc-action-btn::before {
+
+    content: "";
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    background:
+        var(--btn-gradient);
+
+    opacity:
+        0;
+
+    transition:
+        opacity .25s ease;
+}
+
+
+.tc-action-btn:hover::before {
+
+    opacity:
+        1;
+}
+
+
+.tc-action-btn > * {
+
+    position:
+        relative;
+
+    z-index:
+        2;
+}
+
+
+.tc-btn-github {
+
+    --btn-gradient:
+        linear-gradient(
+            135deg,
+            #374151,
+            #111827
+        );
+
+    --btn-shadow:
+        rgba(17,24,39,.20);
+}
+
+
+.tc-btn-linkedin {
+
+    --btn-gradient:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #0a66c2
+        );
+
+    --btn-shadow:
+        rgba(37,99,235,.20);
+}
+
+
+.tc-btn-instagram {
+
+    --btn-gradient:
+        linear-gradient(
+            135deg,
+            #f97316,
+            #db2777,
+            #7c3aed
+        );
+
+    --btn-shadow:
+        rgba(219,39,119,.20);
+}
+
+
+.tc-btn-email {
+
+    --btn-gradient:
+        linear-gradient(
+            135deg,
+            #ef4444,
+            #dc2626
+        );
+
+    --btn-shadow:
+        rgba(220,38,38,.20);
+}
+
+
+/* =========================================================
+   FOOTER STATEMENT
+========================================================= */
+
+.tc-footer-statement {
+
+    position:
+        relative;
+
+    z-index:
+        10;
+
+    margin:
+        34px auto 0;
+
+    text-align:
+        center;
+
+    font-size:
+        11px;
+
+    color:
+        #94a3b8;
+
+    letter-spacing:
+        .03em;
+}
+
+
+.tc-footer-statement strong {
+
+    color:
+        #ea580c;
+}
+
+
+/* =========================================================
+   REVEAL
+========================================================= */
+
+.tc-reveal {
+
+    opacity:
+        0;
+
+    transform:
+        translateY(25px);
+
+    transition:
+        opacity .7s ease,
+        transform .7s
+        cubic-bezier(.2,.8,.2,1);
+}
+
+
+.tc-reveal.tc-visible {
+
+    opacity:
+        1;
+
+    transform:
+        translateY(0);
+}
+
+
+.tc-delay-1 {
+    transition-delay:
+        100ms;
+}
+
+
+.tc-delay-2 {
+    transition-delay:
+        180ms;
+}
+
+
+.tc-delay-3 {
+    transition-delay:
+        260ms;
+}
+
+
+.tc-delay-4 {
+    transition-delay:
+        340ms;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1024px) {
+
+    .tc-tech-grid {
+
+        grid-template-columns:
+            repeat(3, minmax(0,1fr));
+    }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .tc-creator-section {
+
+        padding:
+            90px 15px 60px;
+    }
+
+
+    .tc-header {
+
+        margin-bottom:
+            95px;
+    }
+
+
+    .tc-main-card {
+
+        padding:
+            105px 24px 35px;
+
+        border-radius:
+            28px;
+    }
+
+
+    .tc-profile-photo-wrapper {
+
+        width:
+            165px;
+
+        height:
+            165px;
+
+        top:
+            -80px;
+    }
+
+
+    .tc-profile-photo {
+
+        width:
+            153px;
+
+        height:
+            153px;
+    }
+
+
+    .tc-tech-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0,1fr));
+    }
+
+
+    .tc-project-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .tc-project-card {
+
+        min-height:
+            135px;
+    }
+
+
+    .tc-actions {
+
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+    }
+
+
+    .tc-primary-cta,
+    .tc-action-btn {
+
+        width:
+            100%;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .tc-main-card {
+
+        padding:
+            95px 16px 28px;
+    }
+
+
+    .tc-profile-photo-wrapper {
+
+        width:
+            145px;
+
+        height:
+            145px;
+
+        top:
+            -70px;
+    }
+
+
+    .tc-profile-photo {
+
+        width:
+            135px;
+
+        height:
+            135px;
+
+        border-width:
+            5px;
+    }
+
+
+    .tc-profile-name {
+
+        font-size:
+            2.15rem;
+    }
+
+
+    .tc-profile-role {
+
+        font-size:
+            .92rem;
+    }
+
+
+    .tc-role-divider {
+
+        margin:
+            0 5px;
+    }
+
+
+    .tc-profile-description {
+
+        font-size:
+            13px;
+
+        line-height:
+            1.8;
+    }
+
+
+    .tc-tech-grid {
+
+        gap:
+            7px;
+    }
+
+
+    .tc-tech-item {
+
+        min-height:
+            62px;
+
+        padding:
+            9px;
+    }
+
+
+    .tc-tech-name {
+
+        font-size:
+            9px;
+    }
+
+
+    .tc-tech-type {
+
+        font-size:
+            7px;
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .tc-creator-section *,
+    .tc-creator-section *::before,
+    .tc-creator-section *::after {
+
+        animation-duration:
+            .01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        transition-duration:
+            .01ms !important;
+
+        scroll-behavior:
+            auto !important;
+    }
+
+
+    .tc-main-card {
+
+        transform:
+            none !important;
+    }
+
+}
+
 </style>
+
+
+<!-- =========================================================
+     MAIN PAGE
+========================================================= -->
+
+<section
+    id="tastycart-mindset"
+    class="tc-creator-section"
+>
+
+    <!-- Background -->
+
+    <div class="tc-grid-bg"></div>
+
+    <div class="tc-orb tc-orb-one"></div>
+    <div class="tc-orb tc-orb-two"></div>
+
+
+    <!-- Particles -->
+
+    <span
+        class="tc-particle"
+        style="
+            top:18%;
+            left:10%;
+            --duration:6s;
+            --move-x:30px;
+            --move-y:-35px;
+        "
+    ></span>
+
+
+    <span
+        class="tc-particle"
+        style="
+            top:34%;
+            right:12%;
+            --duration:8s;
+            --move-x:-35px;
+            --move-y:25px;
+        "
+    ></span>
+
+
+    <span
+        class="tc-particle"
+        style="
+            bottom:25%;
+            left:18%;
+            --duration:7s;
+            --move-x:20px;
+            --move-y:35px;
+        "
+    ></span>
+
+
+    <span
+        class="tc-particle"
+        style="
+            bottom:15%;
+            right:22%;
+            --duration:9s;
+            --move-x:-20px;
+            --move-y:-30px;
+        "
+    ></span>
+
+
+    <!-- =====================================================
+         HEADER
+    ===================================================== -->
+
+    <header class="tc-header">
+
+        <div class="tc-reveal">
+
+            <span class="tc-eyebrow">
+
+                <span class="tc-status"></span>
+
+                The Mindset Behind TastyCart
+
+            </span>
+
+        </div>
+
+
+        <h1
+            class="
+                tc-title
+                tc-reveal
+                tc-delay-1
+            "
+        >
+
+            Built With
+
+            <span class="tc-gradient">
+                Purpose
+            </span>
+
+            .<br>
+
+            Engineered With
+
+            <span class="tc-gradient">
+                Passion
+            </span>
+
+            .
+
+        </h1>
+
+
+        <p
+            class="
+                tc-header-description
+                tc-reveal
+                tc-delay-2
+            "
+        >
+            More than a food-delivery platform —
+            TastyCart is an engineering journey where
+            architecture, technology, creativity and
+            user experience come together.
+        </p>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN PROFILE CARD
+    ===================================================== -->
+
+    <div class="tc-card-wrapper">
+
+        <article
+            id="tcCreatorCard"
+            class="
+                tc-main-card
+                tc-reveal
+                tc-delay-3
+            "
+        >
+
+            <!-- Decorative glows -->
+
+            <div class="tc-card-glow"></div>
+            <div class="tc-card-glow-bottom"></div>
+
+
+            <!-- =================================================
+                 PHOTO
+            ================================================= -->
+
+            <div class="tc-profile-photo-wrapper">
+
+                <div class="tc-profile-ring"></div>
+
+
+                <a
+                    href="mailto:thakurarunkumar2004@gmail.com"
+                    aria-label="Contact Arun Kumar Singh"
+                >
+
+                    <img
+                        src="{% static 'images/arun.jpg' %}"
+                        alt="Arun Kumar Singh"
+                        class="tc-profile-photo"
+                    >
+
+                </a>
+
+
+                <span
+                    class="tc-online"
+                    title="Available"
+                ></span>
+
+            </div>
+
+
+            <!-- =================================================
+                 PROFILE CONTENT
+            ================================================= -->
+
+            <div class="tc-profile">
+
+
+                <!-- Expert badge -->
+
+                <div class="tc-expert-badge">
+
+                    <svg
+                        class="tc-expert-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M13 10V3L4 14h7v7l9-11h-7"
+                        />
+
+                    </svg>
+
+                    Full Stack Engineer &amp;
+                    Architect — Expert
+
+                </div>
+
+
+                <!-- Name -->
+
+                <h2 class="tc-profile-name">
+
+                    Arun Kumar Singh
+
+                </h2>
+
+
+                <!-- Role -->
+
+                <p class="tc-profile-role">
+
+                   Software Engineer · Building Scalable Digital Products
+
+                    
+
+                </p>
+
+
+                <!-- Description -->
+
+                <p class="tc-profile-description">
+
+                    I build scalable backend systems,
+                    modern web applications and thoughtful
+                    digital experiences — combining clean
+                    architecture, reliable engineering and
+                    polished user interfaces to turn ideas
+                    into meaningful products.
+
+                </p>
+
+
+                <!-- =================================================
+                     EXPERTISE
+                ================================================= -->
+
+                <div class="tc-expertise">
+
+                    <span>
+                        System Architecture
+                    </span>
+
+                    <span>
+                        Backend Engineering
+                    </span>
+
+                    <span>
+                        Product Engineering
+                    </span>
+
+                    <span>
+                        UI / UX
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     TECH STACK
+                ================================================= -->
+
+                <div class="mt-10">
+
+                    <div class="tc-section-label">
+
+                        <span>
+                            Engineering Stack
+                        </span>
+
+                        <span class="tc-section-line"></span>
+
+                    </div>
+
+
+                    <div class="tc-tech-grid">
+
+
+                        <!-- Django -->
+
+                        <div class="tc-tech-item">
+
+                            <div class="tc-tech-icon">
+                                🔥
+                            </div>
+
+                            <div>
+
+                                <div class="tc-tech-name">
+                                    Django
+                                </div>
+
+                                <div class="tc-tech-type">
+                                    Backend
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Python -->
+
+                        <div class="tc-tech-item">
+
+                            <div class="tc-tech-icon">
+                                🐍
+                            </div>
+
+                            <div>
+
+                                <div class="tc-tech-name">
+                                    Python
+                                </div>
+
+                                <div class="tc-tech-type">
+                                    Engineering
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Java -->
+
+                        <div class="tc-tech-item">
+
+                            <div class="tc-tech-icon">
+                                ☕
+                            </div>
+
+                            <div>
+
+                                <div class="tc-tech-name">
+                                    Java
+                                </div>
+
+                                <div class="tc-tech-type">
+                                    Backend
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Spring Boot -->
+
+                        <div class="tc-tech-item">
+
+                            <div class="tc-tech-icon">
+                                🌿
+                            </div>
+
+                            <div>
+
+                                <div class="tc-tech-name">
+                                    Spring Boot
+                                </div>
+
+                                <div class="tc-tech-type">
+                                    API
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- JavaScript -->
+
+                        <div class="tc-tech-item">
+
+                            <div class="tc-tech-icon">
+                                ⚡
+                            </div>
+
+                            <div>
+
+                                <div class="tc-tech-name">
+                                    JavaScript
+                                </div>
+
+                                <div class="tc-tech-type">
+                                    Frontend
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- React -->
+
+                        <div class="tc-tech-item">
+
+                            <div class="tc-tech-icon">
+                                ⚛️
+                            </div>
+
+                            <div>
+
+                                <div class="tc-tech-name">
+                                    React
+                                </div>
+
+                                <div class="tc-tech-type">
+                                    Frontend
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Android -->
+
+                        <div class="tc-tech-item">
+
+                            <div class="tc-tech-icon">
+                                📱
+                            </div>
+
+                            <div>
+
+                                <div class="tc-tech-name">
+                                    Android
+                                </div>
+
+                                <div class="tc-tech-type">
+                                    Mobile
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- MySQL -->
+
+                        <div class="tc-tech-item">
+
+                            <div class="tc-tech-icon">
+                                🗄️
+                            </div>
+
+                            <div>
+
+                                <div class="tc-tech-name">
+                                    MySQL
+                                </div>
+
+                                <div class="tc-tech-type">
+                                    Database
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- REST API -->
+
+                        <div class="tc-tech-item">
+
+                            <div class="tc-tech-icon">
+                                🔗
+                            </div>
+
+                            <div>
+
+                                <div class="tc-tech-name">
+                                    REST API
+                                </div>
+
+                                <div class="tc-tech-type">
+                                    Architecture
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- GitHub -->
+
+                        <div class="tc-tech-item">
+
+                            <div class="tc-tech-icon">
+                                🐙
+                            </div>
+
+                            <div>
+
+                                <div class="tc-tech-name">
+                                    GitHub
+                                </div>
+
+                                <div class="tc-tech-type">
+                                    Version Control
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     PROJECT ECOSYSTEM
+                ================================================= -->
+
+                <div class="mt-10">
+
+                    <div class="tc-section-label">
+
+                        <span>
+                            Project Ecosystem
+                        </span>
+
+                        <span class="tc-section-line"></span>
+
+                    </div>
+
+
+                    <div class="tc-project-grid">
+
+
+                        <!-- TastyCart -->
+
+                        <a
+                            href="/"
+                            class="tc-project-card"
+                            aria-label="Open TastyCart"
+                        >
+
+                            <div class="tc-project-icon">
+
+                                <svg
+                                    width="19"
+                                    height="19"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="1.8"
+                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 2h13M9 19a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2z"
+                                    />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div class="tc-project-title">
+                                TastyCart
+                            </div>
+
+
+                            <div class="tc-project-description">
+                                Food-tech platform engineered
+                                for a complete digital ordering
+                                experience.
+                            </div>
+
+
+                            <div class="tc-project-arrow">
+                                →
+                            </div>
+
+                        </a>
+
+
+                        <!-- Portfolio -->
+
+                        <a
+                            href="https://arunkumarportfolio.lovable.app/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="tc-project-card"
+                            aria-label="Open portfolio"
+                        >
+
+                            <div class="tc-project-icon">
+
+                                <svg
+                                    width="19"
+                                    height="19"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="1.8"
+                                        d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"
+                                    />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div class="tc-project-title">
+                                Portfolio
+                            </div>
+
+
+                            <div class="tc-project-description">
+                                Engineering profile,
+                                projects and professional work.
+                            </div>
+
+
+                            <div class="tc-project-arrow">
+                                →
+                            </div>
+
+                        </a>
+
+
+                        <!-- GitHub -->
+
+                        <a
+                            href="https://github.com/arun-kumar2004"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="tc-project-card"
+                            aria-label="Open GitHub"
+                        >
+
+                            <div class="tc-project-icon">
+
+                                <svg
+                                    width="19"
+                                    height="19"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+
+                                    <path
+                                        d="M12 .5C5.65.5.5 5.66.5 12.02c0 5.1 3.29 9.42 7.86 10.95.58.1.79-.25.79-.56v-2.01c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.27-1.69-1.27-1.69-1.04-.72.08-.71.08-.71 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.53-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.1 11.1 0 015.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.24 2.75.12 3.04.74.81 1.18 1.83 1.18 3.09 0 4.43-2.69 5.41-5.25 5.69.41.35.78 1.05.78 2.12v3.14c0 .31.21.67.8.56A11.53 11.53 0 0023.5 12C23.5 5.66 18.35.5 12 .5z"
+                                    />
+
+                                </svg>
+
+                            </div>
+
+
+                            <div class="tc-project-title">
+                                GitHub
+                            </div>
+
+
+                            <div class="tc-project-description">
+                                Code, experiments,
+                                repositories and development work.
+                            </div>
+
+
+                            <div class="tc-project-arrow">
+                                →
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ACTION BUTTONS
+                ================================================= -->
+
+                <div class="tc-actions">
+
+
+                    <!-- Portfolio -->
+
+                    <a
+                        href="https://arunkumarportfolio.lovable.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="tc-primary-cta"
+                    >
+
+                        <span>
+                            Explore My Work
+                        </span>
+
+                        <svg
+                            width="15"
+                            height="15"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 12h14M13 6l6 6-6 6"
+                            />
+
+                        </svg>
+
+                    </a>
+
+
+                    <!-- GitHub -->
+
+                    <a
+                        href="https://github.com/arun-kumar2004"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="tc-action-btn tc-btn-github"
+                    >
+
+                        <svg
+                            width="15"
+                            height="15"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                d="M12 .5C5.65.5.5 5.66.5 12.02c0 5.1 3.29 9.42 7.86 10.95.58.1.79-.25.79-.56v-2.01c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.27-1.69-1.27-1.69-1.04-.72.08-.71.08-.71 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.68 1.25 3.34.95.1-.74.4-1.25.72-1.53-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.1 11.1 0 015.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.24 2.75.12 3.04.74.81 1.18 1.83 1.18 3.09 0 4.43-2.69 5.41-5.25 5.69.41.35.78 1.05.78 2.12v3.14c0 .31.21.67.8.56A11.53 11.53 0 0023.5 12C23.5 5.66 18.35.5 12 .5z"
+                            />
+
+                        </svg>
+
+                        <span>
+                            GitHub
+                        </span>
+
+                    </a>
+
+
+                    <!-- LinkedIn -->
+
+                    <a
+                        href="https://www.linkedin.com/in/arun-kumar2004"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="tc-action-btn tc-btn-linkedin"
+                    >
+
+                        <svg
+                            width="15"
+                            height="15"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                d="M4.98 3.5C4.98 4.88 3.87 6 2.49 6S0 4.88 0 3.5 1.11 1 2.49 1s2.49 1.12 2.49 2.5zM.5 8h4v15h-4V8zm7 0h3.84v2.05h.06c.53-1.01 1.84-2.08 3.79-2.08 4.05 0 4.81 2.67 4.81 6.14V23h-4v-7.6c0-1.81-.03-4.14-2.52-4.14-2.52 0-2.91 1.97-2.91 4v7.74h-4V8z"
+                            />
+
+                        </svg>
+
+                        <span>
+                            LinkedIn
+                        </span>
+
+                    </a>
+
+
+                    <!-- Instagram -->
+
+                    <a
+                        href="https://www.instagram.com/arunthakur_004/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="tc-action-btn tc-btn-instagram"
+                    >
+
+                        <svg
+                            width="15"
+                            height="15"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.28-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324A6.162 6.162 0 0012 5.838zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"
+                            />
+
+                        </svg>
+
+                        <span>
+                            Instagram
+                        </span>
+
+                    </a>
+
+
+                    <!-- Email -->
+
+                    <a
+                        href="mailto:thakurarunkumar2004@gmail.com"
+                        class="tc-action-btn tc-btn-email"
+                    >
+
+                        <svg
+                            width="15"
+                            height="15"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.8"
+                                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                            />
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.8"
+                                d="m22 6-10 7L2 6"
+                            />
+
+                        </svg>
+
+                        <span>
+                            Email
+                        </span>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </article>
+
+    </div>
+
+
+    <!-- =====================================================
+         FOOTER STATEMENT
+    ===================================================== -->
+
+    <div
+        class="
+            tc-footer-statement
+            tc-reveal
+            tc-delay-4
+        "
+    >
+
+        <span>
+            Idea
+        </span>
+
+        <span class="mx-1">
+            →
+        </span>
+
+        <span>
+            Architecture
+        </span>
+
+        <span class="mx-1">
+            →
+        </span>
+
+        <span>
+            Engineering
+        </span>
+
+        <span class="mx-1">
+            →
+        </span>
+
+        <strong>
+            Experience
+        </strong>
+
+        <span class="mx-1">
+            →
+        </span>
+
+        <strong>
+            TastyCart
+        </strong>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
+
+    const section =
+        document.getElementById(
+            "tastycart-mindset"
+        );
+
+    const card =
+        document.getElementById(
+            "tcCreatorCard"
+        );
+
+
+    if (!section || !card) {
+        return;
+    }
+
+
+    /* =====================================================
+       MOTION PREFERENCE
+    ===================================================== */
+
+    const reducedMotion =
+        window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+
+    const isTouchDevice =
+        window.matchMedia(
+            "(hover: none)"
+        ).matches ||
+        window.matchMedia(
+            "(pointer: coarse)"
+        ).matches;
+
+
+    /* =====================================================
+       SCROLL REVEAL
+    ===================================================== */
+
+    const revealElements =
+        section.querySelectorAll(
+            ".tc-reveal"
+        );
+
+
+    if (
+        !reducedMotion &&
+        "IntersectionObserver" in window
+    ) {
+
+        const revealObserver =
+            new IntersectionObserver(
+                function (entries, observer) {
+
+                    entries.forEach(
+                        function (entry) {
+
+                            if (
+                                entry.isIntersecting
+                            ) {
+
+                                entry.target.classList.add(
+                                    "tc-visible"
+                                );
+
+                                observer.unobserve(
+                                    entry.target
+                                );
+
+                            }
+
+                        }
+                    );
+
+                },
+                {
+                    threshold: 0.12,
+                    rootMargin:
+                        "0px 0px -50px 0px"
+                }
+            );
+
+
+        revealElements.forEach(
+            function (element) {
+
+                revealObserver.observe(
+                    element
+                );
+
+            }
+        );
+
+    } else {
+
+        revealElements.forEach(
+            function (element) {
+
+                element.classList.add(
+                    "tc-visible"
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       3D CARD TILT
+       Fixed animationFrame scope
+    ===================================================== */
+
+    let animationFrame = null;
+
+    let targetRotateX = 0;
+    let targetRotateY = 0;
+
+    let currentRotateX = 0;
+    let currentRotateY = 0;
+
+
+    function animateTilt() {
+
+        currentRotateX +=
+            (
+                targetRotateX -
+                currentRotateX
+            ) * 0.12;
+
+
+        currentRotateY +=
+            (
+                targetRotateY -
+                currentRotateY
+            ) * 0.12;
+
+
+        card.style.transform =
+            "rotateX(" +
+            currentRotateX +
+            "deg) rotateY(" +
+            currentRotateY +
+            "deg)";
+
+
+        const stillMoving =
+            Math.abs(
+                targetRotateX -
+                currentRotateX
+            ) > 0.01 ||
+
+            Math.abs(
+                targetRotateY -
+                currentRotateY
+            ) > 0.01;
+
+
+        if (stillMoving) {
+
+            animationFrame =
+                requestAnimationFrame(
+                    animateTilt
+                );
+
+        } else {
+
+            animationFrame = null;
+
+        }
+
+    }
+
+
+    function requestTiltAnimation() {
+
+        if (
+            !animationFrame &&
+            !reducedMotion &&
+            !isTouchDevice
+        ) {
+
+            animationFrame =
+                requestAnimationFrame(
+                    animateTilt
+                );
+
+        }
+
+    }
+
+
+    if (
+        !reducedMotion &&
+        !isTouchDevice
+    ) {
+
+
+        /* Mouse move */
+
+        card.addEventListener(
+            "pointermove",
+            function (event) {
+
+                const rect =
+                    card.getBoundingClientRect();
+
+
+                const x =
+                    event.clientX -
+                    rect.left;
+
+
+                const y =
+                    event.clientY -
+                    rect.top;
+
+
+                const percentX =
+                    (x / rect.width) * 100;
+
+
+                const percentY =
+                    (y / rect.height) * 100;
+
+
+                card.style.setProperty(
+                    "--mouse-x",
+                    percentX + "%"
+                );
+
+
+                card.style.setProperty(
+                    "--mouse-y",
+                    percentY + "%"
+                );
+
+
+                targetRotateY =
+                    (
+                        (percentX - 50) /
+                        50
+                    ) * 3.8;
+
+
+                targetRotateX =
+                    (
+                        (50 - percentY) /
+                        50
+                    ) * 3.8;
+
+
+                requestTiltAnimation();
+
+            }
+        );
+
+
+        /* Mouse leave */
+
+        card.addEventListener(
+            "pointerleave",
+            function () {
+
+                targetRotateX = 0;
+                targetRotateY = 0;
+
+
+                card.style.setProperty(
+                    "--mouse-x",
+                    "50%"
+                );
+
+
+                card.style.setProperty(
+                    "--mouse-y",
+                    "50%"
+                );
+
+
+                requestTiltAnimation();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       TECH CARD INTERACTION
+    ===================================================== */
+
+    const techItems =
+        section.querySelectorAll(
+            ".tc-tech-item"
+        );
+
+
+    techItems.forEach(
+        function (item) {
+
+            item.addEventListener(
+                "mouseenter",
+                function () {
+
+                    if (
+                        reducedMotion
+                    ) {
+                        return;
+                    }
+
+
+                    item.style.zIndex =
+                        "10";
+
+                }
+            );
+
+
+            item.addEventListener(
+                "mouseleave",
+                function () {
+
+                    item.style.removeProperty(
+                        "z-index"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       MAGNETIC BUTTONS
+    ===================================================== */
+
+    if (
+        !reducedMotion &&
+        !isTouchDevice
+    ) {
+
+        const buttons =
+            section.querySelectorAll(
+                ".tc-action-btn, .tc-primary-cta"
+            );
+
+
+        buttons.forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "pointermove",
+                    function (event) {
+
+                        const rect =
+                            button.getBoundingClientRect();
+
+
+                        const x =
+                            event.clientX -
+                            rect.left -
+                            rect.width / 2;
+
+
+                        const y =
+                            event.clientY -
+                            rect.top -
+                            rect.height / 2;
+
+
+                        const moveX =
+                            Math.max(
+                                -4,
+                                Math.min(
+                                    4,
+                                    x / 7
+                                )
+                            );
+
+
+                        const moveY =
+                            Math.max(
+                                -4,
+                                Math.min(
+                                    4,
+                                    y / 7
+                                )
+                            );
+
+
+                        button.style.transform =
+                            "translate(" +
+                            moveX +
+                            "px," +
+                            moveY +
+                            "px)";
+
+                    }
+                );
+
+
+                button.addEventListener(
+                    "pointerleave",
+                    function () {
+
+                        button.style.transform =
+                            "";
+
+                    }
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       PROJECT CARD CLICK FEEDBACK
+    ===================================================== */
+
+    const projectCards =
+        section.querySelectorAll(
+            ".tc-project-card"
+        );
+
+
+    projectCards.forEach(
+        function (project) {
+
+            project.addEventListener(
+                "click",
+                function () {
+
+                    if (
+                        reducedMotion
+                    ) {
+                        return;
+                    }
+
+
+                    project.style.transform =
+                        "scale(.985)";
+
+
+                    window.setTimeout(
+                        function () {
+
+                            project.style.transform =
+                                "";
+
+                        },
+                        120
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       VISIBILITY CLEANUP
+       Fixed scope
+    ===================================================== */
+
+    document.addEventListener(
+        "visibilitychange",
+        function () {
+
+            if (
+                document.hidden &&
+                animationFrame
+            ) {
+
+                cancelAnimationFrame(
+                    animationFrame
+                );
+
+                animationFrame = null;
+
+            }
+
+        }
+    );
+
+
+})();
+
+</script>
+
+{% endblock content %}

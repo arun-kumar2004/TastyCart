@@ -8,6 +8,8 @@ from django.db.models import Prefetch
 from menu.models import Category, Item
 from cart.models import Cart
 
+def developer_page(request):
+    return render(request, "Deverloper_Arun_K_Singh.html")
 
 def home(request):
 

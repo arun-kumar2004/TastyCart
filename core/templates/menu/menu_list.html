@@ -9,7 +9,7 @@
 
 <section class="w-full bg-white py-8 shadow-sm">
 
-    <div class="max-w-7xl mx-auto px-4">
+    <div class="max-w-7xl mx-auto px-1">
 
         <div
             id="searchContainer"
@@ -43,7 +43,7 @@
 <!-- CATEGORY SECTION -->
 <!-- ========================= -->
 
-<section class="max-w-7xl mx-auto px-4 lg:px-8 py-12">
+<section class="max-w-7xl mx-auto px-1 lg:px-8 pt-12">
 
     <!-- CATEGORY BUTTONS -->
 
@@ -152,7 +152,7 @@
 
         <!-- PRODUCT GRID -->
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
 
             {% for item in category.items.all %}
 
@@ -181,7 +181,7 @@
 
                             href="{% url 'menu:edit_item' item.id %}"
 
-                            class="block px-4 py-3 hover:bg-blue-50">
+                            class="block px-1 py-3 hover:bg-blue-50">
 
                             ✏️ Edit Item
 
@@ -193,7 +193,7 @@
 
                             onclick="return confirm('Delete this item?')"
 
-                            class="block px-4 py-3 text-red-600 hover:bg-red-50">
+                            class="block px-1 py-3 text-red-600 hover:bg-red-50">
 
                             🗑 Delete Item
 
@@ -368,7 +368,7 @@
 
         <button
 
-            class="page-btn prev-page px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+            class="page-btn prev-page px-1 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
 
             disabled>
 
@@ -407,7 +407,7 @@
 
         <button
 
-            class="page-btn next-page px-4 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600">
+            class="page-btn next-page px-1 py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600">
 
             Next ▶
 
@@ -520,7 +520,7 @@
 
             id="recommendedRow1"
 
-            class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 px-2">
+            class="items-row flex gap-5 overflow-x-auto scroll-smooth pb-4 px-2">
 
             {% for item in recommended_items %}
 
@@ -545,7 +545,7 @@ data-id="{{ item.id }}">
 
             <a
                 href="{% url 'menu:edit_item' item.id %}"
-                class="block px-4 py-3 hover:bg-blue-50">
+                class="block px-1 py-3 hover:bg-blue-50">
 
                 ✏️ Edit
 
@@ -554,7 +554,7 @@ data-id="{{ item.id }}">
             <a
                 href="{% url 'menu:delete_item' item.id %}"
                 onclick="return confirm('Delete this item?')"
-                class="block px-4 py-3 text-red-600 hover:bg-red-50">
+                class="block px-1 py-3 text-red-600 hover:bg-red-50">
 
                 🗑 Delete
 
@@ -735,7 +735,7 @@ data-id="{{ item.id }}">
 
         id="recommendedRow2"
 
-        class="items-row reverse-row flex gap-6 overflow-x-auto scroll-smooth pb-4 px-2">
+        class="items-row reverse-row flex gap-5 overflow-x-auto scroll-smooth pb-4 px-2">
 
         {% for item in recommended_items %}
 
@@ -760,7 +760,7 @@ data-id="{{ item.id }}">
 
                     <a
                         href="{% url 'menu:edit_item' item.id %}"
-                        class="block px-4 py-3 hover:bg-blue-50">
+                        class="block px-1 py-3 hover:bg-blue-50">
 
                         ✏️ Edit
 
@@ -769,7 +769,7 @@ data-id="{{ item.id }}">
                     <a
                         href="{% url 'menu:delete_item' item.id %}"
                         onclick="return confirm('Delete this item?')"
-                        class="block px-4 py-3 text-red-600 hover:bg-red-50">
+                        class="block px-1 py-3 text-red-600 hover:bg-red-50">
 
                         🗑 Delete
 
@@ -2256,29 +2256,6 @@ function stopAutoScroll(id){
 /* ==========================================================
    PAUSE ON HOVER
 ========================================================== */
-
-function bindHover(row,reverse=false){
-
-    if(!row) return;
-
-
-
-    row.addEventListener("mouseenter",()=>{
-
-        stopAutoScroll(row.id);
-
-    });
-
-
-
-    row.addEventListener("mouseleave",()=>{
-
-        startAutoScroll(row,reverse);
-
-    });
-
-}
-
 
 
 /* ==========================================================

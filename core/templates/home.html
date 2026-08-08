@@ -11,7 +11,7 @@
 
 <!-- Search Bar (replace the old search div with this) -->
 <!-- Search Bar -->
-<div id="searchContainer" class="px-12 py-6 text-center relative z-50">
+<div id="searchContainer" class=" py-6 text-center relative z-50">
   <div class="relative w-2/3 md:w-1/2 mx-auto">
     <input
       id="searchInput"
@@ -50,7 +50,7 @@
 </div>
 
 <!-- Hero Section -->
-<section id="home" class="flex flex-col md:flex-row justify-between items-center px-16 py-20 bg-gradient-to-r from-yellow-50 to-orange-100">
+<section id="home" class="flex flex-col md:flex-row justify-between items-center bg-gradient-to-r from-yellow-50 to-orange-100">
   <div class="max-w-lg w-full px-5 sm:px-6 lg:px-0">
     <h2 class="text-3xl sm:text-4xl md:text-5xl
 font-extrabold
@@ -100,7 +100,7 @@ shadow-md">Order Now ⏭</a>
 
 {% if category.items.exists %}
 
-<section class="px-12 relative">
+<section class=" relative">
 
     
 <div class="relative flex items-center justify-center min-h-[50px] p-6 overflow-hidden">
@@ -159,7 +159,7 @@ shadow-md">Order Now ⏭</a>
 
    <div
     id="row{{ category.id }}"
-    class="items-row flex gap-6 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2 touch-pan-x">
+    class="items-row flex gap-4 overflow-x-auto scroll-smooth pb-4 pl-2 pr-2 touch-pan-x">
 
         {% for item in category.items.all %}
 
@@ -300,7 +300,7 @@ shadow-md">Order Now ⏭</a>
 {% endif %}
 {% endfor %}
 <!-- About Us -->
-<section id="about" class="flex flex-col md:flex-row items-center px-12 py-16 bg-gradient-to-r from-yellow-100 to-orange-100">
+<section id="about" class="flex flex-col md:flex-row items-center  py-16 bg-gradient-to-r from-yellow-100 to-orange-100">
   <div class="w-full h-85 md:w-1/2 relative">
     <img id="aboutImage" src="{% static 'images/about1.jpg' %}" class="rounded-lg shadow-lg w-full h-full object-cover">
   </div>
@@ -315,15 +315,38 @@ shadow-md">Order Now ⏭</a>
       our guests are at the heart of everything we do. Step into our world, and let your senses travel through a delightful journey 
       of taste, culture, and celebration.
     </p>
-  </div>
+  
+  <!-- Mindset of TastyCart CTA -->
+<div class="mt-8 flex justify-center md:justify-end">
+
+   <a
+    href="{% url 'developer_page' %}"
+    class="mindset-link group"
+    aria-label="Explore the Mindset of TastyCart"
+>
+    <span class="mindset-dot" aria-hidden="true">
+        <span></span>
+    </span>
+
+    <span class="mindset-content">
+        <span class="mindset-label">
+            THE STORY BEHIND THE EXPERIENCE
+        </span>
+
+        <span class="mindset-title">
+            Mindset of TastyCart
+        </span>
+    </span>
+
+    <span class="mindset-arrow" aria-hidden="true">
+        →
+    </span>
+</a>
+
+</div>
+</div>
 </section>
 
-
-
-<!-- ==========================================
-        MEET THE CREATOR
-=========================================== -->
-{% include "Deverloper_Arun_K_Singh.html" %}
 <!-- ==========================================
         Project statistics section
 ========================================== -->
@@ -447,6 +470,149 @@ shadow-md">Order Now ⏭</a>
     .arrow { width: 40px; height: 40px; }
   }
  
+  .mindset-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px 14px;
+
+    border-radius: 16px;
+
+    background: rgba(255,255,255,.72);
+
+    border: 1px solid rgba(249,115,22,.20);
+
+    box-shadow:
+        0 8px 25px rgba(234,88,12,.08);
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease,
+        border-color .3s ease;
+
+    overflow: hidden;
+}
+
+.mindset-link::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at 0% 50%,
+            rgba(249,115,22,.15),
+            transparent 55%
+        );
+
+    opacity: 0;
+
+    transition: opacity .3s ease;
+}
+
+.mindset-link:hover {
+    transform: translateY(-4px);
+
+    border-color: rgba(249,115,22,.45);
+
+    box-shadow:
+        0 15px 35px rgba(234,88,12,.16);
+}
+
+.mindset-link:hover::before {
+    opacity: 1;
+}
+
+.mindset-dot {
+    position: relative;
+
+    width: 10px;
+    height: 10px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #f97316;
+
+    box-shadow:
+        0 0 0 5px rgba(249,115,22,.10);
+}
+
+.mindset-dot span {
+    position: absolute;
+
+    inset: -5px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(249,115,22,.45);
+
+    animation: mindsetPulse 2s infinite;
+}
+
+@keyframes mindsetPulse {
+
+    0% {
+        transform: scale(.7);
+        opacity: .9;
+    }
+
+    100% {
+        transform: scale(1.7);
+        opacity: 0;
+    }
+
+}
+
+.mindset-content {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    text-align: left;
+}
+
+.mindset-label {
+    font-size: 8px;
+
+    font-weight: 800;
+
+    letter-spacing: .12em;
+
+    color: #94a3b8;
+}
+
+.mindset-title {
+    margin-top: 2px;
+
+    font-family: 'Space Grotesk', sans-serif;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    color: #ea580c;
+}
+
+.mindset-arrow {
+    position: relative;
+
+    font-size: 18px;
+
+    color: #ea580c;
+
+    transition: transform .3s ease;
+}
+
+.mindset-link:hover .mindset-arrow {
+    transform: translateX(5px);
+}
+
  .items-row{
     overflow-x:auto;
     overflow-y:hidden;
